@@ -22,7 +22,7 @@ namespace QuizSystem.Controllers
         public async Task<IActionResult> Index(int testId)
         {
             var test = await _testRepository.GetTestById(testId);
-            var questions = await _questionRepository.GetTestGuestions(testId);
+            var questions = await _questionRepository.GetTestQuestions(testId);
             //get all question for this test
 
             var testVM = new QuestionTestViewModel()

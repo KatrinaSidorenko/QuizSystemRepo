@@ -13,21 +13,31 @@ namespace DAL.Repository
         {
         }
 
-        public async Task AddQuestion(Question question)
+        public async Task<int> AddQuestion(Question question)
         {
             if (question == null)
             {
                 throw new ArgumentNullException(nameof(question));
             }
 
-            var sqlExpression = $"INSERT INTO Questions (question_description, question_type, point, test_id) VALUES ('{question.Description}',  {(int)question.Type}, {question.Point}, {question.TestId})";
+            var sqlExpression = $"INSERT INTO Questions (question_description, question_type, point, test_id) VALUES ('{question.Description}',  {(int)question.Type}, {question.Point}, {question.TestId});" +
+                "SELECT SCOPE_IDENTITY();"; 
             SqlConnection connection = new SqlConnection(_connectionString);
 
             using (connection)
             {
                 connection.Open();
                 SqlCommand command = new SqlCommand(sqlExpression, connection);
-                int number = await command.ExecuteNonQueryAsync();
+                var insertedId = await command.ExecuteScalarAsync();
+
+                if (int.TryParse(insertedId?.ToString(), out int id))
+                {
+                    return id;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Unable to retrieve the inserted ID.");
+                }
             }
         }
 
@@ -56,7 +66,7 @@ namespace DAL.Repository
             return question;
         }
 
-        public async Task<List<Question>> GetTestGuestions(int testId)
+        public async Task<List<Question>> GetTestQuestions(int testId)
         {
             string sqlExpression = $"SELECT * FROM Questions Where test_id = {testId}";
             SqlConnection connection = new SqlConnection(_connectionString);

@@ -10,6 +10,7 @@ namespace Core.Models
     {
         public int AnswerId { get; set; }
         public string Value { get; set; }
-        public string IsRight { get; set; }
+        public bool IsRight { get; set; }
+        public int QuestionId { get; set; }
     }
 }
