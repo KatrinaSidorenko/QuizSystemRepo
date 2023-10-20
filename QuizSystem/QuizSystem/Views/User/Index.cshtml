@@ -1,0 +1,62 @@
+﻿@using Core.Models;
+@model List<User>
+
+
+@{
+    var users = Model.ToList();
+} <!-- Convert Model to a List for easier manipulation -->
+
+<div class="container mb-5">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a href="@Url.Action("Create", "User")" class="btn btn-success btn-rounded">Create User</a>
+        </div>
+    </nav>
+</div>
+
+@for (int i = 0; i < users.Count; i += 3)
+{
+    <div class="row">
+        <!-- Create a row for every three elements -->
+        @for (int j = i; j < Math.Min(i + 3, users.Count); j++)
+        {
+            var user = users[j];
+            <div class="col-md-4">
+                <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
+                <div class="card mb-3">
+                    <div class="card-header">@user.UserId</div>
+                    <div class="card-body">
+                        <h5 class="card-title">@user.FirstName @user.LastName</h5>
+                        <p class="card-text">@user.DateOfBirth.ToString("MM/dd/yyyy")</p>
+
+                        <!-- Button trigger modal with a unique ID -->
+                        <button type="button" class="btn btn-danger" data-mdb-toggle="modal" data-mdb-target="#exampleModal-@user.UserId">
+                            Delete
+                        </button>
+
+                        <!-- Modal with a unique ID -->
+                        <div class="modal fade" id="exampleModal-@user.UserId" tabindex="-1" aria-labelledby="exampleModalLabel-@user.UserId" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel-@user.UserId">Are you sure you want to delete this user?</h5>
+                                        <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                                        <a href="@Url.Action("Delete", "User", new { userId = @user.UserId})" class="btn btn-danger" data-user-id="@user.UserId">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="@Url.Action("Edit", "User", new { userId = @user.UserId})" class="btn btn-primary">Edit</a>
+                        <a href="@Url.Action("Index", "Test", new { userId = @user.UserId})" class="btn btn-success">Tests</a>
+                        <div class="card-footer bg-light px-3 mt-2">@user.Email</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+

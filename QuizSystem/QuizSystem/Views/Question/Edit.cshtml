@@ -1,0 +1,98 @@
+﻿@using QuizSystem.ViewModels.QuestionViewModel
+@using Core.Enums
+@model EditQuestionViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <!--Main layout-->
+    <main class="my-5">
+        <div class="container">
+            <!--Section: Content-->
+            <section class="text-center text-md-start">
+                <h4 class="mb-5"><strong>Create question page</strong></h4>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <form id="create-form" method="post" asp-controller="Question" asp-action="Edit" enctype="multipart/form-data">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input type="hidden" asp-for="TestId" value="@Model.TestId" />
+                                <input type="hidden" asp-for="QuestionId" value="@Model.QuestionId" />
+
+                                <div class="form-outline mb-4">
+                                    <label asp-for="Description" class="control-label"></label>
+                                    <textarea asp-for="Description" class="form-control custom-textarea" rows="5" placeholder="Question Description"></textarea>
+                                </div>
+                                <div class="form-outline mb-3">
+                                    <label class="form-label" asp-for="Point">Point</label>
+                                    <input asp-for="Point" type="number" class="form-control">
+                                    <span asp-validation-for="Point" class="text-danger"></span>
+                                </div>
+                                <div class="btn-group d-flex justify-content-start mb-4">
+
+                                    <input class="btn-check"
+                                           type="radio"
+                                           value="@QuestionType.Single"
+                                           name="Type"
+                                           id="checkbox_@QuestionType.Single"
+                                           autocomplete="off"
+                                    @(Model.Type == QuestionType.Single ? "checked" : "") />
+                                    <label class="btn btn-secondary" for="checkbox_@QuestionType.Single">
+                                        One right option
+                                    </label>
+
+                                    <input class="btn-check"
+                                           type="radio"
+                                           value="@QuestionType.Multiple"
+                                           name="Type"
+                                           id="checkbox_@QuestionType.Multiple"
+                                           autocomplete="off"
+                                    @(Model.Type == QuestionType.Multiple ? "checked" : "") />
+                                    <label class="btn btn-secondary" for="checkbox_@QuestionType.Multiple">
+                                        Multiple right options
+                                    </label>
+
+                                    <input class="btn-check"
+                                           type="radio"
+                                           value="@QuestionType.Open"
+                                           name="Type"
+                                           id="checkbox_@QuestionType.Open"
+                                           autocomplete="off"
+                                    @(Model.Type == QuestionType.Open ? "checked" : "") />
+                                    <label class="btn btn-secondary" for="checkbox_@QuestionType.Open">
+                                        Open question
+                                    </label>
+
+                                </div>
+                                <!-- Submit button -->
+                                <div class="text-end">
+                                    <a href="@Url.Action("Index", "Question", new { testId = Model.TestId })" type="button" class="btn btn-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-primary" onclick="submitForm('tag-form')">Edit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </section>
+
+        </div>
+    </main>
+
+    <!--Main layout-->
+</body>
+</html>
+

@@ -1,0 +1,88 @@
+﻿@using QuizSystem.ViewModels.TestViewModels;
+@using Core.Enums;
+@model QuestionTestViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <!--Main layout-->
+    <main class="my-5">
+        <div class="container">
+            <!--Section: Content-->
+            <section class="text-center text-md-start">
+                <h4 class="mb-5"><strong>Create test page</strong></h4>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <form id="create-form" method="post" asp-controller="Test" asp-action="Edit" enctype="multipart/form-data">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input type="hidden" asp-for="UserId" value="@Model.UserId" />
+                                <input type="hidden" asp-for="TestId" value="@Model.TestId" />
+                                <input type="hidden" asp-for="DateOfCreation" value="@Model.DateOfCreation" />
+
+
+                                <!-- Name input -->
+                                <div class="form-outline mb-4">
+                                    <label asp-for="Name" class="control-label"></label>
+                                    <input asp-for="Name" class="form-control" placeholder="Test Name">
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                                <!-- Message input -->
+                                <div class="form-outline mb-4">
+                                    <label asp-for="Description" class="control-label"></label>
+                                    <textarea asp-for="Description" class="form-control custom-textarea" rows="5" placeholder="Test Description"></textarea>
+                                </div>
+                                <div class="btn-group d-flex justify-content-start mb-4">
+                                    <input class="btn-check"
+                                            type="radio"
+                                            value="@Visibility.Public"
+                                            name="Visibility"
+                                            id="checkbox_@Visibility.Public"
+                                            autocomplete="off"
+                                    @(Model.Visibility == Visibility.Public ? "checked" : "") />
+                                    <label class="btn btn-secondary" for="checkbox_@Visibility.Public">
+                                        @Visibility.Public
+                                    </label>
+                                    <input class="btn-check"
+                                            type="radio"
+                                            value="@Visibility.Private"
+                                            name="Visibility"
+                                            id="checkbox_@Visibility.Private"
+                                            autocomplete="off"
+                                    @(Model.Visibility == Visibility.Private ? "checked" : "") />
+                                    <label class="btn btn-secondary" for="checkbox_@Visibility.Private">
+                                        @Visibility.Private
+                                    </label>
+                                </div>
+                                <!-- Submit button -->
+                                <div class="text-end">
+                                    <a href="@Url.Action("Index", "Test", new { userId = Model.UserId })" type="button" class="btn btn-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-primary" onclick="submitForm('tag-form')">Edit</button>
+                                    <a href="@Url.Action("Create", "Question", new { testId = @Model.TestId })" class="btn btn-outline-success btn-rounded" data-mdb-ripple-color="dark">Add question</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+            </section>
+
+        </div>
+    </main>
+
+    <!--Main layout-->
+</body>
+</html>

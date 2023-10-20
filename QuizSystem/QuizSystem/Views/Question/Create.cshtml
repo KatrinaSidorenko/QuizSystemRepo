@@ -1,0 +1,84 @@
+﻿@using QuizSystem.ViewModels.QuestionViewModel
+@using Core.Enums
+@model CreateQuestionViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie-edge" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <!--Main layout-->
+    <main class="my-5">
+        <div class="container">
+            <!--Section: Content-->
+            <section class="text-center text-md-start">
+                <h4 class="mb-5"><strong>Create question page</strong></h4>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <form id="create-form" asp-action="Create" asp-controller="Question" method="post">
+                                @*<div asp-validation-summary="ModelOnly" class="text-danger"></div>*@
+                                <input type="hidden" name="TestId" value="@Model.TestId" />
+                                <div class="form-outline mb-4">
+                                    <label name="Description" class="control-label">Question Text</label>
+                                    <textarea name="Description" class="form-control custom-textarea" rows="5" placeholder="Question Text"></textarea>
+                                </div>
+                                <div class="form-outline mb-3">
+                                    <label class="form-label" name="Point">Point</label>
+                                    <input name ="Point" type="number" class="form-control">
+                                    <span name="Point" class="text-danger"></span>
+                                </div>
+                                <div class="btn-group d-flex justify-content-start mb-4">
+                                    <input class="btn-check"
+                                           type="radio"
+                                           value="@QuestionType.Single"
+                                           name="Type"
+                                           id="checkbox_@QuestionType.Single"
+                                           autocomplete="off" checked />
+                                    <label class="btn btn-secondary" for="checkbox_@QuestionType.Single">
+                                        One right option
+                                    </label>
+                                    <input class="btn-check"
+                                           type="radio"
+                                           value="@QuestionType.Multiple"
+                                           name="Type"
+                                           id="checkbox_@QuestionType.Multiple"
+                                           autocomplete="off" />
+                                    <label class="btn btn-secondary" for="checkbox_@QuestionType.Multiple">
+                                        Multiple right options
+                                    </label>
+                                    <input class="btn-check"
+                                           type="radio"
+                                           value="@QuestionType.Open"
+                                           name="Type"
+                                           id="checkbox_@QuestionType.Open"
+                                           autocomplete="off" />
+                                    <label class="btn btn-secondary" for="checkbox_@QuestionType.Open">
+                                        Open question
+                                    </label>
+                                </div>
+
+                                <div class="text-end">
+                                    <a href="@Url.Action("Index", "Question", new { testId = Model.TestId })" type="button" class="btn btn-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">Next</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>
