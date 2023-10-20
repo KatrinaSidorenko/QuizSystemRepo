@@ -88,7 +88,7 @@ namespace DAL.Repository
 
                 if (int.TryParse(insertedId?.ToString(), out int id))
                 {
-                    return id; // Return the ID of the newly inserted entity
+                    return id; 
                 }
                 else
                 {

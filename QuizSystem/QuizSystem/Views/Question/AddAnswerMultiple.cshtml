@@ -151,7 +151,8 @@
                     type: "POST",
                     data: formData,
                     success: function (response) {
-                        alert(response);
+                        // Check if the response indicates success (you can customize this condition)
+                        window.location.href = response.redirectUrl;
                     },
                     error: function (error) {
                         alert("Error: " + error.statusText);
