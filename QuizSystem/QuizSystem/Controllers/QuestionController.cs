@@ -4,6 +4,7 @@ using Core.Enums;
 using Microsoft.AspNetCore.Mvc;
 using QuizSystem.ViewModels.QuestionViewModel;
 using QuizSystem.ViewModels.TestViewModels;
+using BLL.Interfaces;
 
 namespace QuizSystem.Controllers
 {
@@ -11,10 +12,12 @@ namespace QuizSystem.Controllers
     {
         private readonly IQuestionRepository _questionRepository;
         private readonly ITestRepository _testRepository;
-        public QuestionController(IQuestionRepository questionRepository, ITestRepository testRepository)
+        private readonly IQuestionService _questionService;
+        public QuestionController(IQuestionRepository questionRepository, ITestRepository testRepository, IQuestionService questionService)
         {
             _questionRepository = questionRepository;
             _testRepository = testRepository;
+            _questionService = questionService;
 
         }
 
@@ -131,9 +134,39 @@ namespace QuizSystem.Controllers
                 Point = createQuestionViewModel.Point
             };
 
-            await _questionRepository.AddQuestion(question);
+            var answerList = createQuestionViewModel.Answers.Select(a =>
+            {
+                var answer = new Answer()
+                {
+                    Value = a.Value,
+                    IsRight = a.IsRight
+                };
 
-            return RedirectToAction("Index", new { testId = createQuestionViewModel.TestId });
+                return answer;
+            }).ToList();
+
+            var result = await _questionService.AddQuestionWithAnswers(question, answerList);
+
+            if (!result.IsSuccessful)
+            {
+                TempData["Error"] = result.Message;
+
+                if (createQuestionViewModel.Type.Equals(QuestionType.Multiple))
+                {
+                    return View("AddAnswerMultiple", createQuestionViewModel);
+                }
+                else if (createQuestionViewModel.Type.Equals(QuestionType.Single))
+                {
+                    return View("AddAnswerSingle", createQuestionViewModel);
+                }
+                else
+                {
+                    return View("AddAnswerOpen", createQuestionViewModel);
+                }
+
+            }
+
+            return Json(new { redirectUrl = Url.Action("Index", new { testId = createQuestionViewModel.TestId }) });
         }
     }
 }
