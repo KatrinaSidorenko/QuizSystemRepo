@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using QuizSystem.ViewModels.QuestionViewModel;
 using QuizSystem.ViewModels.TestViewModels;
 using BLL.Interfaces;
+using QuizSystem.ViewModels;
 
 namespace QuizSystem.Controllers
 {
@@ -13,12 +14,13 @@ namespace QuizSystem.Controllers
         private readonly IQuestionRepository _questionRepository;
         private readonly ITestRepository _testRepository;
         private readonly IQuestionService _questionService;
-        public QuestionController(IQuestionRepository questionRepository, ITestRepository testRepository, IQuestionService questionService)
+        private readonly IAnswerRepository _answerRepository;
+        public QuestionController(IQuestionRepository questionRepository, ITestRepository testRepository, IQuestionService questionService, IAnswerRepository answerRepository)
         {
             _questionRepository = questionRepository;
             _testRepository = testRepository;
             _questionService = questionService;
-
+            _answerRepository = answerRepository;
         }
 
         [HttpGet]
@@ -26,6 +28,34 @@ namespace QuizSystem.Controllers
         {
             var test = await _testRepository.GetTestById(testId);
             var questions = await _questionRepository.GetTestQuestions(testId);
+
+            var questionsVM = questions.Select(async q =>
+            {
+                var answers = await _answerRepository.GetQuestionAnswers(q.QuestionId);
+
+                var answersVm = answers.Select(a =>
+                {
+                    var answer = new AnswerViewModel()
+                    {
+                        IsRight = a.IsRight,
+                        Value = a.Value 
+                    };
+
+                    return answer;
+                }).ToList();
+
+                var question = new IndexQuestionViewModel()
+                {
+                    QuestionId = q.QuestionId,
+                    Description = q.Description,
+                    TestId = q.TestId,
+                    Point = q.Point,
+                    Type = q.Type,
+                    Answers = answersVm
+                };
+
+                return question;
+            }).ToList();
             //get all question for this test
 
             var testVM = new QuestionTestViewModel()
@@ -36,7 +66,7 @@ namespace QuizSystem.Controllers
                 UserId = test.UserId,
                 Visibility = test.Visibility,
                 DateOfCreation = test.DateOfCreation,
-                Questions  = questions,
+                Questions  =  Task.WhenAll(questionsVM).Result.ToList()
             };
 
             return View(testVM);
@@ -153,15 +183,15 @@ namespace QuizSystem.Controllers
 
                 if (createQuestionViewModel.Type.Equals(QuestionType.Multiple))
                 {
-                    return View("AddAnswerMultiple", createQuestionViewModel);
+                    return Json(new { redirectUrl = Url.Action("AddAnswerMultiple", new { createQuestionViewModel }) });
                 }
                 else if (createQuestionViewModel.Type.Equals(QuestionType.Single))
                 {
-                    return View("AddAnswerSingle", createQuestionViewModel);
+                    return Json(new { redirectUrl = Url.Action("AddAnswerSingle", new { createQuestionViewModel }) });
                 }
                 else
                 {
-                    return View("AddAnswerOpen", createQuestionViewModel);
+                    return Json(new { redirectUrl = Url.Action("AddAnswerOpen", new { createQuestionViewModel }) });
                 }
 
             }

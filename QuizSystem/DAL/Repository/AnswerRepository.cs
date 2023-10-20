@@ -19,7 +19,7 @@ namespace DAL.Repository
                 throw new ArgumentNullException(nameof(answer));
             }
 
-            var sqlExpression = $"INSERT INTO Answers (answer_description, is_right, question_id) VALUES ('{answer.Value}',  {answer.IsRight}, {answer.QuestionId});";
+            var sqlExpression = $"INSERT INTO Answers (answer_description, is_right, question_id) VALUES ('{answer.Value}', {Convert.ToInt32(answer.IsRight)}, {answer.QuestionId});";
             SqlConnection connection = new SqlConnection(_connectionString);
 
             using (connection)
@@ -45,7 +45,7 @@ namespace DAL.Repository
                 while (reader.Read())
                 {
                     answer.Value = (string)reader["answer_description"];
-                    answer.IsRight = (bool)reader["is_right"];
+                    answer.IsRight = (int)reader["is_right"] == 1 ? true : false;
                     answer.AnswerId = (int)reader["answer_id"];
                     answer.QuestionId = (int)reader["question_id"];
                 }
@@ -56,7 +56,7 @@ namespace DAL.Repository
 
         public async Task<List<Answer>> GetQuestionAnswers(int questionId)
         {
-            string sqlExpression = $"SELECT * FROM Answers Where question_id = {questionId}";
+            string sqlExpression = $"SELECT * FROM Answers Where question_id={questionId}";
             SqlConnection connection = new SqlConnection(_connectionString);
             SqlCommand command = new SqlCommand(sqlExpression, connection);
             List<Answer> answers = new();
@@ -70,7 +70,7 @@ namespace DAL.Repository
                 {
                     Answer answer = new();
                     answer.Value = (string)reader["answer_description"];
-                    answer.IsRight = (bool)reader["is_right"];
+                    answer.IsRight = (int)reader["is_right"] == 1 ? true : false;
                     answer.AnswerId = (int)reader["answer_id"];
                     answer.QuestionId = (int)reader["question_id"];
                     answers.Add(answer);
@@ -99,7 +99,7 @@ namespace DAL.Repository
                 throw new ArgumentNullException(nameof(answer));
             }
 
-            string sqlExpression = $"UPDATE Answers SET answer_description='{answer.Value}', is_right={answer.IsRight}, question_id={answer.QuestionId} WHERE answer_id={answer.AnswerId}";
+            string sqlExpression = $"UPDATE Answers SET answer_description='{answer.Value}', is_right={Convert.ToInt32(answer.IsRight)}, question_id={answer.QuestionId} WHERE answer_id={answer.AnswerId}";
             SqlConnection connection = new SqlConnection(_connectionString);
 
             using (connection)

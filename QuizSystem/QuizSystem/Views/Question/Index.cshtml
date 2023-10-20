@@ -54,6 +54,21 @@
                                 <div class="card-body">
                                     <p class="card-text">Question: @question.Description</p>
                                     <p class="card-text">Points: @question.Point</p>
+                                        @foreach(var answer in question.Answers)
+                                        {
+                                            <hr class="hr" />
+                                            @if(answer.IsRight){
+                                                <div class="note note-success mb-3">
+                                                    <strong>Right answer:</strong> Answer Text: @answer.Value
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="note note-secondary mb-3">
+                                                    <strong>Wrong answer:</strong> Answer Text: @answer.Value
+                                                </div>
+                                            }
+                                        }                                       
                                     <!-- Button trigger modal with a unique ID -->
                                     <button type="button" class="btn btn-danger" data-mdb-toggle="modal" data-mdb-target="#exampleModal-@question.QuestionId">
                                         Delete
@@ -66,7 +81,7 @@
                                                 <div class="modal-header">
                                                     <h5 class="modal-title" id="exampleModalLabel-@question.QuestionId">Are you sure you want to delete this question?</h5>
                                                     <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
-                                                </div>
+                                                </div>                                         
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
                                                     <a href="@Url.Action("Delete", "Question", new { questionId = question.QuestionId, testId = question.TestId})" class="btn btn-danger" data-user-id="@question.QuestionId">Delete</a>

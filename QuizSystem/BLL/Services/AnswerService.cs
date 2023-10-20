@@ -31,7 +31,7 @@ namespace BLL.Services
                 
                 foreach (var answer in answerList)
                 {
-                    if (answer.QuestionId == 0)
+                    if (answer.QuestionId != 0)
                     {
                         tasks.Add(_answerRepository.AddAnswer(answer));
                     }
