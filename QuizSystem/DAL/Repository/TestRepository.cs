@@ -74,7 +74,7 @@ namespace DAL.Repository
             }
 
             var sqlExpression = $"INSERT INTO Tests (test_name, test_description, test_visibility, date_of_creation, user_id) " +
-                               $"VALUES ('{test.Name}', '{test.Description}', '{(int)test.Visibility}', '{test.DateOfCreation}', '{test.UserId}');" +
+                               $"VALUES ('{test.Name}', '{test.Description}', '{(int)test.Visibility}', '{test.DateOfCreation.ToString("yyyy-MM-ddTHH:mm:ss")}', '{test.UserId}');" +
                                "SELECT SCOPE_IDENTITY();"; // This line retrieves the last inserted ID
 
             SqlConnection connection = new SqlConnection(_connectionString);
@@ -130,7 +130,7 @@ namespace DAL.Repository
                 throw new ArgumentNullException(nameof(test));
             }
 
-            string sqlExpression = $"UPDATE Tests SET test_name='{test.Name}', test_description='{test.Description}', test_visibility={(int)test.Visibility}, date_of_creation='{test.DateOfCreation}', user_id={test.UserId} WHERE test_id={test.TestId}";
+            string sqlExpression = $"UPDATE Tests SET test_name='{test.Name}', test_description='{test.Description}', test_visibility={(int)test.Visibility}, date_of_creation='{test.DateOfCreation.ToString("yyyy-MM-ddTHH:mm:ss")}', user_id={test.UserId} WHERE test_id={test.TestId}";
             SqlConnection connection = new SqlConnection(_connectionString);
 
             using (connection)
