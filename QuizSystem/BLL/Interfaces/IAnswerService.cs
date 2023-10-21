@@ -10,5 +10,8 @@ namespace BLL.Interfaces
     public interface IAnswerService
     {
         Task<Result<bool>> AddRangeOfAnswers(List<Answer> answerList);
+        Task<Result<List<Answer>>> GetQuestionAnswers(int questionId);
+        Task<Result<bool>> RemoveRangeOfAnswers(List<Answer> answerList);
+        Task<Result<bool>> UpdateRangeOfAnswers(List<Answer> answers);
     }
 }

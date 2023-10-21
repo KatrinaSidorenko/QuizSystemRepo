@@ -1,0 +1,165 @@
+﻿@using QuizSystem.ViewModels.QuestionViewModel
+@using Core.Enums
+@model EditQuestionAnswerViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie-edge" />
+    <style>
+        .answer-form {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <!--Main layout-->
+    <main class="my-5">
+        <div class="container">
+            <!--Section: Content-->
+            <section class="text-center text-md-start">
+                <h4 class="mb-5"><strong>Create question page</strong></h4>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <form id="create-form" method="post">
+                                <input type="hidden" name="TestId" value="@Model.TestId" />
+                                <input type="hidden" name="Type" value="@Model.Type" />
+                                <input type="hidden" name="QuestionId" value="@Model.QuestionId" />
+
+                                <div class="form-outline mb-4">
+                                    <label asp-for="Description" class="control-label">Question Text</label>
+                                    <textarea asp-for="Description" name="Description" class="form-control custom-textarea" rows="5" placeholder="Question Text"></textarea>
+                                </div>
+                                <div class="form-outline mb-3">
+                                    <label class="form-label" asp-for="Point">Point</label>
+                                    <input asp-for="Point" name="Point" type="number" class="form-control">
+                                </div>
+                                @for (var i = 1; i <= Model.Answers.Count(); i++)
+                                {
+                                    <div class="form-outline answer-form">
+                                        <input type="hidden" name="AnswerId" value="@Model.Answers[i - 1].AnswerId" />
+
+                                        <label class="form-label" style="padding-right: 5px;">@i</label>
+                                        <input asp-for="@Model.Answers[i - 1].Value" type="text" class="form-control" name="Answers" />
+
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding-left: 10px;">
+                                            <div>
+                                                <input type="radio" class="form-check-input" name="IsRight" @(Model.Answers[i - 1].IsRight ? "checked" : "") />
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-danger remove-answer">Remove</button>
+                                    </div>
+                                }
+
+                                <button type="button" class="btn btn-success btn-add-answer">Add Answer</button>
+
+                                <div class="text-end">
+                                    <a href="@Url.Action("Index", "Question", new { testId = Model.TestId })" type="button" class="btn btn-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">Create</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function addAnswerForm() {
+            var newAnswerIndex = $('.answer-form').length + 1;
+            var answerForm = `
+                            <div class="form-outline answer-form">
+                                <label class="form-label" style="padding-right: 5px;">${newAnswerIndex}</label>
+                                <input type="text" class="form-control" name="Answers" />
+
+                                 <div style="display: flex; align-items: center; justify-content: space-between; padding-left: 10px;">
+                                    <div>
+                                        <input type="radio" class="form-check-input" name="IsRight" />
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-danger remove-answer">Remove</button>
+                            </div>
+                        `;
+
+            $('.btn-add-answer').before(answerForm);
+        }
+
+        $(document).ready(function () {
+            // Handle adding new answer forms
+            $(document).on('click', '.btn-add-answer', function () {
+                addAnswerForm();
+            });
+
+            // Handle removing answer forms
+            $(document).on('click', '.remove-answer', function () {
+                $(this).closest('.answer-form').remove();
+            });
+
+            // Handle form submission
+            $("#create-form").submit(function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                var formData = {
+                    QuestionId: $("input[name='QuestionId']").val(),
+                    TestId: $("input[name='TestId']").val(),
+                    Description: $("textarea[name='Description']").val(),
+                    Point: $("input[name='Point']").val(),
+                    Type: $("input[name='Type']").val(),
+                    Answers: []
+                };
+
+                // Collect answers
+                $(".answer-form").each(function () {
+                    var answer = {
+                        AnswerId: $(this).find("input[name='AnswerId']").val(),
+                        Value: $(this).find("input[name='Answers']").val(),
+                        IsRight: $(this).find("input[name='IsRight']").is(':checked')
+                    };
+
+                    formData.Answers.push(answer);
+                });
+
+                // Send the data to the endpoint
+                $.ajax({
+                    url: "/Question/Edit",
+                    type: "POST",
+                    data: formData,
+                    success: function (response) {
+                        // Check if the response indicates success (you can customize this condition)
+                        window.location.href = response.redirectUrl;
+                    },
+                    error: function (error) {
+                        alert("Error: " + error.statusText);
+                    }
+                });
+            });
+
+            // Handle radio buttons for single type questions
+            if ($("input[name='Type']").val() === "Single") {
+                $(document).on('click', '.form-check-input', function () {
+                    // Uncheck other radio buttons in the same group
+                    $('.form-check-input').prop('checked', false);
+                    $(this).prop('checked', true);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+

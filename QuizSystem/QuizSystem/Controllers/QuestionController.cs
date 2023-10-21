@@ -6,6 +6,7 @@ using QuizSystem.ViewModels.QuestionViewModel;
 using QuizSystem.ViewModels.TestViewModels;
 using BLL.Interfaces;
 using QuizSystem.ViewModels;
+using QuizSystem.ViewModels.AnswerViewModels;
 
 namespace QuizSystem.Controllers
 {
@@ -117,40 +118,100 @@ namespace QuizSystem.Controllers
         {
             var question = await _questionRepository.GetQuestionById(questionId);
 
-            var questionVM = new EditQuestionViewModel()
+            var answers = await _answerRepository.GetQuestionAnswers(questionId);
+
+            var answersVm = answers.Select(a =>
+            {
+                var answer = new EditAnswerViewModel()
+                {
+                    AnswerId = a.AnswerId,
+                    IsRight = a.IsRight,
+                    Value = a.Value,
+                    QuestionId = a.QuestionId
+                };
+
+                return answer;
+            }).ToList();
+
+            var questionVM = new EditQuestionAnswerViewModel()
             {
                 TestId = question.TestId,
                 Description = question.Description,
                 Type = question.Type,
                 Point = question.Point,
-                QuestionId = questionId
+                QuestionId = questionId,
+                Answers = answersVm
             };
 
-            return View(questionVM);
+            if (questionVM.Type.Equals(QuestionType.Multiple))
+            {
+                return View("EditAnswerMultiple", questionVM);
+            }
+            else if (questionVM.Type.Equals(QuestionType.Single))
+            {
+                return View("EditAnswerSingle", questionVM);
+            }
+            else
+            {
+                return View("EditAnswerOpen", questionVM);
+            }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditQuestionViewModel model)
+        public async Task<IActionResult> Edit([FromForm]EditQuestionAnswerViewModel editQuestionViewModel)
         {
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Fail to edit question";
 
-                return View(model);
+                //return View(model);
             }
 
             var question = new Question()
             {
-                QuestionId = model.QuestionId,
-                Description = model.Description,
-                Type = model.Type,
-                Point = model.Point,
-                TestId = model.TestId
+                QuestionId = editQuestionViewModel.QuestionId,
+                TestId = editQuestionViewModel.TestId,
+                Description = editQuestionViewModel.Description,
+                Type = editQuestionViewModel.Type,
+                Point = editQuestionViewModel.Point
             };
 
-            await _questionRepository.UpdateQuestion(question);
+            var answerList = editQuestionViewModel.Answers.Select(a =>
+            {
+                var answer = new Answer()
+                {
+                    AnswerId = a.AnswerId,
+                    Value = a.Value,
+                    QuestionId = editQuestionViewModel.QuestionId,
+                    IsRight = a.IsRight
+                };
 
-            return RedirectToAction("Index", new {testId =  model.TestId});
+                return answer;
+
+            }).ToList();
+
+            var result = await _questionService.EditQuestionAndAnswers(question, answerList);
+
+            if (!result.IsSuccessful)
+            {
+                TempData["Error"] = result.Message;
+
+                if (editQuestionViewModel.Type.Equals(QuestionType.Multiple))
+                {
+                    return Json(new { redirectUrl = Url.Action("EditAnswerMultiple", editQuestionViewModel ) });
+                }
+                else if (editQuestionViewModel.Type.Equals(QuestionType.Single))
+                {
+                    return Json(new { redirectUrl = Url.Action("EditAnswerSingle", editQuestionViewModel ) });
+                }
+                else
+                {
+                    return Json(new { redirectUrl = Url.Action("EditAnswerOpen", editQuestionViewModel) });
+                }
+
+            }
+
+            return Json(new { redirectUrl = Url.Action("Index", new { testId = editQuestionViewModel.TestId }) });
         }
 
         [HttpPost]
@@ -173,6 +234,7 @@ namespace QuizSystem.Controllers
                 };
 
                 return answer;
+
             }).ToList();
 
             var result = await _questionService.AddQuestionWithAnswers(question, answerList);

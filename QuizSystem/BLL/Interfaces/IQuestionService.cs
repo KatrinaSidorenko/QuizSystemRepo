@@ -10,5 +10,6 @@ namespace BLL.Interfaces
     public interface IQuestionService
     {
         Task<Result<Question>> AddQuestionWithAnswers(Question question, List<Answer> answers);
+        Task<Result<bool>> EditQuestionAndAnswers(Question question, List<Answer> answers);
     }
 }

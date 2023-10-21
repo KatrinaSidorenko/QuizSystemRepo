@@ -20,11 +20,6 @@ namespace BLL.Services
                 return new Result<bool>(false);
             }
 
-            if(answerList.Count(a => a.IsRight) == 0)
-            {
-                return new Result<bool>(false, "Should be one right answer");
-            }
-
             try
             {
                 var tasks = new List<Task>();  
@@ -44,6 +39,78 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<bool>(false, "Fail to add answers to question");
+            }
+        }
+
+        public async Task<Result<List<Answer>>> GetQuestionAnswers(int questionId)
+        {
+            try
+            {
+                var answers = await _answerRepository.GetQuestionAnswers(questionId);
+
+                return new Result<List<Answer>>(true, answers);
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<Answer>>(false, "Fail to get answers to question");
+            }
+        }
+
+        public async Task<Result<bool>> RemoveRangeOfAnswers(List<Answer> answerList)
+        {
+            if (!answerList.Any())
+            {
+                return new Result<bool>(false);
+            }
+
+            try
+            {
+                var tasks = new List<Task>();
+
+                foreach (var answer in answerList)
+                {
+                    if (answer.QuestionId != 0)
+                    {
+                        tasks.Add(_answerRepository.DeleteAnswer(answer.AnswerId));
+                    }
+                }
+
+                await Task.WhenAll(tasks);
+
+                return new Result<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, "Fail to delete answers to question");
+            }
+        }
+
+        public async Task<Result<bool>> UpdateRangeOfAnswers(List<Answer> answers)
+        {
+            if (!answers.Any())
+            {
+                return new Result<bool>(false);
+            }
+
+            try
+            {
+                var tasks = new List<Task>();
+
+                foreach (var answer in answers)
+                {
+                    if (answer.QuestionId != 0)
+                    {
+                        tasks.Add(_answerRepository.UpdateAnswer(answer));
+                    }
+                }
+
+                await Task.WhenAll(tasks);
+
+                return new Result<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, "Fail to delete answers to question");
             }
         }
     }
