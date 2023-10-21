@@ -1,4 +1,4 @@
-﻿namespace QuizSystem.ViewModels
+﻿namespace QuizSystem.ViewModels.AnswerViewModels
 {
     public class AnswerViewModel
     {
