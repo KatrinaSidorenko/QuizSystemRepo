@@ -13,7 +13,6 @@ builder.Services.Configure<ConnectionSettings>(builder.Configuration.GetSection(
 //Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
-builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
 
