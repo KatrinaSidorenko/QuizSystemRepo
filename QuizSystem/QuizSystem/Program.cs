@@ -7,6 +7,7 @@ using DAL.Repository;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<ConnectionSettings>(builder.Configuration.GetSection("ConnectionSettings"));
 
