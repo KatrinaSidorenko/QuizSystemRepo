@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using AutoMapper;
+using Core.Models;
 using DAL.Interfaces;
 using DAL.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,11 @@ namespace QuizSystem.Controllers
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
-        public UserController(IUserRepository userRepository)
+        private readonly IMapper _mapper;
+        public UserController(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -35,15 +38,7 @@ namespace QuizSystem.Controllers
         {
             var user = await _userRepository.GetUserById(userId);
 
-            var userVm = new EditUserViewModel() 
-            { 
-                UserId = userId,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                DateOfBirth = user.DateOfBirth,
-                Password = user.Password
-            };
+            var userVm = _mapper.Map<EditUserViewModel>(user);
 
             return View(userVm);
         }
@@ -51,15 +46,7 @@ namespace QuizSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditUserViewModel model)
         {
-            var user = new User()
-            {
-                UserId = model.UserId,
-                Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                DateOfBirth = model.DateOfBirth.Date,
-                Password = model.Password
-            };
+            var user = _mapper.Map<User>(model);          
 
             await _userRepository.UpdateUser(user);
 
@@ -84,14 +71,7 @@ namespace QuizSystem.Controllers
                 return View(userViewModel);
             }
 
-            var user = new User()
-            {
-                Email = userViewModel.Email,
-                FirstName = userViewModel.FirstName,
-                LastName = userViewModel.LastName,
-                DateOfBirth = userViewModel.DateOfBirth.Date,
-                Password = userViewModel.Password
-            };
+            var user = _mapper.Map<User>(userViewModel);
 
             await _userRepository.AddUser(user);
 
