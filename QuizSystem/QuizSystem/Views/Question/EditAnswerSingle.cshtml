@@ -50,6 +50,7 @@
                                 {
                                     <div class="form-outline answer-form">
                                         <input type="hidden" name="AnswerId" value="@Model.Answers[i - 1].AnswerId" />
+                                        <input type="hidden" name="QuestionId" value="@Model.QuestionId" />
 
                                         <label class="form-label" style="padding-right: 5px;">@i</label>
                                         <input asp-for="@Model.Answers[i - 1].Value" type="text" class="form-control" name="Answers" />

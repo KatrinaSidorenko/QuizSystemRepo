@@ -10,6 +10,8 @@ namespace QuizSystem.Profiles
         {
             CreateMap<Test, IndexTestViewModel>();
             CreateMap<Test, QuestionTestViewModel>();
+            CreateMap<TestViewModel, Test>();
+            CreateMap<QuestionTestViewModel, Test>();
         }
     }
 }

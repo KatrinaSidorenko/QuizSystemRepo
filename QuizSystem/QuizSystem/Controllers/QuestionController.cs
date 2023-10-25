@@ -118,7 +118,6 @@ namespace QuizSystem.Controllers
             var questionVM = _mapper.Map<EditQuestionAnswerViewModel>(question);
             questionVM.Answers = answersVm;
 
-
             if (questionVM.Type.Equals(QuestionType.Multiple))
             {
                 return View("EditAnswerMultiple", questionVM);

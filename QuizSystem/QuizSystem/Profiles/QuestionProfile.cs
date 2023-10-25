@@ -11,6 +11,7 @@ namespace QuizSystem.Profiles
             CreateMap<CreateQuestionViewModel, Question>();
             CreateMap<Question, IndexQuestionViewModel>();
             CreateMap<EditQuestionViewModel, Question> ();
+            CreateMap<EditQuestionAnswerViewModel, Question> ();
             CreateMap<Question, EditQuestionAnswerViewModel>();
         }
     }

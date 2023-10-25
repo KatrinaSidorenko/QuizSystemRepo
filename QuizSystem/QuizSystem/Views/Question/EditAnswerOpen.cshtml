@@ -47,6 +47,8 @@
                                     <input asp-for="Point" name="Point" type="number" class="form-control">
                                 </div>
                                 <div class="form-outline answer-form">
+                                    <input type="hidden" name="QuestionId" value="@Model.QuestionId" />
+
                                     <label class="form-label" asp-for="Point">Answer Text</label>
                                     <input type="hidden" name="AnswerId" value="@Model.Answers.FirstOrDefault().AnswerId" />
                                     <textarea asp-for="@Model.Answers.FirstOrDefault().Value" type="text" class="form-control" name="Answers" placeholder="Answe Text"></textarea>
