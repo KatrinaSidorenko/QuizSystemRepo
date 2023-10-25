@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using AutoMapper;
+using Core.Models;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using QuizSystem.ViewModels.TestViewModels;
@@ -8,9 +9,11 @@ namespace QuizSystem.Controllers
     public class TestController : Controller
     {
         private readonly ITestRepository _testRepository;
-        public TestController(ITestRepository testRepository)
+        private readonly IMapper _mapper;
+        public TestController(ITestRepository testRepository, IMapper mapper)
         {
             _testRepository = testRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -22,16 +25,7 @@ namespace QuizSystem.Controllers
             var testVm = new List<IndexTestViewModel>();
 
             tests.ForEach(
-                x => testVm.Add(new IndexTestViewModel()
-                {
-                    Name = x.Name,
-                    Description = x.Description,
-                    UserId = x.UserId,
-                    Visibility = x.Visibility,
-                    DateOfCreation = x.DateOfCreation,
-                    TestId = x.TestId,
-                }
-                )
+                t => testVm.Add(_mapper.Map<IndexTestViewModel>(t))
             );
 
             ViewBag.UserId = userId;
