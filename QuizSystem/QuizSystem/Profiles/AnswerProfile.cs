@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Core.Models;
-using QuizSystem.ViewModels;
 using QuizSystem.ViewModels.AnswerViewModels;
 
 namespace QuizSystem.Profiles

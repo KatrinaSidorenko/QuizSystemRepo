@@ -9,6 +9,7 @@ namespace QuizSystem.Profiles
         public TestProfile()
         {
             CreateMap<Test, IndexTestViewModel>();
+            CreateMap<Test, QuestionTestViewModel>();
         }
     }
 }
