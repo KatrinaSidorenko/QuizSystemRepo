@@ -42,21 +42,31 @@ namespace DAL.Repository
             return users;
         }
 
-        public async Task AddUser(User user)
+        public async Task<int> AddUser(User user)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var sqlExpression = $"INSERT INTO Users (first_name, last_name, password, date_of_birth, email) VALUES ('{user.FirstName}', '{user.LastName}', '{user.Password}', '{user.DateOfBirth.ToString("yyyy-MM-dd")}', '{user.Email}')";
+            var sqlExpression = $"INSERT INTO Users (first_name, last_name, password, date_of_birth, email) VALUES ('{user.FirstName}', '{user.LastName}', '{user.Password}', '{user.DateOfBirth.ToString("yyyy-MM-dd")}', '{user.Email}');"
+                + "SELECT SCOPE_IDENTITY();";
             SqlConnection connection = new SqlConnection(_connectionString);
 
             using (connection)
             {
                 connection.Open();
                 SqlCommand command = new SqlCommand( sqlExpression, connection);
-                int number = await command.ExecuteNonQueryAsync();
+                var insertedId = await command.ExecuteScalarAsync();
+
+                if (int.TryParse(insertedId?.ToString(), out int id))
+                {
+                    return id;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Unable to retrieve the inserted ID.");
+                }
             }
         }
 

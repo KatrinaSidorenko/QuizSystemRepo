@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Core.Models;
 using DAL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuizSystem.ViewModels.TestViewModels;
 
@@ -17,6 +18,7 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Index(int userId)
         {
             //get all user tests
@@ -34,6 +36,7 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> AllTests()
         {
             var tests = await _testRepository.GetAllTests();

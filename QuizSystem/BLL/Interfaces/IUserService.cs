@@ -10,5 +10,6 @@ namespace BLL.Interfaces
     public interface IUserService
     {
         Task<Result<List<User>>> GetAllUsers();
+        Task<Result<int>> AddUser(User user);
     }
 }

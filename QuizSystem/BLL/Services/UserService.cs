@@ -1,18 +1,15 @@
 ﻿using BLL.Interfaces;
 using Core.Models;
 using DAL.Interfaces;
-using Microsoft.AspNetCore.Http;
 
 namespace BLL.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private  IHttpContextAccessor _contextAccessor;
-        public UserService(IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
+        public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
-            _contextAccessor = httpContextAccessor;
         }
         public async Task<Result<List<User>>> GetAllUsers()
         {
@@ -26,6 +23,25 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<List<User>>(false, $"Fail to get all users");
+            }
+        }
+
+        public async Task<Result<int>> AddUser(User user)
+        {
+            if (user == null)
+            {
+                return new Result<int>(isSuccessful: false, $"{nameof(user)} is null");
+            }
+
+            try
+            {
+                var id = await _userRepository.AddUser(user);
+
+                return new Result<int>(true, id);
+            }
+            catch (Exception ex)
+            {
+                return new Result<int>(isSuccessful:false, $"Fail to create user");
             }
         }
     }

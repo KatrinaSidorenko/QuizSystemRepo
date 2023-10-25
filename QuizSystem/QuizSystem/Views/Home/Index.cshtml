@@ -2,5 +2,6 @@
     ViewData["Title"] = "Home Page";
 }
 
-<h1>Lab 1</h1>
+<h1>@User.Claims.FirstOrDefault()?.Value</h1>
+<p>@User.Identity.IsAuthenticated.ToString()</p>
 
