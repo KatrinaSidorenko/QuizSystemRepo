@@ -7,6 +7,7 @@ using QuizSystem.ViewModels.TestViewModels;
 using BLL.Interfaces;
 using QuizSystem.ViewModels;
 using QuizSystem.ViewModels.AnswerViewModels;
+using AutoMapper;
 
 namespace QuizSystem.Controllers
 {
@@ -16,12 +17,16 @@ namespace QuizSystem.Controllers
         private readonly ITestRepository _testRepository;
         private readonly IQuestionService _questionService;
         private readonly IAnswerRepository _answerRepository;
-        public QuestionController(IQuestionRepository questionRepository, ITestRepository testRepository, IQuestionService questionService, IAnswerRepository answerRepository)
+        private readonly IMapper _mapper;
+        public QuestionController(IQuestionRepository questionRepository, ITestRepository testRepository, 
+            IQuestionService questionService, IAnswerRepository answerRepository,
+            IMapper mapper)
         {
             _questionRepository = questionRepository;
             _testRepository = testRepository;
             _questionService = questionService;
             _answerRepository = answerRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -36,11 +41,7 @@ namespace QuizSystem.Controllers
 
                 var answersVm = answers.Select(a =>
                 {
-                    var answer = new AnswerViewModel()
-                    {
-                        IsRight = a.IsRight,
-                        Value = a.Value 
-                    };
+                    var answer = _mapper.Map<AnswerViewModel>(a);
 
                     return answer;
                 }).ToList();
@@ -122,13 +123,7 @@ namespace QuizSystem.Controllers
 
             var answersVm = answers.Select(a =>
             {
-                var answer = new EditAnswerViewModel()
-                {
-                    AnswerId = a.AnswerId,
-                    IsRight = a.IsRight,
-                    Value = a.Value,
-                    QuestionId = a.QuestionId
-                };
+                var answer = _mapper.Map<EditAnswerViewModel>(a);
 
                 return answer;
             }).ToList();
@@ -178,13 +173,7 @@ namespace QuizSystem.Controllers
 
             var answerList = editQuestionViewModel.Answers.Select(a =>
             {
-                var answer = new Answer()
-                {
-                    AnswerId = a.AnswerId,
-                    Value = a.Value,
-                    QuestionId = editQuestionViewModel.QuestionId,
-                    IsRight = a.IsRight
-                };
+                var answer = _mapper.Map<Answer>(a);
 
                 return answer;
 
@@ -227,11 +216,7 @@ namespace QuizSystem.Controllers
 
             var answerList = createQuestionViewModel.Answers.Select(a =>
             {
-                var answer = new Answer()
-                {
-                    Value = a.Value,
-                    IsRight = a.IsRight
-                };
+                var answer = _mapper.Map<Answer>(a);
 
                 return answer;
 

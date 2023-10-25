@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="text-end">
                                     <a href="@Url.Action("Index", "Question", new { testId = Model.TestId })" type="button" class="btn btn-secondary">Cancel</a>
-                                    <button type="submit" class="btn btn-primary">Create</button>
+                                    <button type="submit" class="btn btn-primary">Edit</button>
                                 </div>
                             </form>
                         </div>
@@ -84,7 +84,8 @@
                 var answer = {
                     ANswerId: $(this).find("input[name='AnswerId']").val(),
                     Value: $(this).find("textarea[name='Answers']").val(),
-                    IsRight: true
+                    IsRight: true,
+                    QuestionId: $(this).find("input[name='QuestionId']").val()
                 };
 
                 formData.Answers.push(answer);

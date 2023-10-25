@@ -50,6 +50,7 @@
                                 {
                                     <div class="form-outline answer-form">
                                         <input type="hidden" name="AnswerId" value="@Model.Answers[i - 1].AnswerId" />
+                                        <input type="hidden" name="QuestionId" value="@Model.QuestionId" />
 
                                         <label class="form-label" style="padding-right: 5px;">@i</label>
                                         <input asp-for="@Model.Answers[i - 1].Value" type="text" class="form-control" name="Answers" />
@@ -67,7 +68,7 @@
 
                                 <div class="text-end">
                                     <a href="@Url.Action("Index", "Question", new { testId = Model.TestId })" type="button" class="btn btn-secondary">Cancel</a>
-                                    <button type="submit" class="btn btn-primary">Create</button>
+                                    <button type="submit" class="btn btn-primary">Edit</button>
                                 </div>
                             </form>
                         </div>
@@ -127,7 +128,8 @@
                     var answer = {
                         AnswerId: $(this).find("input[name='AnswerId']").val(),
                         Value: $(this).find("input[name='Answers']").val(),
-                        IsRight: $(this).find("input[name='IsRight']").is(':checked')
+                        IsRight: $(this).find("input[name='IsRight']").is(':checked'),
+                        QuestionId: $(this).find("input[name='QuestionId']").val()
                     };
 
                     formData.Answers.push(answer);

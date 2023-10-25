@@ -67,7 +67,7 @@
 
                                 <div class="text-end">
                                     <a href="@Url.Action("Index", "Question", new { testId = Model.TestId })" type="button" class="btn btn-secondary">Cancel</a>
-                                    <button type="submit" class="btn btn-primary">Create</button>
+                                    <button type="submit" class="btn btn-primary">Edit</button>
                                 </div>
                             </form>
                         </div>
@@ -127,7 +127,8 @@
                     var answer = {
                         AnswerId: $(this).find("input[name='AnswerId']").val(),
                         Value: $(this).find("input[name='Answers']").val(),
-                        IsRight: $(this).find("input[name='IsRight']").is(':checked')
+                        IsRight: $(this).find("input[name='IsRight']").is(':checked'),
+                        QuestionId: $(this).find("input[name='QuestionId']").val()
                     };
 
                     formData.Answers.push(answer);
