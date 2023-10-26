@@ -37,26 +37,16 @@ namespace QuizSystem.Controllers
                 return View(loginViewModel);
             }
 
-            //create method for checking existance
-            var allUsers = await _userService.GetAllUsers();
+            var userExistResult = await _userService.IsUserExist(loginViewModel.Email, loginViewModel.Password);
 
-            if (!allUsers.IsSuccessful)
+            if (!userExistResult.IsSuccessful)
             {
-                TempData["Error"] = allUsers.Message;
+                TempData["Error"] = userExistResult.Message;
 
                 return View(loginViewModel);
             }
 
-            var user = allUsers.Data.FirstOrDefault(u => u.Email == loginViewModel.Email && u.Password == loginViewModel.Password);
-
-            if (user == null)
-            {
-                TempData["Error"] = "This user doesn't exist";
-
-                return View(loginViewModel);
-            }
-
-            await Autthenticate(loginViewModel.Email, user.UserId);
+            await Autthenticate(loginViewModel.Email, userExistResult.Data.UserId);
 
             return RedirectToAction("Index", "Home");
         }
@@ -79,7 +69,15 @@ namespace QuizSystem.Controllers
                 return View(newUser);
             }
 
-            //check if such email exist
+            var emailCheckResult = await _userService.IsTheEmailAvailable(newUser.Email);
+
+            if (!emailCheckResult.IsSuccessful)
+            {
+                TempData["Error"] = emailCheckResult.Message;
+
+                return View(newUser);
+            }
+
             var user = _mapper.Map<User>(newUser);
 
             var registerResult = await _userService.AddUser(user);

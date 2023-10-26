@@ -11,5 +11,10 @@ namespace BLL.Interfaces
     {
         Task<Result<List<User>>> GetAllUsers();
         Task<Result<int>> AddUser(User user);
+        Task<Result<bool>> DeleteUser(int userId);
+        Task<Result<User>> GetUserById(int userId);
+        Task<Result<bool>> UpdateUser(User user);
+        Task<Result<bool>> IsTheEmailAvailable(string email);
+        Task<Result<User>> IsUserExist(string email, string password);
     }
 }

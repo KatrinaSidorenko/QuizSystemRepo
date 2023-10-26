@@ -27,6 +27,12 @@
 
 </head>
 <body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
     <div class="container">
         <form id="edit-form" method="post" asp-controller="Account" asp-action="Register" enctype="multipart/form-data">
             <!-- 2 column grid layout with text inputs for the first and last names -->

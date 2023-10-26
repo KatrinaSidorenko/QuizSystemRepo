@@ -15,7 +15,6 @@
             min-height: 90vh; /* Ensure the container covers the full viewport height */
         }
 
-        /* Optionally, you can add some max-width to limit the form's width on larger screens */
         #edit-form {
             max-width: 400px; /* Adjust this value as needed */
             width: 100%;
@@ -27,6 +26,12 @@
 
 </head>
 <body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
     <div class="container">
         <form id="edit-form" method="post" asp-controller="Account" asp-action="Login" enctype="multipart/form-data">
             <div class="row mb-4">

@@ -1,34 +1,40 @@
 ﻿using AutoMapper;
+using BLL.Interfaces;
 using Core.Models;
 using DAL.Interfaces;
 using DAL.Repository;
 using Microsoft.AspNetCore.Mvc;
-using QuizSystem.ViewModels.TestViewModels;
 using QuizSystem.ViewModels.UserViewModels;
 
 namespace QuizSystem.Controllers
 {
     public class UserController : Controller
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
-        public UserController(IUserRepository userRepository, IMapper mapper)
+        public UserController(IUserService userService, IMapper mapper)
         {
-            _userRepository = userRepository;
+            _userService = userService;
             _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var allUsers = await _userRepository.GetAllUsers();
-            return View(allUsers);
+            var allUsers = await _userService.GetAllUsers();
+
+            return View(allUsers.Data);
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(int userId)
         {
-            await _userRepository.DeleteUser(userId);
+            var deleteResult = await _userService.DeleteUser(userId);
+
+            if (!deleteResult.IsSuccessful)
+            {
+                TempData["Error"] = deleteResult.Message;
+            }
 
             return RedirectToAction("Index");
         }
@@ -36,9 +42,14 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int userId)
         {
-            var user = await _userRepository.GetUserById(userId);
+            var userResult = await _userService.GetUserById(userId);
 
-            var userVm = _mapper.Map<EditUserViewModel>(user);
+            if (!userResult.IsSuccessful)
+            {
+                TempData["Error"] = userResult.Message;
+            }
+
+            var userVm = _mapper.Map<EditUserViewModel>(userResult.Data);
 
             return View(userVm);
         }
@@ -48,7 +59,7 @@ namespace QuizSystem.Controllers
         {
             var user = _mapper.Map<User>(model);          
 
-            await _userRepository.UpdateUser(user);
+            await _userService.UpdateUser(user);
 
             return RedirectToAction("Index");
         }
@@ -73,7 +84,7 @@ namespace QuizSystem.Controllers
 
             var user = _mapper.Map<User>(userViewModel);
 
-            await _userRepository.AddUser(user);
+            await _userService.AddUser(user);
 
             return RedirectToAction("Index");
         }
