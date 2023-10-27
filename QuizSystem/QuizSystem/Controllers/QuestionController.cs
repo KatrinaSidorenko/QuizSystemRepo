@@ -139,7 +139,7 @@ namespace QuizSystem.Controllers
             {
                 TempData["Error"] = "Fail to edit question";
 
-                //return View(model);
+                return View(editQuestionViewModel);
             }
 
             var question = _mapper.Map<Question>(editQuestionViewModel);
@@ -158,19 +158,7 @@ namespace QuizSystem.Controllers
             {
                 TempData["Error"] = result.Message;
 
-                if (editQuestionViewModel.Type.Equals(QuestionType.Multiple))
-                {
-                    return Json(new { redirectUrl = Url.Action("EditAnswerMultiple", editQuestionViewModel ) });
-                }
-                else if (editQuestionViewModel.Type.Equals(QuestionType.Single))
-                {
-                    return Json(new { redirectUrl = Url.Action("EditAnswerSingle", editQuestionViewModel ) });
-                }
-                else
-                {
-                    return Json(new { redirectUrl = Url.Action("EditAnswerOpen", editQuestionViewModel) });
-                }
-
+                return View(editQuestionViewModel);
             }
 
             return Json(new { redirectUrl = Url.Action("Index", new { testId = editQuestionViewModel.TestId }) });
@@ -195,18 +183,22 @@ namespace QuizSystem.Controllers
             {
                 TempData["Error"] = result.Message;
 
-                if (createQuestionViewModel.Type.Equals(QuestionType.Multiple))
-                {
-                    return Json(new { redirectUrl = Url.Action("AddAnswerMultiple", new { createQuestionViewModel }) });
-                }
-                else if (createQuestionViewModel.Type.Equals(QuestionType.Single))
-                {
-                    return Json(new { redirectUrl = Url.Action("AddAnswerSingle", new { createQuestionViewModel }) });
-                }
-                else
-                {
-                    return Json(new { redirectUrl = Url.Action("AddAnswerOpen", new { createQuestionViewModel }) });
-                }
+                //if (createQuestionViewModel.Type.Equals(QuestionType.Multiple))
+                //{
+                //    return View("AddAnswerMultiple", createQuestionViewModel);
+                //}
+                //else if (createQuestionViewModel.Type.Equals(QuestionType.Single))
+                //{
+                //    return View("AddAnswerSingle", createQuestionViewModel);
+
+                //    //return Json(new { redirectUrl = Url.Action("AddAnswerSingle", new { createQuestionViewModel }) });
+                //}
+                //else
+                //{
+                //    return View("AddAnswerOpen", createQuestionViewModel);
+
+                //    //return Json(new { redirectUrl = Url.Action("AddAnswerOpen", new { createQuestionViewModel }) });
+                //}
 
             }
 
