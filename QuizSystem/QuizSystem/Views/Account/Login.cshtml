@@ -1,0 +1,65 @@
+﻿@using QuizSystem.ViewModels.UserViewModels
+@model LoginViewModel
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: center; /* Horizontally center the container */
+            align-items: center; /* Vertically center the container */
+            min-height: 90vh; /* Ensure the container covers the full viewport height */
+        }
+
+        #edit-form {
+            max-width: 400px; /* Adjust this value as needed */
+            width: 100%;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow for visual appeal */
+            background-color: #FBFBFB;
+        }
+    </style>
+
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <div class="container">
+        <form id="edit-form" method="post" asp-controller="Account" asp-action="Login" enctype="multipart/form-data">
+            <div class="row mb-4">
+                <h4>LogIn</h4>
+            </div>
+            <!-- Email input -->
+            <div class="form-outline mb-4">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" placeholder="Email">
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <!-- Number input -->
+            <div class="form-outline mb-4">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" placeholder="Password">
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <div class="py-2">
+                    <button type="submit" class="btn btn-primary btn-block mb-4">Log In</button>
+                    <a asp-controller="User" asp-action="Index" type="button" class="btn btn-secondary btn-block mb-3">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
+

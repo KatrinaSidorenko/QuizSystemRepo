@@ -3,8 +3,16 @@ using BLL.Services;
 using Core.Settings;
 using DAL.Interfaces;
 using DAL.Repository;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
+        options.ExpireTimeSpan = TimeSpan.FromHours(1);
+    });
 
 // Add services to the container.
 builder.Services.AddAutoMapper(typeof(Program));
@@ -20,6 +28,7 @@ builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
 //Services
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IAnswerService, AnswerService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
@@ -39,6 +48,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

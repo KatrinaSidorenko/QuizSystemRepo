@@ -21,6 +21,11 @@ namespace BLL.Services
                 return new Result<Question>(false, "No answers to the question");
             }
 
+            if (answers.Select(a => a.IsRight).Any())
+            {
+                return new Result<Question>(false, "Should be one right answer");
+            }
+
             try
             {
                 var questionId = await _questionRepository.AddQuestion(question);
@@ -48,6 +53,11 @@ namespace BLL.Services
             if (question == null || answers.Count == 0)
             {
                 return new Result<bool>(isSuccessful: false, "No answers to the question");
+            }
+
+            if (answers.Select(a => a.IsRight).Any())
+            {
+                return new Result<bool>(false, "Should be one right answer");
             }
 
             try

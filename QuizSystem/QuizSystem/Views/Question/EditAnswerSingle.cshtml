@@ -145,7 +145,8 @@
                         window.location.href = response.redirectUrl;
                     },
                     error: function (error) {
-                        alert("Error: " + error.statusText);
+                        window.location.href = response.redirectUrl;
+
                     }
                 });
             });
