@@ -8,9 +8,11 @@ using BLL.Interfaces;
 using QuizSystem.ViewModels;
 using QuizSystem.ViewModels.AnswerViewModels;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace QuizSystem.Controllers
 {
+    [Authorize]
     public class QuestionController : Controller
     {
         private readonly IQuestionRepository _questionRepository;
@@ -147,6 +149,7 @@ namespace QuizSystem.Controllers
             var answerList = editQuestionViewModel.Answers.Select(a =>
             {
                 var answer = _mapper.Map<Answer>(a);
+                answer.QuestionId = editQuestionViewModel.QuestionId;
 
                 return answer;
 
