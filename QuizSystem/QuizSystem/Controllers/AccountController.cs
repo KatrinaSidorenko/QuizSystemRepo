@@ -106,7 +106,7 @@ namespace QuizSystem.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, email),
-                new Claim(ClaimsIdentity.DefaultNameClaimType, userId.ToString()),
+                new Claim("id", userId.ToString()),
             };
 
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);

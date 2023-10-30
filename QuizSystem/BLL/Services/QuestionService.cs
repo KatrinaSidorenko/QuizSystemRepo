@@ -21,7 +21,7 @@ namespace BLL.Services
                 return new Result<Question>(false, "No answers to the question");
             }
 
-            if (answers.Select(a => a.IsRight).Any())
+            if (answers.Where(a => a.IsRight).Count() == 0)
             {
                 return new Result<Question>(false, "Should be one right answer");
             }
@@ -55,7 +55,7 @@ namespace BLL.Services
                 return new Result<bool>(isSuccessful: false, "No answers to the question");
             }
 
-            if (answers.Select(a => a.IsRight).Any())
+            if (answers.Where(a => a.IsRight).Count() == 0)
             {
                 return new Result<bool>(false, "Should be one right answer");
             }

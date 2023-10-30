@@ -49,23 +49,7 @@ namespace DAL.Repository
             return tests;
         }
 
-        //public async Task AddTest(Test test)
-        //{
-        //    if (test == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(test));
-        //    }
-
-        //    var sqlExpression = $"INSERT INTO Tests (test_name, test_description, test_visibility, date_of_creation, user_id) VALUES ('{test.Name}', '{test.Description}', '{(int)test.Visibility}', '{test.DateOfCreation}', '{test.UserId}')";
-        //    SqlConnection connection = new SqlConnection(_connectionString);
-
-        //    using (connection)
-        //    {
-        //        connection.Open();
-        //        SqlCommand command = new SqlCommand(sqlExpression, connection);
-        //        int number = await command.ExecuteNonQueryAsync();
-        //    }
-        //}
+       
         public async Task<int> AddTest(Test test)
         {
             if (test == null)

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BLL.Interfaces;
 using Core.Models;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,41 +8,52 @@ using QuizSystem.ViewModels.TestViewModels;
 
 namespace QuizSystem.Controllers
 {
+    [Authorize]
     public class TestController : Controller
     {
-        private readonly ITestRepository _testRepository;
+        private readonly ITestService _testService;
         private readonly IMapper _mapper;
-        public TestController(ITestRepository testRepository, IMapper mapper)
+        public TestController(ITestService testRepository, IMapper mapper)
         {
-            _testRepository = testRepository;
+            _testService = testRepository;
             _mapper = mapper;
         }
 
         [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Index(int userId)
+
+        public async Task<IActionResult> Index(int id)
         {
-            //get all user tests
-            var tests = await _testRepository.GetUserTests(userId);
+            var testsResult = await _testService.GetUserTests(id);
+
+            if (!testsResult.IsSuccessful)
+            {
+                TempData["Error"] = testsResult.Message;
+
+                return View(testsResult.Data);
+            }
 
             var testVm = new List<IndexTestViewModel>();
 
-            tests.ForEach(
+            testsResult.Data.ForEach(
                 t => testVm.Add(_mapper.Map<IndexTestViewModel>(t))
             );
 
-            ViewBag.UserId = userId;
+            ViewBag.UserId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
 
             return View(testVm);
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> AllTests()
         {
-            var tests = await _testRepository.GetAllTests();
+            var testsResult = await _testService.GetAllPublicTests();
 
-            return View(tests);
+            if (!testsResult.IsSuccessful)
+            {
+                TempData["Error"] = testsResult.Message;
+            }
+
+            return View(testsResult.Data);
         }
 
         [HttpGet]
@@ -57,7 +69,7 @@ namespace QuizSystem.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Fail to create test";
+                TempData["Error"] = "Invalid data input";
 
                 return View(testViewModel);
             }
@@ -65,15 +77,27 @@ namespace QuizSystem.Controllers
             var test = _mapper.Map<Test>(testViewModel);
             test.DateOfCreation = DateTime.Now;
 
-            var testId = await _testRepository.AddTest(test);
+            var testId = await _testService.AddTest(test);
 
-            return RedirectToAction("Index", "Question", new { testId = testId });
+            if (!testId.IsSuccessful)
+            {
+                TempData["Error"] = testId.Message;
+
+                return View(testViewModel);
+            }
+
+            return RedirectToAction("Index", "Question", new { testId = testId.Data });
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(int testId, int userId)
         {
-            await _testRepository.DeleteTest(testId);
+            var deleteResult = await _testService.DeleteTest(testId);
+
+            if (!deleteResult.IsSuccessful)
+            {
+                TempData["Error"] = deleteResult.Message;
+            }
 
             return RedirectToAction("Index", new { userId = userId });
         }
@@ -81,9 +105,16 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int testId)
         {
-            var test = await _testRepository.GetTestById(testId);
+            var testResult = await _testService.GetTestById(testId);
 
-            var testVM = _mapper.Map<QuestionTestViewModel>(test);
+            if (!testResult.IsSuccessful)
+            {
+                TempData["Error"] = testResult.Message;
+
+                return RedirectToAction("Index", "Question", new { testId = testId });
+            }
+
+            var testVM = _mapper.Map<QuestionTestViewModel>(testResult.Data);
 
             return View(testVM);
         }
@@ -93,7 +124,14 @@ namespace QuizSystem.Controllers
         {
             var test = _mapper.Map<Test>(testVM);
 
-            await _testRepository.UpdateTest(test);
+            var updateResult = await _testService.UpdateTest(test);
+
+            if (!updateResult.IsSuccessful)
+            {
+                TempData["Error"] = updateResult.Message;
+
+                return RedirectToAction("Index", "Question", new { testId = testVM.TestId });
+            }
 
             return RedirectToAction("Index", "Question", new { testId = testVM.TestId });
         }

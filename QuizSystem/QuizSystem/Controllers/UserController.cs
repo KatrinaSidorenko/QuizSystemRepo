@@ -3,11 +3,13 @@ using BLL.Interfaces;
 using Core.Models;
 using DAL.Interfaces;
 using DAL.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuizSystem.ViewModels.UserViewModels;
 
 namespace QuizSystem.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
