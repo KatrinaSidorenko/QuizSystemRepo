@@ -2,8 +2,11 @@
 using BLL.Interfaces;
 using Core.Models;
 using DAL.Interfaces;
+using DAL.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using QuizSystem.ViewModels.AnswerViewModels;
+using QuizSystem.ViewModels.QuestionViewModel;
 using QuizSystem.ViewModels.TestViewModels;
 
 namespace QuizSystem.Controllers
@@ -12,12 +15,17 @@ namespace QuizSystem.Controllers
     public class TestController : Controller
     {
         private readonly ITestService _testService;
+        private readonly IAnswerRepository _answerRepository;
+        private readonly IQuestionRepository _questionRepository;
         private readonly IMapper _mapper;
-        public TestController(ITestService testRepository, IMapper mapper)
+        public TestController(ITestService testRepository, IMapper mapper, IQuestionRepository questionRepository, IAnswerRepository answerRepository)
         {
             _testService = testRepository;
             _mapper = mapper;
+            _answerRepository = answerRepository;
+            _questionRepository = questionRepository;
         }
+
 
         [HttpGet]
 
@@ -41,6 +49,85 @@ namespace QuizSystem.Controllers
             ViewBag.UserId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
 
             return View(testVm);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> TestView(int testId)
+        {
+            var test = await _testService.GetTestById(testId);
+
+            if (!test.IsSuccessful)
+            {
+                TempData["Error"] = test.Message;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var questions = await _questionRepository.GetTestQuestions(testId);
+
+            var questionsVM = questions.Select(async q =>
+            {
+                var answers = await _answerRepository.GetQuestionAnswers(q.QuestionId);
+
+                var answersVm = answers.Select(a =>
+                {
+                    var answer = _mapper.Map<AnswerViewModel>(a);
+
+                    return answer;
+
+                }).ToList();
+
+                var question = _mapper.Map<IndexQuestionViewModel>(q);
+                question.Answers = answersVm;
+
+                return question;
+
+            }).ToList();
+            //get all question for this test
+            var testVM = _mapper.Map<QuestionTestViewModel>(test.Data);
+            testVM.Questions = Task.WhenAll(questionsVM).Result.ToList();
+
+            return View(testVM);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MemberView(int testId)
+        {
+            var test = await _testService.GetTestById(testId);
+
+            if (!test.IsSuccessful)
+            {
+                TempData["Error"] = test.Message;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var questions = await _questionRepository.GetTestQuestions(testId);
+
+            var questionsVM = questions.Select(async q =>
+            {
+                var answers = await _answerRepository.GetQuestionAnswers(q.QuestionId);
+
+                var answersVm = answers.Select(a =>
+                {
+                    var answer = _mapper.Map<AnswerViewModel>(a);
+
+                    return answer;
+
+                }).ToList();
+
+                var question = _mapper.Map<IndexQuestionViewModel>(q);
+                question.Answers = answersVm;
+
+                return question;
+
+            }).ToList();
+            //get all question for this test
+            var testVM = _mapper.Map<QuestionTestViewModel>(test.Data);
+            testVM.Questions = Task.WhenAll(questionsVM).Result.ToList();
+
+            return View(testVM);
         }
 
         [HttpGet]

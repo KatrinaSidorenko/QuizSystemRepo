@@ -27,7 +27,7 @@ else
                             <h5 class="card-title">Title: @test.Name</h5>
                             <p class="card-text">Creator: @test.UserId</p>
                             <p class="card-text">Description: @test.Description</p>
-                            <a href="@Url.Action("Edit", "Test", new { testId = test.TestId})" class="btn btn-primary">View the Test</a>
+                            <a href="@Url.Action("MemberView", "Test", new { testId = test.TestId})" class="btn btn-primary">View the Test</a>
                             <div class="card-footer bg-light px-3 mt-2">@test.DateOfCreation.ToString("dddd, dd MMMM yyyy HH:mm")</div>
                             @*<div class="card-footer text-muted"></div>*@
                         </div>

@@ -16,7 +16,6 @@ namespace QuizSystem.Controllers
     public class QuestionController : Controller
     {
         private readonly IQuestionRepository _questionRepository;
-        private readonly ITestRepository _testRepository;
         private readonly IQuestionService _questionService;
         private readonly IAnswerRepository _answerRepository;
         private readonly IMapper _mapper;
@@ -25,41 +24,9 @@ namespace QuizSystem.Controllers
             IMapper mapper)
         {
             _questionRepository = questionRepository;
-            _testRepository = testRepository;
             _questionService = questionService;
             _answerRepository = answerRepository;
             _mapper = mapper;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Index(int testId)
-        {
-            var test = await _testRepository.GetTestById(testId);
-            var questions = await _questionRepository.GetTestQuestions(testId);
-
-            var questionsVM = questions.Select(async q =>
-            {
-                var answers = await _answerRepository.GetQuestionAnswers(q.QuestionId);
-
-                var answersVm = answers.Select(a =>
-                {
-                    var answer = _mapper.Map<AnswerViewModel>(a);
-
-                    return answer;
-
-                }).ToList();
-
-                var question = _mapper.Map<IndexQuestionViewModel>(q);
-                question.Answers = answersVm;
-
-                return question;
-
-            }).ToList();
-            //get all question for this test
-            var testVM = _mapper.Map<QuestionTestViewModel>(test);
-            testVM.Questions = Task.WhenAll(questionsVM).Result.ToList();
-
-            return View(testVM);
         }
 
         [HttpGet]

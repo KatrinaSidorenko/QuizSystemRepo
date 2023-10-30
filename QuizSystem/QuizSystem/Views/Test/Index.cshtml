@@ -58,7 +58,7 @@ else
                                 </div>
                             </div>
                             <a href="@Url.Action("Edit", "Test", new { testId = test.TestId})" class="btn btn-primary">Edit</a>
-                            <a href="@Url.Action("Index", "Question", new { testId = test.TestId})" class="btn btn-primary">Details</a>
+                            <a href="@Url.Action("TestView", "Test", new { testId = test.TestId})" class="btn btn-primary">Details</a>
 
                             <div class="card-footer bg-light px-3 mt-2">@test.DateOfCreation.ToString("dddd, dd MMMM yyyy HH:mm")</div>
                             @*<div class="card-footer text-muted"></div>*@
