@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Core.Models;
 using QuizSystem.ViewModels.AnswerViewModels;
+using QuizSystem.ViewModels.TakeTestViewModels;
 
 namespace QuizSystem.Profiles
 {
@@ -12,6 +13,7 @@ namespace QuizSystem.Profiles
             CreateMap<EditAnswerViewModel, Answer>();
             CreateMap<AnswerViewModel, Answer>();
             CreateMap<Answer, AnswerViewModel>();
+            CreateMap<Answer, AnswerTakeTestViewModel>();
         }
     }
 }

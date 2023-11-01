@@ -54,7 +54,7 @@
                                     <textarea asp-for="@Model.Answers.FirstOrDefault().Value" type="text" class="form-control" name="Answers" placeholder="Answe Text"></textarea>
                                 </div>
                                 <div class="text-end">
-                                    <a href="@Url.Action("Index", "Question", new { testId = Model.TestId })" type="button" class="btn btn-secondary">Cancel</a>
+                                    <a href="@Url.Action("TestView", "Test", new { testId = Model.TestId })" type="button" class="btn btn-secondary">Cancel</a>
                                     <button type="submit" class="btn btn-primary">Edit</button>
                                 </div>
                             </form>
