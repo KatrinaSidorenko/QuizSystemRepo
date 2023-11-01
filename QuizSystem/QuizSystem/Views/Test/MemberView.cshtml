@@ -1,0 +1,90 @@
+﻿@using QuizSystem.ViewModels.TestViewModels
+@using Core.Enums
+@using BLL.Interfaces;
+@model QuestionTestViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <style>
+        /* Custom CSS to center the card and make it 60% width */
+        .centered-card {
+            margin: 0 auto;
+            width: 60%;
+        }
+
+        /* Custom CSS to align the button to the right of the center elements */
+        .centered-container {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <!--Main layout-->
+    <main class="my-5">
+        <div class="container">
+            <!--Section: Content-->
+            <section class="text-center text-md-start">
+                <div class="row">
+                    <div class="col-md-12 centered-card">
+                        <!-- Centered card with 60% width -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Test name: @Model.Name - @Model.Visibility.ToString()</h5>
+                                <p class="card-text">@Model.Description</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Space between test card and question cards -->
+                <div class="mb-4"></div>
+
+                <div class="row justify-content-center">
+                    @foreach (var question in Model.Questions)
+                    {
+                        <div class="col-md-12 centered-card">
+                            <div class="card">
+                                <div class="card-header">TestId: @question.TestId - Type: @question.Type.ToString()</div>
+                                <div class="card-body">
+                                    <p class="card-text">Question: @question.Description</p>
+                                    <p class="card-text">Points: @question.Point</p>
+                                    @foreach (var answer in question.Answers)
+                                    {
+                                        <hr class="hr" />
+
+                                        <div class="note note-secondary mb-3">
+                                            <strong>Answer Text: </strong> @answer.Value
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="mb-4"></div>
+
+                    <div class="col-md-12 centered-card">
+                        <div class="centered-container justify-content-end">
+                            <button type="button" class="btn btn-danger centered-button">
+                                Take the test
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </main>
+    <!--Main layout-->
+</body>
+</html>
