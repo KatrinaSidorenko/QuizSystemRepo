@@ -21,7 +21,7 @@
         <div class="container">
             <!--Section: Content-->
             <section class="text-center text-md-start">
-                <h4 class="mb-5"><strong>Create question page</strong></h4>
+                <h4 class="mb-5"><strong>Edit question page</strong></h4>
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-6">
@@ -77,7 +77,7 @@
                                 </div>
                                 <!-- Submit button -->
                                 <div class="text-end">
-                                    <a href="@Url.Action("Index", "Question", new { testId = Model.TestId })" type="button" class="btn btn-secondary">Cancel</a>
+                                    <a href="@Url.Action("TestView", "Test", new { testId = Model.TestId })" type="button" class="btn btn-secondary">Cancel</a>
                                     <button type="submit" class="btn btn-primary">Edit</button>
                                 </div>
                             </form>

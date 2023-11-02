@@ -131,7 +131,7 @@ namespace QuizSystem.Controllers
                 return View(editQuestionViewModel);
             }
 
-            return Json(new { redirectUrl = Url.Action("Index", new { testId = editQuestionViewModel.TestId }) });
+            return Json(new { redirectUrl = Url.Action("TestView", "Test", new { testId = editQuestionViewModel.TestId }) });
         }
 
         [HttpPost]
@@ -172,7 +172,7 @@ namespace QuizSystem.Controllers
 
             }
 
-            return Json(new { redirectUrl = Url.Action("Index", new { testId = createQuestionViewModel.TestId }) });
+            return Json(new { redirectUrl = Url.Action("TestView", "Test", new { testId = createQuestionViewModel.TestId }) });
         }
     }
 }

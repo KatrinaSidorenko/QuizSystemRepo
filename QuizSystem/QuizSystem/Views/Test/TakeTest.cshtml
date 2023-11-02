@@ -1,0 +1,260 @@
+﻿@using QuizSystem.ViewModels.TakeTestViewModels
+@using Core.Enums
+@using BLL.Interfaces;
+@model TakeTestViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <style>
+        /* Custom CSS to center the card and make it 60% width */
+        .centered-card {
+            margin: 0 auto;
+            width: 60%;
+        }
+
+        /* Custom CSS to align the button to the right of the center elements */
+        .centered-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+    </style>
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <!--Main layout-->
+    <main class="my-5">
+        <div class="container">
+            <!--Section: Content-->
+            <section class="text-center text-md-start">
+                <div class="row">
+                    <div class="col-md-12 centered-card">
+                        <!-- Centered card with 60% width -->
+                        <div class="card">
+                            <div class="card-body">
+                                <input type="hidden" name="TestId" value="@Model.TestId" />
+                                <input type="hidden" name="TakedTestUserId" value="@Model.TakedTestUserId" />
+                                <h5 class="card-title">Test name: @Model.Name</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Space between test card and question cards -->
+                <div class="mb-4"></div>
+
+                <div class="row justify-content-center">
+                    @foreach (var question in Model.TakeTestQuestions)
+                    {
+                        <div class="col-md-12 centered-card">
+                            <div class="card">
+                                @if (question.Type.Equals(QuestionType.Open))
+                                {
+                                    <div class="form-outline answer-form">
+                                        <div class="card-header">
+                                              <strong>Question: @question.Description</strong>                                  
+                                        </div>
+                                        <input type="hidden" name="Point" value="@question.Point"/>
+                                        <input type="hidden" name="Type" value="@question.Type" />
+
+                                        <div class="card-body">
+                                            <input type="hidden" name="QuestionId" value="@question.QuestionAnswers.FirstOrDefault().QuestionId" />
+                                            <input type="hidden" name="AnswerId" value="@question.QuestionAnswers.FirstOrDefault().AnswerId" />
+                                            <div class="form-outline" style="background-color:lavenderblush">
+                                                <textarea type="text" class="form-control" name="Answers" placeholder="Enter answer"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                   
+                                }
+                                else if (question.Type.Equals(QuestionType.Multiple))
+                                {
+                                    <div class="card-header">
+                                        <strong>Question: @question.Description</strong>
+                                    </div>
+                                    
+
+
+                                    @foreach(var answer in question.QuestionAnswers)
+                                    {
+                                        <div class="form-outline answer-form">
+                                            <input type="hidden" name="Point" value="@question.Point" />
+                                            <input type="hidden" name="Type" value="@question.Type" />
+                                            <input type="hidden" name="AnswerId" value="@answer.AnswerId" />
+                                            <input type="hidden" name="QuestionId" value="@answer.QuestionId" />
+                                            <div class="card-header">
+                                                <input type="checkbox" class="form-check-input" name="IsRight" />
+                                                <label class="form-label"><strong> @answer.Value</strong></label>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="card-header">
+                                        <strong>Question: @question.Description</strong>
+                                    </div>
+                                   
+
+                                    @foreach (var answer in question.QuestionAnswers)
+                                    {
+                                        <div class="form-outline answer-form">
+                                            <input type="hidden" name="Point" value="@question.Point" />
+                                            <input type="hidden" name="Type" value="@question.Type" />
+                                            <input type="hidden" name="AnswerId" value="@answer.AnswerId" />
+                                            <input type="hidden" name="QuestionId" value="@answer.QuestionId" />
+                                            <div class="card-header">
+                                                <input type="radio" class="form-check-input" name="IsRight" />
+                                                <label class="form-label"><strong> @answer.Value</strong></label>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="mb-3"></div>
+                    }
+                    <div class="mb-4"></div>
+
+                    <div class="col-md-12 centered-card">
+                        <div class="centered-container justify-content-end">
+                            <button type="button" class="btn btn-danger centered-button btn-save-answer">
+                                Finish
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+    </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        if ($("input[name='Type']").val() === "Single") {
+            $(document).on('click', '.form-check-input', function () {
+                // Uncheck other radio buttons in the same group
+                $('.form-check-input').prop('checked', false);
+                $(this).prop('checked', true);
+            });
+        }
+        $(document).ready(function () {
+            // Handle form submission
+            $(document).on('click', '.btn-save-answer', function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                var formData = {
+                    TestId: $("input[name='TestId']").val(),
+                    TakedTestUserId: $("input[name='TakedTestUserId']").val(),
+                    Answers: []
+                };
+
+                // Collect answers
+                $(".answer-form").each(function () {
+                    var type = $(this).find("input[name='Type']").val();
+
+                    if (type === "Open") {
+                        var answer = {
+                            AnswerId: $(this).find("input[name='AnswerId']").val(),
+                            IsRight: true,
+                            Value: $(this).find("textarea[name='Answers']").val(),
+                            QuestionId: $(this).find("input[name='QuestionId']").val()
+                        };
+                        formData.Answers.push(answer);
+                    } else if (type === "Multiple" || type === "Single") {
+                        if ($(this).find("input[name='IsRight']").is(':checked')){
+                            var answer = {
+                                AnswerId: $(this).find("input[name='AnswerId']").val(),
+                                Value: "",
+                                QuestionId: $(this).find("input[name='QuestionId']").val(),
+                                IsRight: true
+                            };
+                            formData.Answers.push(answer);
+                        }
+                        
+                    }
+                });
+
+                // Send the data to the endpoint
+                $.ajax({
+                    url: "/Test/TakeTest",
+                    type: "POST",
+                    data: formData,
+                    success: function (response) {
+                        // Check if the response indicates success (you can customize this condition)
+                        window.location.href = response.redirectUrl;
+                    },
+                    error: function (error) {
+                        window.location.href = response.redirectUrl;
+                    }
+                });
+            });
+        });
+
+
+        //$(document).ready(function () {
+        //    // Handle form submission
+        //    $(document).on('click', '.btn-save-answer', function () {
+        //        event.preventDefault(); // Prevent the default form submission
+
+        //        var formData = {
+        //            TestId: $("input[name='TestId']").val(),
+        //            TakedTestUserId: $("input[name='TakedTestUserId']").val(),
+        //            Answers: []
+        //        };
+
+        //        // Collect answers
+        //        $(".answer-form").each(function () {
+        //            if ($("input[name='Type']").val() === "Open"){
+        //                var answer = {
+        //                    AnswerId: $(this).find("input[name='AnswerId']").val(),
+        //                    IsRight: true,
+        //                    Value: $(this).find("textarea[name='Answers']").val(),
+        //                    QuestionId: $(this).find("input[name='QuestionId']").val()
+        //                };
+        //                formData.Answers.push(answer);
+        //            }
+        //            else{
+        //                if ($(this).find("input[name='IsRight']").is(':checked')) {
+                           
+        //                    var answer = {
+        //                        AnswerId: $(this).find("input[name='AnswerId']").val(),
+        //                        Value: "",
+        //                        QuestionId: $(this).find("input[name='QuestionId']").val()
+        //                            IsRight: true
+        //                    };
+
+        //                    formData.Answers.push(answer);
+        //                }
+        //            }
+        //        });
+
+        //        // Send the data to the endpoint
+        //        $.ajax({
+        //            url: "/Test/TakeTest",
+        //            type: "POST",
+        //            data: formData,
+        //            success: function (response) {
+        //                // Check if the response indicates success (you can customize this condition)
+        //                window.location.href = response.redirectUrl;
+        //            },
+        //            error: function (error) {
+        //                window.location.href = response.redirectUrl;
+        //            }
+        //        });
+        //    });
+
+        //});
+    </script>
+</body>
+</html>
+
