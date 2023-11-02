@@ -261,6 +261,8 @@ namespace QuizSystem.Controllers
             testVM.TakeTestQuestions = Task.WhenAll(questionsVM).Result.ToList();
             testVM.TakedTestUserId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
 
+            //attempt model
+
             return View(testVM);
         }
 
