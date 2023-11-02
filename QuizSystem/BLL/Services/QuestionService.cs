@@ -1,6 +1,7 @@
 ﻿using BLL.Interfaces;
 using Core.Models;
 using DAL.Interfaces;
+using DAL.Repository;
 
 namespace BLL.Services
 {
@@ -109,6 +110,20 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<bool>(isSuccessful: false, "Fail to edit question and answers");
+            }
+        }
+
+        public async Task<Result<List<Question>>> GetTestQuestions(int testId)
+        {
+            try
+            {
+                var questions = await _questionRepository.GetTestQuestions(testId);
+
+                return new Result<List<Question>>(true, questions);
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<Question>>(isSuccessful: false, "Fail to get questions");
             }
         }
     }

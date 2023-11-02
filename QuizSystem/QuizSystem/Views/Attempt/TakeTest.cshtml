@@ -43,6 +43,7 @@
                             <div class="card-body">
                                 <input type="hidden" name="TestId" value="@Model.TestId" />
                                 <input type="hidden" name="TakedTestUserId" value="@Model.TakedTestUserId" />
+                                <input type="hidden" name="AttemptId" value="@Model.AttemptId" />
                                 <h5 class="card-title">Test name: @Model.Name</h5>
                             </div>
                         </div>
@@ -155,6 +156,7 @@
                 var formData = {
                     TestId: $("input[name='TestId']").val(),
                     TakedTestUserId: $("input[name='TakedTestUserId']").val(),
+                    AttemptId: $("input[name='AttemptId']").val(),
                     Answers: []
                 };
 
@@ -186,7 +188,7 @@
 
                 // Send the data to the endpoint
                 $.ajax({
-                    url: "/Test/TakeTest",
+                    url: "/Attempt/TakeTest",
                     type: "POST",
                     data: formData,
                     success: function (response) {

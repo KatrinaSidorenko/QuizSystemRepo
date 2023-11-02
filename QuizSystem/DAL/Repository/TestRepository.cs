@@ -59,7 +59,7 @@ namespace DAL.Repository
 
             var sqlExpression = $"INSERT INTO Tests (test_name, test_description, test_visibility, date_of_creation, user_id) " +
                                $"VALUES ('{test.Name}', '{test.Description}', '{(int)test.Visibility}', '{test.DateOfCreation.ToString("yyyy-MM-ddTHH:mm:ss")}', '{test.UserId}');" +
-                               "SELECT SCOPE_IDENTITY();"; // This line retrieves the last inserted ID
+                               "SELECT SCOPE_IDENTITY();"; 
 
             SqlConnection connection = new SqlConnection(_connectionString);
 

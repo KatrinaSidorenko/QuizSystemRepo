@@ -224,55 +224,7 @@ namespace QuizSystem.Controllers
             return RedirectToAction("Index", "Question", new { testId = testVM.TestId });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> TakeTest(int testId)
-        {
-            var testResult = await _testService.GetTestById(testId);
-
-            if (!testResult.IsSuccessful)
-            {
-                TempData["Error"] = testResult.Message;
-
-                return RedirectToAction("Index", "Home");
-            }
-
-            var questions = await _questionRepository.GetTestQuestions(testId);
-
-            var questionsVM = questions.Select(async q =>
-            {
-                var answers = await _answerRepository.GetQuestionAnswers(q.QuestionId);
-
-                var answersVm = answers.Select(a =>
-                {
-                    var answer = _mapper.Map<AnswerTakeTestViewModel>(a);
-
-                    return answer;
-
-                }).ToList();
-
-                var question = _mapper.Map<TakeTestQuestionViewModel>(q);
-                question.QuestionAnswers = answersVm;
-
-                return question;
-
-            }).ToList();
-            //get all question for this test
-            var testVM = _mapper.Map<TakeTestViewModel>(testResult.Data);
-            testVM.TakeTestQuestions = Task.WhenAll(questionsVM).Result.ToList();
-            testVM.TakedTestUserId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
-
-            //attempt model
-
-            return View(testVM);
-        }
-
-        [HttpPost] 
-        public async Task<IActionResult> TakeTest([FromForm]  ResultTestViewModel testVM)
-        {
-            var some = testVM.Answers;
-
-            return RedirectToAction("Index", "Home");
-        }
+       
 
     }
 }
