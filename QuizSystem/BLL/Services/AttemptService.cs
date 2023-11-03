@@ -89,5 +89,23 @@ namespace BLL.Services
                 return new Result<Attempt>(isSuccessful: false, $"{nameof(attemptResultDTO)} is null");
             }
         }
+        public async Task<Result<Attempt>> GetAttemptById(int attemptId)
+        {
+            try
+            {
+                var attempt = await _attemptRepository.GetAttemptById(attemptId);
+
+                if (attempt == null)
+                {
+                    return new Result<Attempt>(isSuccessful: false, "Fail to get question");
+                }
+
+                return new Result<Attempt>(true, attempt);
+            }
+            catch (Exception ex)
+            {
+                return new Result<Attempt>(isSuccessful: false, "Fail to get question");
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ using BLL.Services;
 using Core.DTO;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using QuizSystem.ViewModels.AttemptViewModel;
 using QuizSystem.ViewModels.TakeTestViewModels;
 
 namespace QuizSystem.Controllers
@@ -90,7 +91,18 @@ namespace QuizSystem.Controllers
 
             var attemptResult = await _attemptService.SaveAttemptData(testDTO);
 
-            return RedirectToAction("Index", "Home");
+           
+
+            return RedirectToAction("Result", "Attempt", new { attemptId  = attemptResult.Data.AttemptId});
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Result(int attemptId)
+        {
+            var attempt = await _attemptService.GetAttemptById(attemptId);
+            var attemptVm = _mapper.Map<AttemptViewModel>(attempt.Data);
+
+            return View(attemptVm);
         }
     }
 }
