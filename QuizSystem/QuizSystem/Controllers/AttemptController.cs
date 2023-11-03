@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BLL.Interfaces;
 using BLL.Services;
+using Core.DTO;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using QuizSystem.ViewModels.TakeTestViewModels;
@@ -56,12 +57,11 @@ namespace QuizSystem.Controllers
                 return question;
 
             }).ToList();
-            //get all question for this test
+
             var testVM = _mapper.Map<TakeTestViewModel>(testResult.Data);
             testVM.TakeTestQuestions = Task.WhenAll(questionsVM).Result.ToList();
             testVM.TakedTestUserId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
 
-            //attempt model
             var attempt = new Attempt()
             {
                 StartDate = DateTime.Now,
@@ -81,7 +81,14 @@ namespace QuizSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> TakeTest([FromForm] ResultTestViewModel testVM)
         {
-            var some = testVM.Answers;
+            
+            var answersDTO = testVM.Answers
+                .Select(a => _mapper.Map<AnswerResultDTO>(a)).ToList();
+
+            var testDTO = _mapper.Map<AttemptResultDTO>(testVM);
+            testDTO.Answers = answersDTO;
+
+            var attemptResult = await _attemptService.SaveAttemptData(testDTO);
 
             return RedirectToAction("Index", "Home");
         }

@@ -67,7 +67,7 @@
                                 </div>
                                 <!-- Submit button -->
                                 <div class="text-end">
-                                    <a href="@Url.Action("Index", "Test", new { userId = Model.UserId })" type="button" class="btn btn-secondary">Cancel</a>
+                                    <a href="@Url.Action("TestView", "Test", new { userId = Model.UserId })" type="button" class="btn btn-secondary">Cancel</a>
                                     <button type="submit" class="btn btn-primary" onclick="submitForm('tag-form')">Edit</button>
                                     <a href="@Url.Action("Create", "Question", new { testId = @Model.TestId })" class="btn btn-outline-success btn-rounded" data-mdb-ripple-color="dark">Add question</a>
                                 </div>

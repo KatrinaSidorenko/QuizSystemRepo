@@ -126,5 +126,51 @@ namespace BLL.Services
                 return new Result<List<Question>>(isSuccessful: false, "Fail to get questions");
             }
         }
+
+        public async Task<Result<Dictionary<int, List<int>>>> GetTestQuestionsWithRightAnswers(int testId)
+        {
+            try
+            {
+                var dict = new Dictionary<int, List<int>>();
+                var testQuestions = await _questionRepository.GetTestQuestions(testId);
+                var questionsId = testQuestions.Select(t => t.QuestionId).ToList();
+
+                foreach (var questionId in questionsId)
+                {
+                    var answers = await _answerService.GetQuestionAnswers(questionId);
+                    var rightAnswersId = answers.Data
+                        .Where(a => a.IsRight)
+                        .Select(a => a.AnswerId)
+                        .ToList();
+
+                    dict.Add(questionId, rightAnswersId);
+                }
+
+                return new Result<Dictionary<int, List<int>>>(true, dict);
+            }
+            catch (Exception ex)
+            {
+                return new Result<Dictionary<int, List<int>>>(isSuccessful: false, "Fail to get questions with answers");
+            }
+        }
+        public async Task<Result<Question>> GetQuestionById(int questionId)
+        {
+            try
+            {
+                var question = await _questionRepository.GetQuestionById(questionId);
+
+                if (question == null)
+                {
+                    return new Result<Question>(isSuccessful: false, "Fail to get question");
+                }
+
+                return new Result<Question>(true, question);
+            }
+            catch (Exception ex)
+            {
+                return new Result<Question>(isSuccessful: false, "Fail to get question");
+            }
+        }
+
     }
 }

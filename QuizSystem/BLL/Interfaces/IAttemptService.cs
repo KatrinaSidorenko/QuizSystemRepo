@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.DTO;
+using Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,6 @@ namespace BLL.Interfaces
     public interface IAttemptService
     {
         Task<Result<int>> AddAttempt(Attempt attempt);
+        Task<Result<Attempt>> SaveAttemptData(AttemptResultDTO attemptResultDTO);
     }
 }

@@ -9,7 +9,7 @@ namespace Core.Models
     public class Attempt
     {
         public int AttemptId { get; set; }
-        public int Points { get; set; }
+        public double Points { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int SharedTestId { get; set; }
