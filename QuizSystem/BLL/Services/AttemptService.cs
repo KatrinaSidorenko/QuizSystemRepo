@@ -107,5 +107,15 @@ namespace BLL.Services
                 return new Result<Attempt>(isSuccessful: false, "Fail to get question");
             }
         }
+
+        public async Task<Result<bool>> SaveUserGivenAnswers(List<Answer> givenAnswers, int attemptId)
+        {
+            if (!givenAnswers.Any())
+            {
+                return new Result<bool>(false, "No answers");
+            }
+
+
+        }
     }
 }

@@ -25,6 +25,7 @@ builder.Services.AddScoped<ITestRepository, TestRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
 builder.Services.AddScoped<IAttemptRepository, AttemptRepository>();
+builder.Services.AddScoped<ITestResultRepository, TestResultRepository>();
 
 //Services
 builder.Services.AddScoped<IQuestionService, QuestionService>();
@@ -32,6 +33,7 @@ builder.Services.AddScoped<IAnswerService, AnswerService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<IAttemptService, AttemptService>();
+builder.Services.AddScoped<ITestResultService, TestResultService>();
 
 var app = builder.Build();
 
