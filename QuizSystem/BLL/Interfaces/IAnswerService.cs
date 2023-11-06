@@ -13,5 +13,6 @@ namespace BLL.Interfaces
         Task<Result<List<Answer>>> GetQuestionAnswers(int questionId);
         Task<Result<bool>> RemoveRangeOfAnswers(List<Answer> answerList);
         Task<Result<bool>> UpdateRangeOfAnswers(List<Answer> answers);
+        Task<Result<Answer>> GetAnswerById(int answerId);
     }
 }

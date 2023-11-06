@@ -13,5 +13,6 @@ namespace BLL.Interfaces
         Task<Result<int>> AddAttempt(Attempt attempt);
         Task<Result<Attempt>> SaveAttemptData(AttemptResultDTO attemptResultDTO);
         Task<Result<Attempt>> GetAttemptById(int attemptId);
+        Task<Result<bool>> SaveUserGivenAnswers(List<Answer> givenAnswers, int attemptId);
     }
 }

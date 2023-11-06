@@ -13,7 +13,7 @@ namespace BLL.Services
             _testResultRepository = testResultRepository;
         }
 
-        public async Task<Result<bool>> AddRangeOfAnswers(List<TestResult> testResults)
+        public async Task<Result<bool>> AddRangeOfTestResults(List<TestResult> testResults)
         {
             if (!testResults.Any())
             {
@@ -36,6 +36,25 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<bool>(false, "Fail to add test result");
+            }
+        }
+
+        public async Task<Result<TestResult>> GetTestResult(int attemptId, int questionId)
+        {
+            try
+            {
+                var teatResult = await _testResultRepository.GetTestResultByAttemptIdandQuestionId(attemptId, questionId);
+
+                if (teatResult == null)
+                {
+                    return new Result<TestResult>(false, "Fail to get test reault");
+                }
+
+                return new Result<TestResult>(true, teatResult);
+            }
+            catch (Exception ex)
+            {
+                return new Result<TestResult>(false, "Fail to get test reault");
             }
         }
     }

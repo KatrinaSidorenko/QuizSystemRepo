@@ -45,6 +45,32 @@ namespace DAL.Repository
                 }
             }
         }
+        public async Task<TestResult> GetTestResultByAttemptIdandQuestionId(int attemptId, int questionId)
+        {
+            string sqlExpression = $"SELECT * FROM TestResults WHERE attempt_id = {attemptId} and question_id = {questionId}";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(sqlExpression, connection))
+                {
+                    var reader = await command.ExecuteReaderAsync();
 
+                    if (await reader.ReadAsync())
+                    {
+                        var testResult = new TestResult
+                        {
+                            TestResultId = (int)reader["test_result_answer_id"],
+                            QuestionId = (int)reader["question_id"],
+                            AnswerId = (int)reader["answer_id"],
+                            AttemptId = (int)reader["attempt_id"]
+                        };
+
+                        return testResult;
+                    }
+                }
+            }
+
+            return null; 
+        }
     }
 }

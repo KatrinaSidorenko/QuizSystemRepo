@@ -1,6 +1,7 @@
 ﻿using BLL.Interfaces;
 using Core.Models;
 using DAL.Interfaces;
+using DAL.Repository;
 
 
 namespace BLL.Services
@@ -111,6 +112,24 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<bool>(false, "Fail to delete answers to question");
+            }
+        }
+        public async Task<Result<Answer>> GetAnswerById(int answerId)
+        {
+            try
+            {
+                var answer = await _answerRepository.GetAnswerById(answerId);
+
+                if (answer == null)
+                {
+                    return new Result<Answer>(isSuccessful: false, $"Fail to get {nameof(answer)}");
+                }
+
+                return new Result<Answer>(true, answer);
+            }
+            catch (Exception ex)
+            {
+                return new Result<Answer>(isSuccessful: false, $"Fail to get test");
             }
         }
     }
