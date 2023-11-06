@@ -135,5 +135,32 @@ namespace BLL.Services
                 return new Result<bool>(isSuccessful: false);
             }
         }
+
+        public async Task<Result<List<Test>>> GetRangeOfTests(List<int> testIds)
+        {
+            if (!testIds.Any())
+            {
+                return new Result<List<Test>>(true, new List<Test>());
+            }
+
+            try
+            {
+                var tasks = new List<Task<Test>>();
+
+                testIds.ForEach(testId =>
+                {
+                    tasks.Add(_testRepository.GetTestById(testId));
+                });
+
+
+                var tests = await Task.WhenAll(tasks);
+
+                return new Result<List<Test>>(true, tests.ToList());
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<Test>>(false, "Fail to get range of tests");
+            }
+        }
     }
 }

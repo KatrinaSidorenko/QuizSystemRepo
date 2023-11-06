@@ -108,5 +108,29 @@ namespace DAL.Repository
                 int number = await command.ExecuteNonQueryAsync();
             }
         }
+
+        public async Task<Dictionary<int, int>> GetUserTestAttemptsId(int userId)
+        {
+            string sqlExpresiion = $"select distinct test_id, count(*) as total from [Attempts] where user_id = {userId} group by test_id";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpresiion, connection);
+            Dictionary<int, int> testIds = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while(reader.Read())
+                {
+                    var testId = (int)reader["test_id"];
+                    var attemptCount = (int)reader["total"];
+
+                    testIds.Add(testId, attemptCount);
+                }
+
+                return testIds;
+            }
+        }
     }
 }

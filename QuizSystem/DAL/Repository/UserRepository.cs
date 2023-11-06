@@ -126,5 +126,20 @@ namespace DAL.Repository
                 int number = await command.ExecuteNonQueryAsync();
             }
         }
+
+        public async Task<bool> UserExist(int userId)
+        {
+            var sqlExpression = $"SELECT CASE WHEN EXISTS ( SELECT * FROM [Users] WHERE user_id = {userId}) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END";
+            SqlConnection sqlConnection = new SqlConnection(_connectionString);
+
+            using (sqlConnection)
+            {
+                sqlConnection.Open();
+                SqlCommand command = new(sqlExpression, sqlConnection);
+                var result = await command.ExecuteScalarAsync();
+
+                return (bool)result;
+            }
+        }
     }
 }

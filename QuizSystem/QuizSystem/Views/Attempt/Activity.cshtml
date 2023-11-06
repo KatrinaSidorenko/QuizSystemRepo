@@ -1,0 +1,38 @@
+﻿@using QuizSystem.ViewModels.AttemptViewModel;
+@model List<ActivityViewModel>
+
+@{
+    var tests = Model.ToList();
+}
+
+@if (Model.Count() == 0)
+{
+    <h1>You havn't create tests</h1>
+}
+else
+{
+    <!-- Convert Model to a List for easier manipulation -->
+    @for (int i = 0; i < tests.Count; i += 3)
+    {
+        <div class="row">
+            <!-- Create a row for every three elements -->
+            @for (int j = i; j < Math.Min(i + 3, tests.Count); j++)
+            {
+                var test = tests[j];
+                <div class="col-md-4">
+                    <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
+                    <div class="card mb-3">
+                        <div class="card-header"><h4>Title: @test.Name</h4></div>
+                        <div class="card-body">
+                            <p class="card-title">Description: @test.Description</p>
+                            <p class="card-text"><strong>Your attempts amount: <i class="fas fa-bullseye"></i> @test.AmountOfAttempts</strong></p>
+                            <a href="@Url.Action("MemberView", "Test", new { testId = test.TestId})" class="btn btn-primary">View the Test</a>
+                            <div class="card-footer bg-light px-3 mt-2">@test.DateOfCreation.ToString("dddd, dd MMMM yyyy HH:mm")</div>
+                            @*<div class="card-footer text-muted"></div>*@
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}

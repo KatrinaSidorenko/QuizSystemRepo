@@ -16,5 +16,6 @@ namespace BLL.Interfaces
         Task<Result<bool>> UpdateUser(User user);
         Task<Result<bool>> IsTheEmailAvailable(string email);
         Task<Result<User>> IsUserExist(string email, string password);
+        Task<Result<bool>> IsUserExist(int userId);
     }
 }

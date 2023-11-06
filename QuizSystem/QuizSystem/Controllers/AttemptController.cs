@@ -19,16 +19,18 @@ namespace QuizSystem.Controllers
         private readonly IQuestionService _questionService;
         private readonly IAnswerService _answerService;
         private readonly ITestResultService _resultService;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
         public AttemptController(IAttemptService attemptService, ITestService testService, IMapper mapper,
             IQuestionService questionService, IAnswerService answerService,
-            ITestResultService testResultService)
+            ITestResultService testResultService, IUserService userService)
         {
             _attemptService = attemptService;
             _testService = testService;
             _questionService = questionService;
             _answerService = answerService;
             _resultService = testResultService;
+            _userService = userService;
             _mapper = mapper;
         }
 
@@ -181,6 +183,55 @@ namespace QuizSystem.Controllers
             attemptVm.Questions = Task.WhenAll(questionsVM).Result.ToList();
 
             return View(attemptVm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Activity()
+        {
+            var userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+
+            var userIdResult = await _userService.IsUserExist(userId);
+
+            if (!userIdResult.IsSuccessful)
+            {
+                TempData["Error"] = userIdResult.Message;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var testIdsResult = await _attemptService.GetUserTestAttemptsId(userId);
+
+            if (!testIdsResult.IsSuccessful)
+            {
+                TempData["Error"] = testIdsResult.Message;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var testsResult = await _testService.GetRangeOfTests(testIdsResult.Data.Keys.ToList());
+
+            if (!testsResult.IsSuccessful)
+            {
+                TempData["Error"] = testsResult.Message;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var activityVms = new List<ActivityViewModel>();
+
+            foreach(var test in testsResult.Data)
+            {
+                var activityVM = _mapper.Map<ActivityViewModel>(test);
+
+                if (test is not null)
+                {
+                    activityVM.AmountOfAttempts = testIdsResult.Data[test.TestId];
+                }
+
+                activityVms.Add(activityVM);
+            }
+
+            return View(activityVms);
         }
     }
 }

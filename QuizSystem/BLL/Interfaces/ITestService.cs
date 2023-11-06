@@ -16,5 +16,6 @@ namespace BLL.Interfaces
         Task<Result<List<Test>>> GetUserTests(int userId);
         Task<Result<bool>> UpdateTest(Test test);
         Task<Result<bool>> IsUserTest(int testId, int userId);
+        Task<Result<List<Test>>> GetRangeOfTests(List<int> testIds);
     }
 }

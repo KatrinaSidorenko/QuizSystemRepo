@@ -19,7 +19,8 @@ namespace QuizSystem.Controllers
         private readonly IAnswerRepository _answerRepository;
         private readonly IQuestionRepository _questionRepository;
         private readonly IMapper _mapper;
-        public TestController(ITestService testRepository, IMapper mapper, IQuestionRepository questionRepository, IAnswerRepository answerRepository)
+        public TestController(ITestService testRepository, IMapper mapper, IQuestionRepository questionRepository, 
+            IAnswerRepository answerRepository)
         {
             _testService = testRepository;
             _mapper = mapper;
@@ -224,7 +225,7 @@ namespace QuizSystem.Controllers
             return RedirectToAction("Index", "Question", new { testId = testVM.TestId });
         }
 
-       
+        
 
     }
 }

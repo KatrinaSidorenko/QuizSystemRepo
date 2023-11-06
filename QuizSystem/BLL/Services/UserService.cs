@@ -166,5 +166,24 @@ namespace BLL.Services
                 return new Result<User>(isSuccessful: false, "Something went wrong");
             }
         }
+
+        public async Task<Result<bool>> IsUserExist(int userId)
+        {
+            try
+            {
+                var result = await _userRepository.UserExist(userId);
+
+                if (!result)
+                {
+                    return new Result<bool>(false, "Fail to check user");
+                }
+
+                return new Result<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, "Fail to check user");
+            }
+        }
     }
 }

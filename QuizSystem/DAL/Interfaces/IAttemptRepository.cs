@@ -9,6 +9,7 @@ namespace DAL.Interfaces
        // Task DeleteAnswer(int answerId);
         Task<Attempt> GetAttemptById(int attemptId);
         Task<List<Attempt>> GetUserAttempts(int userId, int testId);
+        Task<Dictionary<int, int>> GetUserTestAttemptsId(int userId);
 
     }
 }
