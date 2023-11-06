@@ -12,11 +12,14 @@ namespace BLL.Services
         private readonly IAttemptRepository _attemptRepository;
         private readonly IAnswerService _answerService;
         private readonly IQuestionService _questionService;
-        public AttemptService(IAttemptRepository attemptRepository, IAnswerService answerService, IQuestionService questionService)
+        private readonly ITestResultService _testResultService;
+        public AttemptService(IAttemptRepository attemptRepository, IAnswerService answerService, 
+            IQuestionService questionService, ITestResultService testResultService)
         {
             _attemptRepository = attemptRepository;
             _answerService = answerService;
             _questionService = questionService;
+            _testResultService = testResultService;
         }
 
         public async Task<Result<int>> AddAttempt(Attempt attempt)
@@ -107,5 +110,43 @@ namespace BLL.Services
                 return new Result<Attempt>(isSuccessful: false, "Fail to get question");
             }
         }
+
+        public async Task<Result<bool>> SaveUserGivenAnswers(List<Answer> givenAnswers, int attemptId)
+        {
+            if (!givenAnswers.Any())
+            {
+                return new Result<bool>(false, "No answers");
+            }
+
+            List<TestResult> testResults = new();
+
+            foreach (var answer in givenAnswers)
+            {
+                testResults.Add(new TestResult()
+                {
+                    AnswerId = answer.AnswerId,
+                    QuestionId = answer.QuestionId,
+                    AttemptId = attemptId,
+                    EnteredValue = answer.Value
+                });
+            }
+
+            try
+            {
+                var saveResult = await _testResultService.AddRangeOfTestResults(testResults);
+
+                if (!saveResult.IsSuccessful)
+                {
+                    return new Result<bool>(false, "Fail to save answers");
+                }
+
+                return new Result<bool>(true);
+            }
+            catch(Exception ex)
+            {
+                return new Result<bool>(false, "Fail to save answers");
+            }
+        }
+       
     }
 }

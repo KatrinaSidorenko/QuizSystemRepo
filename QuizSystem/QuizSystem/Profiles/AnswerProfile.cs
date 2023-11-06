@@ -16,6 +16,7 @@ namespace QuizSystem.Profiles
             CreateMap<Answer, AnswerViewModel>();
             CreateMap<Answer, AnswerTakeTestViewModel>();
             CreateMap<AnswerTakeTestViewModel, AnswerResultDTO>();
+            CreateMap<AnswerTakeTestViewModel, Answer>();
         }
     }
 }

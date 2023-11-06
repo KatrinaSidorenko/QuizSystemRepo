@@ -1,0 +1,173 @@
+﻿@using QuizSystem.ViewModels.AttemptViewModel
+@using Core.Enums
+@model AttemptResultViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <style>
+        /* Custom CSS to center the card and make it 60% width */
+        .centered-card {
+            margin: 0 auto;
+            width: 60%;
+        }
+    </style>
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <!--Main layout-->
+    <main class="my-5">
+        <div class="container">
+            <!--Section: Content-->
+            <section class="text-center text-md-start">
+                <div class="row">
+                    <div class="col-md-12 centered-card">
+                        <!-- Centered card with 60% width -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Test name: @Model.Name</h5>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Space between test card and question cards -->
+                <div class="mb-4"></div>
+
+                <div class="row justify-content-center">
+                    @foreach (var question in Model.Questions)
+                    {
+                        <div class="col-md-12 centered-card">
+                            <div class="card">
+                                <div class="card-header">Question: @question.Description - Points: @question.Point</div>
+                                <div class="card-body">
+                                    <p class="card-text"></p>
+                                    @foreach (var answer in question.Answers)
+                                    {
+                                        <hr class="hr" />
+                                        @if (question.Type.Equals(QuestionType.Open))
+                                        {
+                                            @if(answer.IsRight && answer.ChoosenByUser)
+                                            {
+                                                <div class="note note-success mb-3">
+                                                    <strong>Right answer:</strong> Answer Text: @answer.Value
+                                                </div>
+                                            }
+                                            else if(answer.IsRight && !answer.ChoosenByUser)
+                                            {
+                                                <div class="note note-success mb-3">
+                                                    <strong>Right answer:</strong> Answer Text: @answer.Value
+                                                </div>
+                                                <div class="note note-danger mb-3">
+                                                    <strong>Your answer:</strong> Answer Text: @answer.ValueByUser
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="note note-secondary mb-3">
+                                                    <strong>Answer Text: </strong> @answer.Value
+                                                </div>
+                                            }
+                                        }
+                                        else if (question.Type.Equals(QuestionType.Multiple))
+                                        {
+                                            @if(answer.IsRight && answer.ChoosenByUser)
+                                            {
+                                                <div class="note note-success mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckCheckedDisabled" checked disabled />
+                                                        <label class="form-check-label" for="flexCheckCheckedDisabled">@answer.Value</label>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if(answer.IsRight && !answer.ChoosenByUser)
+                                            {
+                                                <div class="note note-success mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDisabled" disabled />
+                                                        <label class="form-check-label" for="flexCheckDisabled">@answer.Value</label>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if(!answer.IsRight && answer.ChoosenByUser)
+                                            {
+                                                <div class="note note-danger mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckCheckedDisabled" checked disabled />
+                                                        <label class="form-check-label" for="flexCheckCheckedDisabled">@answer.Value</label>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="note note-secondary mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckCheckedDisabled" disabled />
+                                                        <label class="form-check-label" for="flexCheckCheckedDisabled">@answer.Value</label>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @if (answer.IsRight && answer.ChoosenByUser)
+                                            {
+                                                <div class="note note-success mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="flexRadioDisabled" id="flexRadioCheckedDisabled" checked disabled />
+                                                        <label class="form-check-label" for="flexRadioCheckedDisabled">@answer.Value</label>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (answer.IsRight && !answer.ChoosenByUser)
+                                            {
+                                                <div class="note note-success mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="flexRadioDisabled" id="flexRadioDisabled" disabled />
+                                                        <label class="form-check-label" for="flexRadioDisabled">@answer.Value</label>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (!answer.IsRight && answer.ChoosenByUser)
+                                            {
+                                                <div class="note note-danger mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="flexRadioDisabled" id="flexRadioCheckedDisabled" checked disabled />
+                                                        <label class="form-check-label" for="flexRadioCheckedDisabled">@answer.Value</label>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="note note-secondary mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="flexRadioDisabled" id="flexRadioDisabled" disabled />
+                                                        <label class="form-check-label" for="flexRadioDisabled">@answer.Value</label>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    }                                   
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3"></div>
+                    }
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!--Main layout-->
+</body>
+</html>
+

@@ -10,15 +10,15 @@
     <style>
         .container {
             display: flex;
-            justify-content: center; /* Horizontally center the container */
-            align-items: center; /* Vertically center the container */
-            min-height: 90vh; /* Ensure the container covers the full viewport height */
+            justify-content: center; 
+            align-items: center; 
+            min-height: 70vh; 
         }
 
         .card {
-            max-width: 600px; /* Increase the maximum width of the card */
-            width: 100%; /* Make sure the card takes the full width of its container */
-            padding: 30px; /* Increase the padding for more space inside the card */
+            max-width: 600px; 
+            width: 100%; 
+            padding: 30px; 
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             background-color: #FBFBFB;
         }
@@ -39,7 +39,7 @@
             <div class="card-body">
                 <h5 class="card-title">Points: @Model.Points</h5>
                 @*<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>*@
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <a href="@Url.Action("AttemptResult", "Attempt", new { attemptId = Model.AttemptId})" class="btn btn-primary">View Answers</a>
             </div>
             @{
                 var time = Model.EndDate - Model.StartDate;
