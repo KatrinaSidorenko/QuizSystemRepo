@@ -126,7 +126,8 @@ namespace BLL.Services
                 {
                     AnswerId = answer.AnswerId,
                     QuestionId = answer.QuestionId,
-                    AttemptId = attemptId
+                    AttemptId = attemptId,
+                    EnteredValue = answer.Value
                 });
             }
 

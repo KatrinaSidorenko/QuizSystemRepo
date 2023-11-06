@@ -19,8 +19,8 @@ namespace DAL.Repository
                 throw new ArgumentNullException(nameof(testResult));
             }
 
-            var sqlExpression = "INSERT INTO TestResults (question_id, answer_id, attempt_id)" +
-                               "VALUES (@QuestionId, @AnswerId, @AttemptId);" +
+            var sqlExpression = "INSERT INTO TestResults (question_id, answer_id, attempt_id, entered_value)" +
+                               "VALUES (@QuestionId, @AnswerId, @AttemptId, @EnteredValue);" +
                                "SELECT SCOPE_IDENTITY();";
 
             using (var connection = new SqlConnection(_connectionString))
@@ -31,6 +31,7 @@ namespace DAL.Repository
                     command.Parameters.AddWithValue("@QuestionId", testResult.QuestionId);
                     command.Parameters.AddWithValue("@AnswerId", testResult.AnswerId);
                     command.Parameters.AddWithValue("@AttemptId", testResult.AttemptId);
+                    command.Parameters.AddWithValue("@EnteredValue", testResult.EnteredValue ?? " ");
 
                     var insertedId = await command.ExecuteScalarAsync();
 
@@ -62,7 +63,8 @@ namespace DAL.Repository
                             TestResultId = (int)reader["test_result_answer_id"],
                             QuestionId = (int)reader["question_id"],
                             AnswerId = (int)reader["answer_id"],
-                            AttemptId = (int)reader["attempt_id"]
+                            AttemptId = (int)reader["attempt_id"],
+                            EnteredValue = (string)reader["entered_value"] 
                         };
 
                         return testResult;

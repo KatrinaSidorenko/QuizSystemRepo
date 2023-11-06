@@ -2,6 +2,7 @@
 using BLL.Interfaces;
 using BLL.Services;
 using Core.DTO;
+using Core.Enums;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using QuizSystem.ViewModels.AnswerViewModels;
@@ -148,8 +149,18 @@ namespace QuizSystem.Controllers
                         Value = a.Value
                     };
 
-                    attemptAnswer.ChoosenByUser = a.AnswerId == testResult.Data.AnswerId ? true : false;
+                    
+                    if (q.Type.Equals(QuestionType.Open))
+                    {
+                        attemptAnswer.ChoosenByUser = testResult.Data.EnteredValue.ToLower().Equals(a.Value)? true : false;
+                        attemptAnswer.ValueByUser = testResult.Data.EnteredValue;
+                    }
+                    else
+                    {
+                        attemptAnswer.ChoosenByUser = a.AnswerId == testResult.Data.AnswerId ? true : false;
+                    }
 
+                    
                     return attemptAnswer;
 
                 }).ToList();

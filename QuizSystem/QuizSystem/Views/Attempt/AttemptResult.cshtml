@@ -67,7 +67,7 @@
                                                 <div class="note note-success mb-3">
                                                     <strong>Right answer:</strong> Answer Text: @answer.Value
                                                 </div>
-                                                <div class="note note-secondary mb-3">
+                                                <div class="note note-danger mb-3">
                                                     <strong>Your answer:</strong> Answer Text: @answer.ValueByUser
                                                 </div>
                                             }
@@ -130,7 +130,7 @@
                                             }
                                             else if (answer.IsRight && !answer.ChoosenByUser)
                                             {
-                                                <div class="note note-danger mb-3">
+                                                <div class="note note-success mb-3">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="radio" name="flexRadioDisabled" id="flexRadioDisabled" disabled />
                                                         <label class="form-check-label" for="flexRadioDisabled">@answer.Value</label>

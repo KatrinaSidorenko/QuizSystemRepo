@@ -12,5 +12,6 @@ namespace Core.Models
         public int QuestionId { get; set; }
         public int AnswerId { get; set; }
         public int AttemptId { get; set; }
+        public string  EnteredValue { get; set; }
     }
 }
