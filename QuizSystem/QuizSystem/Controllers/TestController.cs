@@ -142,7 +142,21 @@ namespace QuizSystem.Controllers
                 TempData["Error"] = testsResult.Message;
             }
 
-            return View(testsResult.Data);
+            var attemptcountResult = await _testService.GetTestAttemptsCount();
+
+            var testVMS = testsResult.Data.Select(t =>
+            {
+                var testVm = _mapper.Map<IndexTestViewModel>(t);
+
+                if(attemptcountResult.Data.ContainsKey(t.TestId))
+                {
+                    testVm.UserTakenTestAmount = attemptcountResult.Data[t.TestId];
+                }
+
+                return testVm;
+            });
+
+            return View(testVMS.ToList());
         }
 
         [HttpGet]

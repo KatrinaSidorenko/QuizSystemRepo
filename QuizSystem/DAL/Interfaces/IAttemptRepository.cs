@@ -10,6 +10,7 @@ namespace DAL.Interfaces
         Task<Attempt> GetAttemptById(int attemptId);
         Task<List<Attempt>> GetUserAttempts(int userId, int testId);
         Task<Dictionary<int, int>> GetUserTestAttemptsId(int userId);
+        Task<List<Attempt>> GetAttempts(int testId, int userId);
 
     }
 }

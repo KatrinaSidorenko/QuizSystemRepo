@@ -233,5 +233,25 @@ namespace QuizSystem.Controllers
 
             return View(activityVms);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> History(int testId, int userId)
+        {
+            var attemptsResult = await _attemptService.GetUserTestAttempts(testId, userId);
+
+            if (!attemptsResult.IsSuccessful)
+            {
+                TempData["Error"] = attemptsResult.Message;
+
+                return RedirectToAction("Activity", "Attempt");
+            }
+
+            var attemptsVM = attemptsResult.Data.Select(a =>
+            {
+                var attemptVM = _mapper.Map<AttemptViewModel>(a); return attemptVM;
+            });
+
+            return View(attemptsVM.ToList());
+        }
     }
 }

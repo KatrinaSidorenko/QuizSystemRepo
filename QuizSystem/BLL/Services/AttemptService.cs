@@ -161,5 +161,19 @@ namespace BLL.Services
                 return new Result<Dictionary<int, int>>(false, "Fail to get test Ids");
             }
         }
+
+        public async Task<Result<List<Attempt>>> GetUserTestAttempts(int testId, int userId)
+        {
+            try
+            {
+                var attempts = await _attemptRepository.GetAttempts(testId, userId);
+
+                return new Result<List<Attempt>>(true, attempts);
+            }
+            catch
+            {
+                return new Result<List<Attempt>>(false, "Fail to get attempts");
+            }
+        }
     }
 }

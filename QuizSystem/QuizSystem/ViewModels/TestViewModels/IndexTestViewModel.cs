@@ -10,5 +10,6 @@ namespace QuizSystem.ViewModels.TestViewModels
         public Visibility Visibility { get; set; }
         public int UserId { get; set; }
         public DateTime DateOfCreation { get; set; }
+        public int UserTakenTestAmount { get; set; }
     }
 }

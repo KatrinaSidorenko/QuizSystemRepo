@@ -1,5 +1,5 @@
-﻿@using Core.Models;
-@model List<Test>
+﻿@using QuizSystem.ViewModels.TestViewModels
+@model List<IndexTestViewModel>
 
 @{
     var tests = Model.ToList();
@@ -22,10 +22,11 @@ else
                 <div class="col-md-4">
                     <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
                     <div class="card mb-3">
-                        <div class="card-header">Visibility: @test.Visibility.ToString()</div>
+                        <div class="card-header"><h5>Title: @test.Name</h5></div>
                         <div class="card-body">
-                            <h5 class="card-title">Title: @test.Name</h5>
-                            <p class="card-text">Creator: @test.UserId</p>
+                            <p class="card-text"><strong>Attempts count: <i class="fas fa-bullseye"></i> @test.UserTakenTestAmount</strong></p>
+                            @*<h5 class="card-title"></h5>*@
+                            @*<p class="card-text">Creator: @test.UserId</p>*@
                             <p class="card-text">Description: @test.Description</p>
                             <a href="@Url.Action("MemberView", "Test", new { testId = test.TestId})" class="btn btn-primary">View the Test</a>
                             <div class="card-footer bg-light px-3 mt-2">@test.DateOfCreation.ToString("dddd, dd MMMM yyyy HH:mm")</div>

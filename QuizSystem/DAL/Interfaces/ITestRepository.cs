@@ -16,5 +16,6 @@ namespace DAL.Interfaces
         Task UpdateTest(Test test);
         Task DeleteTest(int testId);
         Task<List<Test>> GetUserTests(int userId);
+        Task<Dictionary<int, int>> GetTestAttemptsCount();
     }
 }

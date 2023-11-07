@@ -165,5 +165,29 @@ namespace DAL.Repository
 
             return tests;
         }
+
+        public async Task<Dictionary<int, int>> GetTestAttemptsCount()
+        {
+            string sqlExpresiion = "select test_id, count(*) as total_attempts_count from Attempts group by test_id";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpresiion, connection);
+            Dictionary<int, int> testIds = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    var testId = (int)reader["test_id"];
+                    var attemptCount = (int)reader["total_attempts_count"];
+
+                    testIds.Add(testId, attemptCount);
+                }
+
+                return testIds;
+            }
+        }
     }
 }

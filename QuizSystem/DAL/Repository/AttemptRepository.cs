@@ -132,5 +132,38 @@ namespace DAL.Repository
                 return testIds;
             }
         }
+
+        public async Task<List<Attempt>> GetAttempts(int testId, int userId)
+        {
+            string sqlExpression = $"select * from [Attempts] where test_id = {testId} and user_id = {userId} order by end_date desc";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+            List<Attempt> attempts = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    attempts.Add(new Attempt()
+                    {
+                        TestId = (int)reader["test_id"],
+                        Points = (double)reader["points"],
+                        StartDate = (DateTime)reader["start_date"],
+                        EndDate = (DateTime)reader["end_date"],
+                        UserId = (int)reader["user_id"],
+                        RightAnswersAmount = (int)reader["right_answers_amount"],
+                        SharedTestId = (int)reader["shared_test_id"],
+                        AttemptId = (int)reader["attempt_id"]
+                });
+                    
+                }
+            }
+
+            return attempts;
+        }
     }
 }

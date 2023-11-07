@@ -162,5 +162,19 @@ namespace BLL.Services
                 return new Result<List<Test>>(false, "Fail to get range of tests");
             }
         }
+
+        public async Task<Result<Dictionary<int, int>>> GetTestAttemptsCount()
+        {
+            try
+            {
+               var result = await _testRepository.GetTestAttemptsCount();
+
+                return new Result< Dictionary<int, int> > (true, result);
+            }
+            catch (Exception ex)
+            {
+                return new Result<Dictionary<int, int> > (false, "Fail to get range of tests");
+            }
+        }
     }
 }
