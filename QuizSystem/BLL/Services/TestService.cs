@@ -14,19 +14,17 @@ namespace BLL.Services
             _testRepository = testRepository;
         }
 
-        public async Task<Result<List<Test>>> GetAllPublicTests()
+        public async Task<Result<(List<Test>, int)>> GetAllPublicTests(int pageNumber = 1, int pageSize = 6, string orderByProp = "test_id", string sortOrder = "asc")
         {
             try
             {
-                var tests = await _testRepository.GetAllTests();
+                var pablicTestsAndRecordsAmount = await _testRepository.GetAllPublicTestsWithTotalRecords(pageNumber, pageSize, orderByProp, sortOrder);
 
-                var publicTests = tests.Where(t => t.Visibility == Visibility.Public).ToList();
-
-                return new Result<List<Test>>(true, publicTests);
+                return new Result<(List<Test>, int)>(true, pablicTestsAndRecordsAmount);
             }
             catch (Exception ex)
             {
-                return new Result<List<Test>>(isSuccessful: false, "Fail to get public tests");
+                return new Result<(List<Test>, int)>(isSuccessful: false, "Fail to get public tests");
             }
         }
 

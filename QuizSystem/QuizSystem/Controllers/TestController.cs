@@ -6,6 +6,7 @@ using DAL.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuizSystem.ViewModels.AnswerViewModels;
+using QuizSystem.ViewModels.PaginationTestViewModels;
 using QuizSystem.ViewModels.QuestionViewModel;
 using QuizSystem.ViewModels.TakeTestViewModels;
 using QuizSystem.ViewModels.TestViewModels;
@@ -133,9 +134,17 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AllTests()
+        public async Task<IActionResult> AllTests(int page = 1)
         {
-            var testsResult = await _testService.GetAllPublicTests();
+            int pageSize = 2;
+
+            var testPaginationModel = new TestPaginationModel()
+            {
+                CurrentPageIndex = page > 0 ? page : 1
+            };
+ 
+
+            var testsResult = await _testService.GetAllPublicTests(pageNumber: page, pageSize: pageSize);
 
             if (!testsResult.IsSuccessful)
             {
@@ -144,7 +153,7 @@ namespace QuizSystem.Controllers
 
             var attemptcountResult = await _testService.GetTestAttemptsCount();
 
-            var testVMS = testsResult.Data.Select(t =>
+            var testVMS = testsResult.Data.Item1.Select(t =>
             {
                 var testVm = _mapper.Map<IndexTestViewModel>(t);
 
@@ -156,7 +165,12 @@ namespace QuizSystem.Controllers
                 return testVm;
             });
 
-            return View(testVMS.ToList());
+            testPaginationModel.Tests = testVMS.ToList();
+            double pageCount = (double)((decimal)testsResult.Data.Item2 / Convert.ToDecimal(pageSize));
+            testPaginationModel.PageCount = (int)Math.Ceiling(pageCount);
+            testPaginationModel.PageSize = pageSize;
+
+            return View(testPaginationModel);
         }
 
         [HttpGet]
