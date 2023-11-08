@@ -11,7 +11,7 @@ namespace BLL.Interfaces
     {
         Task<Result<int>> AddTest(Test test);
         Task<Result<bool>> DeleteTest(int testId);
-        Task<Result<(List<Test>, int)>> GetAllPublicTests(int pageNumber = 1, int pageSize = 6, string orderByProp = "test_id", string sortOrder = "asc");
+        Task<Result<(List<Test>, int)>> GetAllPublicTests(int pageNumber = 1, int pageSize = 6, string orderByProp = "test_id", string sortOrder = "asc", string search = "");
         Task<Result<Test>> GetTestById(int testId);
         Task<Result<List<Test>>> GetUserTests(int userId);
         Task<Result<bool>> UpdateTest(Test test);

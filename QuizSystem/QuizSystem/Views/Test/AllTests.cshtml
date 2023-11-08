@@ -11,6 +11,25 @@
 }
 else
 {
+        <form method="get"  asp-controller="Test" asp-action="AllTests" class="mb-4">
+            <div class="row justify-content-center">
+                <!-- Center the input group and button -->
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <div class="form-outline">
+                            <input type="hidden" id="page" name="page" value="@Model.CurrentPageIndex" />
+                            <input type="search" id="searchParam" name="searchParam" class="form-control" style="background-color: ghostwhite;" />
+                            <label class="form-label" for="searchParam">Search</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                   
+                </div>
+            </div>
+        </form>
+
     <!-- Convert Model to a List for easier manipulation -->
     @for (int i = 0; i < tests.Count; i += 3)
     {
@@ -25,12 +44,9 @@ else
                         <div class="card-header"><h5>Title: @test.Name</h5></div>
                         <div class="card-body">
                             <p class="card-text"><strong>Attempts count: <i class="fas fa-bullseye"></i> @test.UserTakenTestAmount</strong></p>
-                            @*<h5 class="card-title"></h5>*@
-                            @*<p class="card-text">Creator: @test.UserId</p>*@
                             <p class="card-text">Description: @test.Description</p>
                             <a href="@Url.Action("MemberView", "Test", new { testId = test.TestId })" class="btn btn-primary">View the Test</a>
                             <div class="card-footer bg-light px-3 mt-2">@test.DateOfCreation.ToString("dddd, dd MMMM yyyy HH:mm")</div>
-                            @*<div class="card-footer text-muted"></div>*@
                         </div>
                     </div>
                 </div>
@@ -52,7 +68,7 @@ else
                 @if (Model.CurrentPageIndex > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="/Test/AllTests/page=@(Model.CurrentPageIndex - 1)" aria-label="Previous">
+                        <a href="@Url.Action("AllTests", "Test", new { page = (Model.CurrentPageIndex - 1), searchParam = Model.SearchParam })" aria-label="Previous" class="page-link">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
@@ -62,18 +78,19 @@ else
                 {
                     if (i == Model.CurrentPageIndex)
                     {
-                        <li class="page-item active"><a class="page-link" href="/Test/AllTests?page=@i">@i</a></li>
+                        <li class="page-item active"> <a href="@Url.Action("AllTests", "Test", new { page = @i, searchParam = Model.SearchParam })" class="page-link">@i</a></li>
                     }
                     else
                     {
-                        <li class="page-item"><a class="page-link" href="/Test/AllTests?page=@i">@i</a></li>
+                        <li class="page-item"> <a href="@Url.Action("AllTests", "Test", new { page = @i, searchParam = Model.SearchParam })" class="page-link">@i</a></li>
+
                     }
                 }
 
                 @if (Model.CurrentPageIndex < Model.PageCount)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="/Test/AllTests/page=@(Model.CurrentPageIndex + 1)" aria-label="Next">
+                        <a href="@Url.Action("AllTests", "Test", new { page = (Model.CurrentPageIndex + 1), searchParam = Model.SearchParam })" aria-label="Next" class="page-link">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>

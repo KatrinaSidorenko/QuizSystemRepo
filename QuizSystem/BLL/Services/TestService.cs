@@ -14,13 +14,15 @@ namespace BLL.Services
             _testRepository = testRepository;
         }
 
-        public async Task<Result<(List<Test>, int)>> GetAllPublicTests(int pageNumber = 1, int pageSize = 6, string orderByProp = "test_id", string sortOrder = "asc")
+        public async Task<Result<(List<Test>, int)>> GetAllPublicTests(int pageNumber = 1, int pageSize = 6, string orderByProp = "test_id", string sortOrder = "asc", string search = "")
         {
             try
             {
                 var pablicTestsAndRecordsAmount = await _testRepository.GetAllPublicTestsWithTotalRecords(pageNumber, pageSize, orderByProp, sortOrder);
 
-                return new Result<(List<Test>, int)>(true, pablicTestsAndRecordsAmount);
+                var result = pablicTestsAndRecordsAmount.Item1.Where(t => t.Name.ToLower().Contains(search)).ToList();
+
+                return new Result<(List<Test>, int)>(true, (result, pablicTestsAndRecordsAmount.Item2));
             }
             catch (Exception ex)
             {

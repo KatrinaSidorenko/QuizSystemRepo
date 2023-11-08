@@ -58,6 +58,7 @@ namespace DAL.Repository
             {
                 List<Test> tests = new List<Test>();
                 int totalRecords = 0;
+                bool IsNextPageAvailable;
 
                 using (SqlCommand command = new SqlCommand(sqlExpression, connection))
                 {

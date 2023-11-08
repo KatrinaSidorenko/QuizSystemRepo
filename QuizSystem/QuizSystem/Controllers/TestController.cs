@@ -134,17 +134,19 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AllTests(int page = 1)
+        public async Task<IActionResult> AllTests(int page = 1, string searchParam = "")
         {
-            int pageSize = 2;
+            int pageSize = 6;
+            string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
 
             var testPaginationModel = new TestPaginationModel()
             {
-                CurrentPageIndex = page > 0 ? page : 1
+                CurrentPageIndex = page > 0 ? page : 1,
+                SearchParam = search
             };
  
 
-            var testsResult = await _testService.GetAllPublicTests(pageNumber: page, pageSize: pageSize);
+            var testsResult = await _testService.GetAllPublicTests(pageNumber: page, pageSize: pageSize, search:search );
 
             if (!testsResult.IsSuccessful)
             {
@@ -166,7 +168,18 @@ namespace QuizSystem.Controllers
             });
 
             testPaginationModel.Tests = testVMS.ToList();
-            double pageCount = (double)((decimal)testsResult.Data.Item2 / Convert.ToDecimal(pageSize));
+            double pageCount;
+
+            if (!string.IsNullOrEmpty(searchParam))
+            {
+                 pageCount = (double)((decimal)testVMS.Count() / Convert.ToDecimal(pageSize));
+            }
+            else
+            {
+                 pageCount = (double)((decimal)testsResult.Data.Item2 / Convert.ToDecimal(pageSize));
+
+            }
+
             testPaginationModel.PageCount = (int)Math.Ceiling(pageCount);
             testPaginationModel.PageSize = pageSize;
 
