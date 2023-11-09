@@ -27,6 +27,7 @@ else
                             <p class="card-title">Description: @test.Description</p>
                             <p class="card-text"><strong>Your attempts amount: <i class="fas fa-bullseye"></i> @test.AmountOfAttempts</strong></p>
                             <a href="@Url.Action("History", "Attempt", new { testId = test.TestId, userId = User.Claims.FirstOrDefault(c => c.Type == "id").Value})" class="btn btn-primary">History</a>
+                            <a href="@Url.Action("Details", "Attempt", new { testId = test.TestId})" class="btn btn-success btn-rounded">Statistic</a>
                             <a href="@Url.Action("MemberView", "Test", new { testId = test.TestId})" class="btn btn-primary">View the Test</a>
                             <div class="card-footer bg-light px-3 mt-2">@test.DateOfCreation.ToString("dddd, dd MMMM yyyy HH:mm")</div>
                             @*<div class="card-footer text-muted"></div>*@

@@ -1,7 +1,7 @@
 ﻿@using QuizSystem.ViewModels.TestViewModels
 @using Core.Enums
 @using BLL.Interfaces;
-@model QuestionTestViewModel
+@model MemberTestViewModel
 
 <!DOCTYPE html>
 <html lang="en">
@@ -40,8 +40,10 @@
                         <!-- Centered card with 60% width -->
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Test name: @Model.Name - @Model.Visibility.ToString()</h5>
-                                <p class="card-text">@Model.Description</p>
+                                <h5 class="card-title">Test name: @Model.Name</h5>
+                                <p class="card-text">Description: @Model.Description</p>
+                                <p class="card-text">Questions amount: @Model.AmountOfQuestions</p>
+                                <p class="card-text">Max mark: @Model.TotalMark</p>
                             </div>
                         </div>
                     </div>

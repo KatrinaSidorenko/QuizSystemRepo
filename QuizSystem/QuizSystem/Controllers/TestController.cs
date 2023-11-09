@@ -68,41 +68,11 @@ namespace QuizSystem.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var questions = await _questionRepository.GetTestQuestions(testId);
+            var questionsAmount = await _testService.GetQuestionsAmountAndMaxMark(testId);
 
-            var questionsVM = questions.Select(async q =>
+            if (!questionsAmount.IsSuccessful)
             {
-                var answers = await _answerRepository.GetQuestionAnswers(q.QuestionId);
-
-                var answersVm = answers.Select(a =>
-                {
-                    var answer = _mapper.Map<AnswerViewModel>(a);
-
-                    return answer;
-
-                }).ToList();
-
-                var question = _mapper.Map<IndexQuestionViewModel>(q);
-                question.Answers = answersVm;
-
-                return question;
-
-            }).ToList();
-            //get all question for this test
-            var testVM = _mapper.Map<QuestionTestViewModel>(test.Data);
-            testVM.Questions = Task.WhenAll(questionsVM).Result.ToList();
-
-            return View(testVM);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> MemberView(int testId)
-        {
-            var test = await _testService.GetTestById(testId);
-
-            if (!test.IsSuccessful)
-            {
-                TempData["Error"] = test.Message;
+                TempData["Error"] = questionsAmount.Message;
 
                 return RedirectToAction("Index", "Home");
             }
@@ -128,8 +98,60 @@ namespace QuizSystem.Controllers
 
             }).ToList();
             //get all question for this test
-            var testVM = _mapper.Map<QuestionTestViewModel>(test.Data);
+            var testVM = _mapper.Map<MemberTestViewModel>(test.Data);
             testVM.Questions = Task.WhenAll(questionsVM).Result.ToList();
+            testVM.AmountOfQuestions = questionsAmount.Data.Item1;
+            testVM.TotalMark = questionsAmount.Data.Item2;
+
+            return View(testVM);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MemberView(int testId)
+        {
+            var test = await _testService.GetTestById(testId);
+
+            if (!test.IsSuccessful)
+            {
+                TempData["Error"] = test.Message;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var questionsAmount = await _testService.GetQuestionsAmountAndMaxMark(testId);
+
+            if (!questionsAmount.IsSuccessful)
+            {
+                TempData["Error"] = questionsAmount.Message;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var questions = await _questionRepository.GetTestQuestions(testId);
+
+            var questionsVM = questions.Select(async q =>
+            {
+                var answers = await _answerRepository.GetQuestionAnswers(q.QuestionId);
+
+                var answersVm = answers.Select(a =>
+                {
+                    var answer = _mapper.Map<AnswerViewModel>(a);
+
+                    return answer;
+
+                }).ToList();
+
+                var question = _mapper.Map<IndexQuestionViewModel>(q);
+                question.Answers = answersVm;
+
+                return question;
+
+            }).ToList();
+
+            var testVM = _mapper.Map<MemberTestViewModel>(test.Data);
+            testVM.Questions = Task.WhenAll(questionsVM).Result.ToList();
+            testVM.AmountOfQuestions = questionsAmount.Data.Item1;
+            testVM.TotalMark = questionsAmount.Data.Item2;
 
             return View(testVM);
         }

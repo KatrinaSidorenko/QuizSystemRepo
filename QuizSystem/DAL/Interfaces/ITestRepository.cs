@@ -18,5 +18,6 @@ namespace DAL.Interfaces
         Task<List<Test>> GetUserTests(int userId);
         Task<Dictionary<int, int>> GetTestAttemptsCount();
         Task<(List<Test>, int)> GetAllPublicTestsWithTotalRecords(int pageNumber = 1, int pageSize = 6, string orderByProp = "test_id", string sortOrder = "asc");
+        Task<(int, double)> GetQyestionAmountAndPoints(int testId);
     }
 }

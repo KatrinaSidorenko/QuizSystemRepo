@@ -1,8 +1,10 @@
-﻿using Core.Enums;
+﻿using Core.DTO;
+using Core.Enums;
 using Core.Models;
 using Core.Settings;
 using DAL.Interfaces;
 using Microsoft.Extensions.Options;
+using System.ComponentModel;
 using System.Data.SqlClient;
 
 namespace DAL.Repository
@@ -164,6 +166,48 @@ namespace DAL.Repository
             }
 
             return attempts;
+        }
+
+        public async Task<StatisticAttemptsDTO> GetAttemptsStatistic(int testId, int userId)
+        {
+            string sqlExpression = $"SELECT user_id, test_id, \r\nCOUNT(*) AS entry_count, \r\nAVG(CAST(DATEDIFF(MINUTE, start_date, end_date) AS FLOAT)) AS avg_time, \r\navg(points) as avg_points\r\nFROM [Attempts] \r\nwhere user_id ={userId} and test_id = {testId}\r\nGROUP BY user_id, test_id;";
+
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+            StatisticAttemptsDTO statistic = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    statistic.AmountOfAttempts = (int)reader["entry_count"];
+                    statistic.AverageMark = (double)reader["avg_points"];
+                    statistic.AverageTime = (double)reader["avg_time"];
+                }
+            }
+
+            return statistic;
+
+        }
+
+        public async Task<double> GetAttemptAccuracy(int attemptId)
+        {
+            string sqlExpression = $"select (points / \r\n(select sum(point) from Questions Q\r\nwhere A.test_id = Q.test_id\r\ngroup by test_id))*100\r\nfrom [Attempts] A\r\nwhere A.attempt_id = {attemptId}";
+
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+            using(connection)
+            {
+                connection.Open();
+                var result = await command.ExecuteScalarAsync();
+
+                return (double)result;
+            }   
         }
     }
 }

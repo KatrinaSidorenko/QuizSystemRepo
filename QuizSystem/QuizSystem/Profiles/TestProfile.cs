@@ -18,6 +18,7 @@ namespace QuizSystem.Profiles
             CreateMap<Test, TakeTestViewModel>();
             CreateMap<ResultTestViewModel, AttemptResultDTO>();
             CreateMap<Test, ActivityViewModel>();
+            CreateMap<Test, MemberTestViewModel>();
         }
     }
 }

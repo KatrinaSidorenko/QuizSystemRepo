@@ -175,5 +175,33 @@ namespace BLL.Services
                 return new Result<List<Attempt>>(false, "Fail to get attempts");
             }
         }
+
+        public async Task<Result<double>> GetAttemptAccuracy(int attemptId)
+        {
+            try
+            {
+                var accuracy = await _attemptRepository.GetAttemptAccuracy(attemptId);
+
+                return new Result<double>(true, accuracy);
+            }
+            catch (Exception ex)
+            {
+                return new Result<double>(false, "Fail to get accuracy");
+            }
+        }
+
+        public async Task<Result<StatisticAttemptsDTO>> GetTestAttemptsStatistic(int testId, int userId)
+        {
+            try
+            {
+                var statistic = await _attemptRepository.GetAttemptsStatistic(testId, userId);
+
+                return new Result<StatisticAttemptsDTO>(true, statistic);
+            }
+            catch (Exception ex)
+            {
+                return new Result<StatisticAttemptsDTO>(false, "Fail to get statistic");
+            }
+        }
     }
 }

@@ -259,6 +259,28 @@ namespace DAL.Repository
 
                 return testIds;
             }
+        } 
+
+        public async Task<(int, double)> GetQyestionAmountAndPoints(int testId)
+        {
+            string sqlExpression = $"select count(*) as question_amount, cast(sum(point) as float) as max_mark\r\nfrom [Questions]\r\nwhere test_id = {testId}\r\ngroup by test_id";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+                (int, double) result = new();
+
+                while (reader.Read())
+                {
+                    result.Item1 = (int)reader["question_amount"];
+                    result.Item2 = (double)reader["max_mark"];
+                }
+
+                return result;
+            }
         }
     }
 }

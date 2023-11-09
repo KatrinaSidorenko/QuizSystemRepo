@@ -200,5 +200,19 @@ namespace BLL.Services
                 return new Result<Dictionary<int, int> > (false, "Fail to get range of tests");
             }
         }
+
+        public async Task<Result<(int, double)>> GetQuestionsAmountAndMaxMark(int testId)
+        {
+            try
+            {
+                var result = await _testRepository.GetQyestionAmountAndPoints(testId);
+
+                return new Result<(int, double)>(true, result);
+            }
+            catch (Exception ex)
+            {
+                return new Result<(int, double)>(false, "Fail to get questions amount");
+            }
+        }
     }
 }

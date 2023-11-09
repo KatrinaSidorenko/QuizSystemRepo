@@ -246,12 +246,49 @@ namespace QuizSystem.Controllers
                 return RedirectToAction("Activity", "Attempt");
             }
 
-            var attemptsVM = attemptsResult.Data.Select(a =>
+            var attemptsVM = attemptsResult.Data.Select(async a =>
             {
-                var attemptVM = _mapper.Map<AttemptViewModel>(a); return attemptVM;
+                var attemptVM = _mapper.Map<AttemptViewModel>(a);
+                var attemptAccuracy = await _attemptService.GetAttemptAccuracy(a.AttemptId);
+
+                if (attemptAccuracy.IsSuccessful)
+                {
+                    attemptVM.Accuracy = attemptAccuracy.Data;
+                }
+                
+                return attemptVM;
             });
 
-            return View(attemptsVM.ToList());
+            return View(Task.WhenAll(attemptsVM).Result.ToList());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int testId)
+        {
+            var userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+
+            var userIdResult = await _userService.IsUserExist(userId);
+
+            if (!userIdResult.IsSuccessful)
+            {
+                TempData["Error"] = userIdResult.Message;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var statisticResult = await _attemptService.GetTestAttemptsStatistic(testId, userId);
+
+            if (!statisticResult.IsSuccessful)
+            {
+                TempData["Error"] = statisticResult.Message;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var statisticVm = _mapper.Map<StatisticViewModel>(statisticResult.Data);
+
+            return View(statisticVm);
+            
         }
     }
 }

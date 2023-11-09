@@ -14,5 +14,6 @@ namespace BLL.Interfaces
         Task<Result<bool>> IsUserTest(int testId, int userId);
         Task<Result<List<Test>>> GetRangeOfTests(List<int> testIds);
         Task<Result<Dictionary<int, int>>> GetTestAttemptsCount();
+        Task<Result<(int, double)>> GetQuestionsAmountAndMaxMark(int testId);
     }
 }
