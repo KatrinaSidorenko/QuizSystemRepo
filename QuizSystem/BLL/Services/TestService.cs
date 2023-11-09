@@ -14,10 +14,34 @@ namespace BLL.Services
             _testRepository = testRepository;
         }
 
-        public async Task<Result<(List<Test>, int)>> GetAllPublicTests(int pageNumber = 1, int pageSize = 6, string orderByProp = "test_id", string sortOrder = "asc", string search = "")
+        public async Task<Result<(List<Test>, int)>> GetAllPublicTests(SortingParam sortingParam, int pageNumber = 1, int pageSize = 6,  string search = "")
         {
             try
             {
+                string orderByProp = "test_id";
+                string sortOrder = "acs";
+
+                switch (sortingParam)
+                {
+                    case SortingParam.Name:
+                        orderByProp = "test_name";
+                        sortOrder = "acs";
+                        break;
+                    case SortingParam.NameDesc:
+                        orderByProp = "test_name";
+                        sortOrder = "desc";
+                        break;
+                    case SortingParam.Date:
+                        orderByProp = "date_of_creation";
+                        sortOrder = "acs";
+                        break;
+                    case SortingParam.DateDesc:
+                        orderByProp = "date_of_creation";
+                        sortOrder = "desc";
+                        break;
+                }
+
+                   
                 var pablicTestsAndRecordsAmount = await _testRepository.GetAllPublicTestsWithTotalRecords(pageNumber, pageSize, orderByProp, sortOrder);
 
                 var result = pablicTestsAndRecordsAmount.Item1.Where(t => t.Name.ToLower().Contains(search)).ToList();

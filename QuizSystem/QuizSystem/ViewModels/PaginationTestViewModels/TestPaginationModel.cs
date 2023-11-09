@@ -1,4 +1,5 @@
-﻿using QuizSystem.ViewModels.TestViewModels;
+﻿using Core.Enums;
+using QuizSystem.ViewModels.TestViewModels;
 
 namespace QuizSystem.ViewModels.PaginationTestViewModels
 {
@@ -9,5 +10,6 @@ namespace QuizSystem.ViewModels.PaginationTestViewModels
         public int PageCount { get; set; }
         public int PageSize { get; set; }
         public string SearchParam { get; set; } 
+        public SortingParam SortingParam { get; set; }
     }
 }

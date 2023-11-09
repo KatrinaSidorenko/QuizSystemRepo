@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BLL.Interfaces;
+using Core.Enums;
 using Core.Models;
 using DAL.Interfaces;
 using DAL.Repository;
@@ -134,10 +135,11 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AllTests(int page = 1, string searchParam = "")
+        public async Task<IActionResult> AllTests(SortingParam sortOrder, int page = 1, string searchParam = "")
         {
             int pageSize = 6;
             string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
+            ViewBag.SortParam = sortOrder;
 
             var testPaginationModel = new TestPaginationModel()
             {
@@ -146,7 +148,7 @@ namespace QuizSystem.Controllers
             };
  
 
-            var testsResult = await _testService.GetAllPublicTests(pageNumber: page, pageSize: pageSize, search:search );
+            var testsResult = await _testService.GetAllPublicTests(pageNumber: page, pageSize: pageSize, search:search, sortingParam: sortOrder);
 
             if (!testsResult.IsSuccessful)
             {
