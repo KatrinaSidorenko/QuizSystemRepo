@@ -1,0 +1,16 @@
+﻿namespace Core.Enums
+{
+    public enum SortingParam
+    {
+        NameDesc,
+        Name,
+        EndDateDesc,
+        EndDate,
+        StartDate,
+        StartDateDesc,
+        Date,
+        DateDesc,
+        Created,
+        CreatedDesc
+    }
+}

@@ -1,0 +1,44 @@
+﻿@using QuizSystem.ViewModels.AttemptViewModel
+@model List<AttemptViewModel>
+
+@{
+    var attempts = Model.ToList();
+}
+
+
+@if (Model.Count() == 0)
+{
+    <h1>You havn't create tests</h1>
+}
+else
+{
+    <!-- Convert Model to a List for easier manipulation -->
+    @for (int i = 0; i < attempts.Count; i += 3)
+    {
+        <div class="row">
+            <!-- Create a row for every three elements -->
+            @for (int j = i; j < Math.Min(i + 3, attempts.Count); j++)
+            {
+                var attempt = attempts[j];
+                <div class="col-md-4">
+                    <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
+                    <div class="card mb-3">
+                        <div class="card-header">Right answers amount: @attempt.RightAnswersAmount</div>
+                        <div class="card-body">
+                            <h5 class="card-title">Mark: @attempt.Points</h5>
+                            <h5 class="card-title">Accuracy: @attempt.Accuracy%</h5>
+                            <p class="card-text">Start date: @attempt.StartDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
+                            <p class="card-text">End date: @attempt.EndDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
+                            <a href="@Url.Action("AttemptResult", "Attempt", new { attemptId = attempt.AttemptId})" class="btn btn-primary">View the Attempt</a>
+                            @{
+                                var time = attempt.EndDate - attempt.StartDate;
+                            }
+                            <div class="card-footer bg-light px-3 mt-2">Total time: @time.ToString(@"hh\:mm\:ss")</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
+

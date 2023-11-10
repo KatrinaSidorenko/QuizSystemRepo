@@ -1,16 +1,60 @@
-﻿@using Core.Models;
-@model List<Test>
+﻿@using QuizSystem.ViewModels.PaginationTestViewModels
+@using Core.Enums
+@model TestPaginationModel
 
 @{
-    var tests = Model.ToList();
+    var tests = Model.Tests;
 }
 
-@if (Model.Count() == 0)
+@if (Model.Tests.Count() == 0)
 {
-    <h1>You havn't create tests</h1>
+    <h1>You haven't created tests</h1>
 }
 else
 {
+    <div style="text-align: center;">
+        <form method="get" asp-controller="Test" asp-action="AllTests" class="mb-4">
+            <div class="row">
+                <!-- Center the input group and button -->
+                <div class="col-md-6">
+                    <div class="input-group" style="width: 350px">
+                        <div class="form-outline">
+                            <input type="hidden" id="page" name="page" value="@Model.CurrentPageIndex" />
+                            <input type="search" id="searchParam" name="searchParam" class="form-control" style="background-color: ghostwhite;" />
+                            <label class="form-label" for="searchParam">Search by title</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 d-flex justify-content-end">
+                    <!-- Align the dropdown to the right -->
+                    <div class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-mdb-toggle="dropdown" aria-expanded="false">
+                            Order By
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li>
+                                    <a href="@Url.Action("AllTests", "Test", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.Date })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Date (oldest)</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("AllTests", "Test", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.DateDesc})" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Date (newest)</a>
+                            </li>
+                            <li>
+                                    <a href="@Url.Action("AllTests", "Test", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.Name })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Title </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("AllTests", "Test", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.NameDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Title</a>
+                            </li>
+                            @*<li><a class="dropdown-item" href="#">Attempts</a></li>*@
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <!-- Convert Model to a List for easier manipulation -->
     @for (int i = 0; i < tests.Count; i += 3)
     {
@@ -22,18 +66,61 @@ else
                 <div class="col-md-4">
                     <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
                     <div class="card mb-3">
-                        <div class="card-header">Visibility: @test.Visibility.ToString()</div>
+                        <div class="card-header"><h5>Title: @test.Name</h5></div>
                         <div class="card-body">
-                            <h5 class="card-title">Title: @test.Name</h5>
-                            <p class="card-text">Creator: @test.UserId</p>
+                            <p class="card-text"><strong>Attempts count: <i class="fas fa-bullseye"></i> @test.UserTakenTestAmount</strong></p>
                             <p class="card-text">Description: @test.Description</p>
-                            <a href="@Url.Action("MemberView", "Test", new { testId = test.TestId})" class="btn btn-primary">View the Test</a>
+                            <a href="@Url.Action("MemberView", "Test", new { testId = test.TestId })" class="btn btn-primary">View the Test</a>
                             <div class="card-footer bg-light px-3 mt-2">@test.DateOfCreation.ToString("dddd, dd MMMM yyyy HH:mm")</div>
-                            @*<div class="card-footer text-muted"></div>*@
                         </div>
                     </div>
                 </div>
             }
         </div>
     }
+
+    <!-- Add CSS styles to center the pagination bar -->
+    <style>
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+
+    <div class="pagination-container">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                @if (Model.CurrentPageIndex > 1)
+                {
+                    <li class="page-item">
+                        <a href="@Url.Action("AllTests", "Test", new { page = (Model.CurrentPageIndex - 1), searchParam = Model.SearchParam, sortOrder =ViewBag.SortParam })" aria-label="Previous" class="page-link">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.PageCount; i++)
+                {
+                    if (i == Model.CurrentPageIndex)
+                    {
+                        <li class="page-item active"> <a href="@Url.Action("AllTests", "Test", new { page = @i, searchParam = Model.SearchParam , sortOrder =ViewBag.SortParam})" class="page-link">@i</a></li>
+                    }
+                    else
+                    {
+                        <li class="page-item"> <a href="@Url.Action("AllTests", "Test", new { page = @i, searchParam = Model.SearchParam , sortOrder =ViewBag.SortParam})" class="page-link">@i</a></li>
+
+                    }
+                }
+
+                @if (Model.CurrentPageIndex < Model.PageCount)
+                {
+                    <li class="page-item">
+                        <a href="@Url.Action("AllTests", "Test", new { page = (Model.CurrentPageIndex + 1), searchParam = Model.SearchParam, sortOrder =ViewBag.SortParam })" aria-label="Next" class="page-link">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
 }

@@ -1,0 +1,49 @@
+﻿@using QuizSystem.ViewModels.AttemptViewModel
+@model StatisticViewModel
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .card {
+            max-width: 600px;
+            width: 100%;
+            padding: 30px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            background-color: #FBFBFB;
+        }
+
+    </style>
+
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <div class="container">
+        <div class="card text-center">
+            <div class="card-header">Total amount of attempts: @Model.AmountOfAttempts</div>
+            <div class="card-body">
+                <h5 class="card-title">Avarage mark: @Math.Round(Model.AverageMark, 2)</h5>
+                @*<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>*@
+            </div>
+            <div class="card-footer text-muted">Average time in minutes: @Math.Round(Model.AverageTime, 2)</div>
+        </div>
+    </div>
+
+</body>
+</html>
+

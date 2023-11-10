@@ -14,19 +14,43 @@ namespace BLL.Services
             _testRepository = testRepository;
         }
 
-        public async Task<Result<List<Test>>> GetAllPublicTests()
+        public async Task<Result<(List<Test>, int)>> GetAllPublicTests(SortingParam sortingParam, int pageNumber = 1, int pageSize = 6,  string search = "")
         {
             try
             {
-                var tests = await _testRepository.GetAllTests();
+                string orderByProp = "test_id";
+                string sortOrder = "acs";
 
-                var publicTests = tests.Where(t => t.Visibility == Visibility.Public).ToList();
+                switch (sortingParam)
+                {
+                    case SortingParam.Name:
+                        orderByProp = "test_name";
+                        sortOrder = "acs";
+                        break;
+                    case SortingParam.NameDesc:
+                        orderByProp = "test_name";
+                        sortOrder = "desc";
+                        break;
+                    case SortingParam.Date:
+                        orderByProp = "date_of_creation";
+                        sortOrder = "acs";
+                        break;
+                    case SortingParam.DateDesc:
+                        orderByProp = "date_of_creation";
+                        sortOrder = "desc";
+                        break;
+                }
 
-                return new Result<List<Test>>(true, publicTests);
+                   
+                var pablicTestsAndRecordsAmount = await _testRepository.GetAllPublicTestsWithTotalRecords(pageNumber, pageSize, orderByProp, sortOrder);
+
+                var result = pablicTestsAndRecordsAmount.Item1.Where(t => t.Name.ToLower().Contains(search)).ToList();
+
+                return new Result<(List<Test>, int)>(true, (result, pablicTestsAndRecordsAmount.Item2));
             }
             catch (Exception ex)
             {
-                return new Result<List<Test>>(isSuccessful: false, "Fail to get public tests");
+                return new Result<(List<Test>, int)>(isSuccessful: false, "Fail to get public tests");
             }
         }
 
@@ -133,6 +157,61 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<bool>(isSuccessful: false);
+            }
+        }
+
+        public async Task<Result<List<Test>>> GetRangeOfTests(List<int> testIds)
+        {
+            if (!testIds.Any())
+            {
+                return new Result<List<Test>>(true, new List<Test>());
+            }
+
+            try
+            {
+                var tasks = new List<Task<Test>>();
+
+                testIds.ForEach(testId =>
+                {
+                    tasks.Add(_testRepository.GetTestById(testId));
+                });
+
+
+                var tests = await Task.WhenAll(tasks);
+
+                return new Result<List<Test>>(true, tests.ToList());
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<Test>>(false, "Fail to get range of tests");
+            }
+        }
+
+        public async Task<Result<Dictionary<int, int>>> GetTestAttemptsCount()
+        {
+            try
+            {
+               var result = await _testRepository.GetTestAttemptsCount();
+
+                return new Result< Dictionary<int, int> > (true, result);
+            }
+            catch (Exception ex)
+            {
+                return new Result<Dictionary<int, int> > (false, "Fail to get range of tests");
+            }
+        }
+
+        public async Task<Result<(int, double)>> GetQuestionsAmountAndMaxMark(int testId)
+        {
+            try
+            {
+                var result = await _testRepository.GetQyestionAmountAndPoints(testId);
+
+                return new Result<(int, double)>(true, result);
+            }
+            catch (Exception ex)
+            {
+                return new Result<(int, double)>(false, "Fail to get questions amount");
             }
         }
     }

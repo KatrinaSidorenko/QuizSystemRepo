@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System;
 using static System.Net.Mime.MediaTypeNames;
+using System.Data;
 
 namespace DAL.Repository
 {
@@ -49,7 +50,77 @@ namespace DAL.Repository
             return tests;
         }
 
-       
+        public async Task<(List<Test>, int)> GetAllPublicTestsWithTotalRecords(int pageNumber = 1, int pageSize = 6, string orderByProp = "test_id", string sortOrder = "asc")
+        {
+            string sqlExpression = "PagingAllPublicTests"; // The stored procedure name
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                List<Test> tests = new List<Test>();
+                int totalRecords = 0;
+                bool IsNextPageAvailable;
+
+                using (SqlCommand command = new SqlCommand(sqlExpression, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Define the input parameters
+                    command.Parameters.AddWithValue("@PageNumber", pageNumber);
+                    command.Parameters.AddWithValue("@PageSize", pageSize);
+                    command.Parameters.AddWithValue("@OrderBy", orderByProp);
+                    command.Parameters.AddWithValue("@SortOrder", sortOrder);
+
+                    // Define the output parameter for total records
+                    SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
+                    totalRecordsParam.Direction = ParameterDirection.Output;
+                    command.Parameters.Add(totalRecordsParam);
+
+                    connection.Open();
+
+                    SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        totalRecords = (int)reader["TotalRecords"];
+                    }
+                    reader.NextResult();
+                    var columns = reader.GetColumnSchema();
+   
+                    while (reader.Read())
+                    {
+                        Test test = new Test();
+                        test.TestId = (int)reader["test_id"];
+                        test.Name = (string)reader["test_name"];
+                        test.Description = (string)reader["test_description"];
+                        test.Visibility = (Visibility)reader["test_visibility"];
+                        test.DateOfCreation = (DateTime)reader["date_of_creation"];
+                        test.UserId = (int)reader["user_id"];
+                        tests.Add(test);
+                    }
+                }
+
+                return (tests, totalRecords);
+            }
+        }
+
+
+        public async Task<int> PublicTestsAmount()
+        {
+            string sqlExpression = "select count(*) from [Tests] where test_visibility=0";
+            SqlConnection connection = new SqlConnection(_connectionString);
+
+            using (connection)
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                var amount = await command.ExecuteScalarAsync();
+
+                return (int)amount;
+            }
+        }
+
+
         public async Task<int> AddTest(Test test)
         {
             if (test == null)
@@ -164,6 +235,52 @@ namespace DAL.Repository
             }
 
             return tests;
+        }
+
+        public async Task<Dictionary<int, int>> GetTestAttemptsCount()
+        {
+            string sqlExpresiion = "select test_id, count(*) as total_attempts_count from Attempts group by test_id";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpresiion, connection);
+            Dictionary<int, int> testIds = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    var testId = (int)reader["test_id"];
+                    var attemptCount = (int)reader["total_attempts_count"];
+
+                    testIds.Add(testId, attemptCount);
+                }
+
+                return testIds;
+            }
+        } 
+
+        public async Task<(int, double)> GetQyestionAmountAndPoints(int testId)
+        {
+            string sqlExpression = $"select count(*) as question_amount, cast(sum(point) as float) as max_mark\r\nfrom [Questions]\r\nwhere test_id = {testId}\r\ngroup by test_id";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+                (int, double) result = new();
+
+                while (reader.Read())
+                {
+                    result.Item1 = (int)reader["question_amount"];
+                    result.Item2 = (double)reader["max_mark"];
+                }
+
+                return result;
+            }
         }
     }
 }

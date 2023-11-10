@@ -1,7 +1,7 @@
 ﻿@using QuizSystem.ViewModels.TestViewModels
 @using Core.Enums
 @using BLL.Interfaces;
-@model QuestionTestViewModel
+@model MemberTestViewModel
 @inject ITestService testService
 
 @{
@@ -41,7 +41,9 @@
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Test name: @Model.Name - @Model.Visibility.ToString()</h5>
-                                <p class="card-text">@Model.Description</p>
+                                <p class="card-text">Description: @Model.Description</p>
+                                <p class="card-text">Questions amount: @Model.AmountOfQuestions</p>
+                                <p class="card-text">Max mark: @Model.TotalMark</p>
 
                                 @if (isCreator){
                                     <a href="@Url.Action("Edit", "Test", new { testId = @Model.TestId })" class="btn btn-primary">Edit</a>

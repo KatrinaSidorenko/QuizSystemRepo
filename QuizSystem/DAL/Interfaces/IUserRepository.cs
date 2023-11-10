@@ -9,5 +9,6 @@ namespace DAL.Interfaces
         Task<User> GetUserById(int id);
         Task UpdateUser(User user);
         Task DeleteUser(int userId);
+        Task<bool> UserExist(int userId);
     }
 }
