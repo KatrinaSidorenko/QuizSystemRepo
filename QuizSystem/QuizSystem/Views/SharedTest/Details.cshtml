@@ -1,0 +1,55 @@
+﻿@using QuizSystem.ViewModels.SharedTestViewModels;
+@model DetailsSharedTestViewModel
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .card {
+            max-width: 600px;
+            width: 100%;
+            padding: 30px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            background-color: #FBFBFB;
+        }
+
+    </style>
+
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <div class="container">
+        <div class="card text-center">
+            <div class="card-header"><h4>Tets title: @Model.TestName</h4></div>
+            <div class="card-body">
+                <h5 class="card-title">Code: @Model.TestCode </h5>
+                <p class="card-text">Description: @Model.Description</p>
+                <p class="card-text">Attempts count: @Model.AttemptCount</p>
+                <p class="card-text">Start Date: @Model.StartDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
+                <p class="card-text">End Date: @Model.EndDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
+                <a href="@Url.Action("AttemptResult", "Attempt")" class="btn btn-primary">Edit</a>
+            </div>
+            @{
+                var time = Model.AttemptDuration - new DateTime(2023, 01, 01);
+            }
+            <div class="card-footer text-muted">Attempt duration: @time</div>
+        </div>
+    </div>
+
+</body>
+</html>

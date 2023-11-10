@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Core.Models;
+using QuizSystem.ViewModels.SharedTestViewModels;
 
 namespace QuizSystem.Profiles
 {
@@ -6,7 +8,8 @@ namespace QuizSystem.Profiles
     {
         public ShareTestProfile()
         {
-            
+            CreateMap<CreateShareTestViewModel, SharedTest>();
+            CreateMap<SharedTest, DetailsSharedTestViewModel>();
         }
     }
 }

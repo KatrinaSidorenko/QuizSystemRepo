@@ -47,9 +47,10 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-6">
-                            <form id="create-form" method="post" asp-controller="Test" asp-action="Create" enctype="multipart/form-data">
+                            <form id="create-form" method="post" asp-controller="SharedTest" asp-action="Create" enctype="multipart/form-data">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 <input type="hidden" asp-for="TestId" value="@Model.TestId" />
+                                <input type="hidden" asp-for="TestName" value="@Model.TestName" />
                                 <!-- Name input -->
                                 <div class="form-outline mb-4">
                                     <h4>Test Title: @Model.TestName</h4>
@@ -60,9 +61,9 @@
                                     <textarea asp-for="Description" class="form-control custom-textarea" rows="5" placeholder="Test Description"></textarea>
                                 </div>
                                 <div class="form-outline mb-3">
-                                    <label asp-for="AttemptsCount" class=" form-label" name="Point">Attempts count</label>
-                                    <input asp-for="AttemptsCount" name="Point" type="number" class="form-control">
-                                    <span asp-validation-for="AttemptsCount" class="text-danger"></span>
+                                    <label asp-for="AttemptCount" class=" form-label" >Attempts count</label>
+                                    <input asp-for="AttemptCount" type="number" class="form-control">
+                                    <span asp-validation-for="AttemptCount" class="text-danger"></span>
                                 </div>
 
                                 <label class="form-label" for="customRange1">Time duration (in minutes): <span id="customRange1Label">0</span></label>
@@ -73,29 +74,30 @@
 
                                 <div class="form-outline-date mb-4">
                                     <div class="form-group-date">
-                                        <label asp-for="StartDate" class="control-label"></label>
-                                        <input asp-for="StartDate" class="form-control" placeholder="Start Date" type="date">
-                                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                                        <div class="field">
+                                            <label asp-for="StartDate" class="control-label"></label>
+                                            <input asp-for="StartDate" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-ddTHH:mm")" type="datetime-local">
+                                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                                        </div>
                                     </div>
 
                                     <div class="form-group-date">
-                                        <label asp-for="EndDate" class="control-label"></label>
-                                        <input asp-for="EndDate" class="form-control" placeholder="End Date" type="date">
-                                        <span asp-validation-for="EndDate" class="text-danger"></span>
+                                        <div class="field">
+                                            <label asp-for="EndDate" class="control-label"></label>
+                                            <input asp-for="EndDate" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-ddTHH:mm")" type="datetime-local">
+                                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                                        </div>
                                     </div>
                                 </div>
 
 
                                 <!-- Submit button -->
                                 <div class="text-end">
-                                    <a href="@Url.Action("Index", "Test", new{testId = Model.TestId})" type="button" class="btn btn-secondary">Cancel</a>
+                                    <a href="@Url.Action("Index", "Test", new{id = @User.Claims.FirstOrDefault(c => c.Type == "id")?.Value})" type="button" class="btn btn-secondary">Cancel</a>
                                     <button type="submit" class="btn btn-primary">Share</button>
                                 </div>
-                                @*<button type="button" class="btn btn-outline-success btn-rounded" data-mdb-ripple-color="dark">Add question</button>*@
                             </form>
                         </div>
-                        @*                        <div class="col-lg-6">
-                        </div>*@
                     </div>
 
                 </div>
@@ -109,13 +111,13 @@
                 $('#customRange1Label').text($(this).val() + " minutes");
             });
         });
-        $(function () {
-            // Get the current date and time in the format "YYYY-MM-DDTHH:mm"
-            var currentDateTime = new Date().toISOString();
+        //$(function () {
+        //    // Get the current date and time in the format "YYYY-MM-DDTHH:mm"
+        //    var currentDateTime = new Date().toISOString();
 
-            // Set the value of the date inputs to the current date and time
-            $('input[type="date"]').val(currentDateTime);
-        });
+        //    // Set the value of the date inputs to the current date and time
+        //    $('input[type="date"]').val(currentDateTime);
+        //});
     </script>
     <!--Main layout-->
 </body>
