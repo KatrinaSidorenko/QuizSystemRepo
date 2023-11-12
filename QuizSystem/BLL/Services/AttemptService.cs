@@ -52,6 +52,7 @@ namespace BLL.Services
             {
                 var attempt = await _attemptRepository.GetAttemptById(attemptResultDTO.AttemptId);
                 attempt.EndDate = DateTime.Now;
+                attempt.SharedTestId = attemptResultDTO.SharedTestId;
 
                 var rightAnswers = await _questionService.GetTestQuestionsWithRightAnswers(attemptResultDTO.TestId);
 
@@ -67,7 +68,7 @@ namespace BLL.Services
                             {
                                 var openAnswer = await _answerService.GetQuestionAnswers(question.Data.QuestionId);
 
-                                if(openAnswer.Data.FirstOrDefault().Value.ToLower().Equals(answer.Value.ToLower()))
+                                if(openAnswer.Data.FirstOrDefault().Value.ToLower().Equals(answer.Value?.ToLower() ?? ""))
                                 {
                                     attempt.Points += question.Data.Point;
                                     attempt.RightAnswersAmount++;

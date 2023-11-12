@@ -42,6 +42,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <input type="hidden" name="TestId" value="@Model.TestId" />
+                                <input type="hidden" name="SharedTestId" value="@Model.SharedTestId" />
                                 <input type="hidden" name="TakedTestUserId" value="@Model.TakedTestUserId" />
                                 <input type="hidden" name="AttemptId" value="@Model.AttemptId" />
                                 <h5 class="card-title">Test name: @Model.Name</h5>
@@ -157,6 +158,7 @@
                     TestId: $("input[name='TestId']").val(),
                     TakedTestUserId: $("input[name='TakedTestUserId']").val(),
                     AttemptId: $("input[name='AttemptId']").val(),
+                    SharedTestId: $("input[name='SharedTestId']").val(),
                     Answers: []
                 };
 

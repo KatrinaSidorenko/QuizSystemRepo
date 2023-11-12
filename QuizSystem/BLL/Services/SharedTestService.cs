@@ -1,4 +1,5 @@
 ﻿using BLL.Interfaces;
+using Core.DTO;
 using Core.Enums;
 using Core.Models;
 using DAL.Interfaces;
@@ -9,10 +10,12 @@ namespace BLL.Services
     public class SharedTestService : ISharedTestService
     {
         private readonly ISharedTestRepository _sharedTestRepository;
+        private readonly IAttemptRepository _attemptRepository;
 
-        public SharedTestService(ISharedTestRepository sharedTestRepository)
+        public SharedTestService(ISharedTestRepository sharedTestRepository, IAttemptRepository attemptRepository)
         {
             _sharedTestRepository = sharedTestRepository;
+            _attemptRepository = attemptRepository;
         }
 
         public async Task<Result<int>> AddSharedTest(SharedTest sharedTest)
@@ -105,14 +108,36 @@ namespace BLL.Services
             }
         }
 
-        public async Task<Result<SharedTest>> GetSharedTestByCode(Guid code)
+        public async Task<Result<SharedTest>> GetSharedTestByCode(Guid code, int userId)
         {
 
             try
             {
+                var codeExist = await _sharedTestRepository.IsCodeExist(code);
+
+                if (!codeExist)
+                {
+                    return new Result<SharedTest>(isSuccessful: false, $"Invalid code");
+                }
+
                 var sharedTest = await _sharedTestRepository.GetSharedTestByCode(code);
 
-                //validation
+                if (sharedTest.Status.Equals(SharedTestStatus.Completed) || sharedTest.EndDate <= DateTime.Now)
+                {
+                    return new Result<SharedTest>(isSuccessful: false, $"This test was alresdy finished");
+                }
+
+                if (sharedTest.StartDate >= DateTime.Now || sharedTest.Status.Equals(SharedTestStatus.Planned))
+                {
+                    return new Result<SharedTest>(isSuccessful: false, $"This test not strated yet");
+                }
+
+                var attemptsCount = await _attemptRepository.UserAttemptsCount(sharedTest.SharedTestId, userId);
+
+                if(!(attemptsCount < sharedTest.AttemptCount))
+                {
+                    return new Result<SharedTest>(isSuccessful: false, $"Your attempts are finished");
+                }
 
                 if (sharedTest == null)
                 {
@@ -126,7 +151,70 @@ namespace BLL.Services
                 return new Result<SharedTest>(isSuccessful: false, $"Fail to get shared test");
             }
         }
-            
+
+        public async Task<Result<List<SharedTestDTO>>> GetUserSharedTests(int userId)
+        {
+
+            try
+            {
+                var sharedTest = await _sharedTestRepository.GetUserSharedTests(userId);
+
+                //validation
+
+                if (sharedTest == null)
+                {
+                    return new Result<List<SharedTestDTO>>(isSuccessful: false, $"Fail to get {nameof(sharedTest)}");
+                }
+
+                return new Result<List<SharedTestDTO>>(true, sharedTest);
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<SharedTestDTO>>(isSuccessful: false, $"Fail to get shared test");
+            }
+        }
+
+        public async Task<Result<bool>> FinishSharedTest(int sharedTestId)
+        {
+            try
+            {
+                var sharedTest = await _sharedTestRepository.GetSharedTestById(sharedTestId);
+
+                if(sharedTest == null)
+                {
+                    return new Result<bool>(isSuccessful: false, $"Fail to get {nameof(sharedTest)}");
+                }
+
+                sharedTest.Status = SharedTestStatus.Completed;
+
+                await _sharedTestRepository.UpdateSharedTest(sharedTest);
+
+                return new Result<bool>(isSuccessful: true);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(isSuccessful: false, $"Fail to update shared test");
+            }
+        }
+
+        public async Task<Result<bool>> IsTestShared(int testId)
+        {
+            try
+            {
+                var result = await _sharedTestRepository.IsTestShared(testId);
+
+                if (result)
+                {
+                    return new Result<bool>(false, "This test already shared");
+                }
+
+                return new Result<bool>(true, result);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, "Fail to check shared test");
+            }
+        }
         private void SetSharedTestStatus(SharedTest sharedTest)
         {
             if (sharedTest.StartDate > DateTime.Now)

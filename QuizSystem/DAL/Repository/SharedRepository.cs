@@ -1,4 +1,5 @@
-﻿using Core.Enums;
+﻿using Core.DTO;
+using Core.Enums;
 using Core.Models;
 using Core.Settings;
 using DAL.Interfaces;
@@ -132,7 +133,7 @@ namespace DAL.Repository
                     sharedTest.TestCode = (Guid)reader["test_code"];
                     sharedTest.StartDate = (DateTime)reader["start_date"];
                     sharedTest.EndDate = (DateTime)reader["end_date"];
-                    sharedTest.Description = (string)reader["description"];
+                    sharedTest.Description = reader["description"] as string;
                     sharedTest.AttemptCount = (int)reader["attempt_count"];
                     sharedTest.AttemptDuration = (DateTime)reader["attempt_duration"];
                     sharedTest.Status = (SharedTestStatus)reader["status"];
@@ -143,6 +144,38 @@ namespace DAL.Repository
             }
 
             return sharedTests;
+        }
+
+        public async Task<List<SharedTestDTO>> GetUserSharedTests(int userId)
+        {
+            string sqlExpression = $"select *, (select test_name from [Tests] where test_id = [SharedTests].test_id) as test_name from [SharedTests] where test_id in (select test_id from [Tests] where user_id = {userId})";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+            List<SharedTestDTO> sharedTests = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    SharedTestDTO sharedTest = new();
+                    sharedTest.TestCode = (Guid)reader["test_code"];
+                    sharedTest.StartDate = (DateTime)reader["start_date"];
+                    sharedTest.EndDate = (DateTime)reader["end_date"];
+                    sharedTest.Description = reader["description"] as string;
+                    sharedTest.AttemptCount = (int)reader["attempt_count"];
+                    sharedTest.AttemptDuration = (DateTime)reader["attempt_duration"];
+                    sharedTest.Status = (SharedTestStatus)reader["status"];
+                    sharedTest.TestId = (int)reader["test_id"];
+                    sharedTest.SharedTestId = (int)reader["shared_test_id"];
+                    sharedTest.TestName = (string)reader["test_name"];
+                    sharedTests.Add(sharedTest);
+                }
+
+                return sharedTests;
+            }
         }
 
         public async Task DeleteSharedTest(int sharedTestId)
@@ -185,5 +218,37 @@ namespace DAL.Repository
                 int number = await command.ExecuteNonQueryAsync();
             }
         }
+
+        public async Task<bool> IsTestShared(int testId)
+        {
+            string sqlExpression = $"SELECT CASE WHEN EXISTS ( SELECT * FROM [SharedTests] WHERE test_id = {testId} and status != 2) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END";
+            SqlConnection sqlConnection = new SqlConnection(_connectionString);
+
+            using (sqlConnection)
+            {
+                sqlConnection.Open();
+                SqlCommand command = new(sqlExpression, sqlConnection);
+                var result = await command.ExecuteScalarAsync();
+
+                return (bool)result;
+            }
+        }
+
+        public async Task<bool> IsCodeExist(Guid code)
+        {
+            string sqlExpression = $"SELECT CASE WHEN EXISTS ( SELECT * FROM [SharedTests] WHERE test_code = '{code}') THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END";
+            SqlConnection sqlConnection = new SqlConnection(_connectionString);
+
+            using (sqlConnection)
+            {
+                sqlConnection.Open();
+                SqlCommand command = new(sqlExpression, sqlConnection);
+                var result = await command.ExecuteScalarAsync();
+
+                return (bool)result;
+            }
+        }
+
+        
     }
 }

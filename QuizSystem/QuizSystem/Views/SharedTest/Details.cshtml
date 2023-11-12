@@ -1,4 +1,5 @@
 ﻿@using QuizSystem.ViewModels.SharedTestViewModels;
+@using Core.Enums
 @model DetailsSharedTestViewModel
 
 
@@ -38,11 +39,37 @@
             <div class="card-header"><h4>Tets title: @Model.TestName</h4></div>
             <div class="card-body">
                 <h5 class="card-title">Code: @Model.TestCode </h5>
+                <p class="card-text">Satus: @Model.Status</p>
                 <p class="card-text">Description: @Model.Description</p>
                 <p class="card-text">Attempts count: @Model.AttemptCount</p>
                 <p class="card-text">Start Date: @Model.StartDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
                 <p class="card-text">End Date: @Model.EndDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
+
                 <a href="@Url.Action("AttemptResult", "Attempt")" class="btn btn-primary">Edit</a>
+
+                @if (!Model.Status.Equals(SharedTestStatus.Completed))
+                {
+                    <button type="button" class="btn btn-danger" data-mdb-toggle="modal" data-mdb-target="#exampleModal-@Model.SharedTestId">
+                        Finish
+                    </button>
+
+                    <!-- Modal with a unique ID -->
+                    <div class="modal fade" id="exampleModal-@Model.SharedTestId" tabindex="-1" aria-labelledby="exampleModalLabel-@Model.SharedTestId" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel-@Model.SharedTestId">Are you sure you want to finish this test?</h5>
+                                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                                    <a href="@Url.Action("Finish", "SharedTest", new { sharedTestId = Model.SharedTestId})" class="btn btn-danger" data-user-id="@Model.SharedTestId">Finish</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                           
             </div>
             @{
                 var time = Model.AttemptDuration - new DateTime(2023, 01, 01);

@@ -35,6 +35,7 @@ namespace QuizSystem.Controllers
 
         public async Task<IActionResult> Index(int id)
         {
+
             var testsResult = await _testService.GetUserTests(id);
 
             if (!testsResult.IsSuccessful)

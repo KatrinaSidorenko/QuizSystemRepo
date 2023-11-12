@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.DTO;
+using Core.Models;
 
 namespace DAL.Interfaces
 {
@@ -10,5 +11,8 @@ namespace DAL.Interfaces
         Task<List<SharedTest>> GetTests();
         Task UpdateSharedTest(SharedTest sharedTest);
         Task<SharedTest> GetSharedTestByCode(Guid code);
+        Task<List<SharedTestDTO>> GetUserSharedTests(int userId);
+        Task<bool> IsTestShared(int testId);
+        Task<bool> IsCodeExist(Guid code);
     }
 }

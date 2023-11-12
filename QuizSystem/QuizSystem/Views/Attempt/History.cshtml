@@ -26,7 +26,7 @@ else
                         <div class="card-header">Right answers amount: @attempt.RightAnswersAmount</div>
                         <div class="card-body">
                             <h5 class="card-title">Mark: @attempt.Points</h5>
-                            <h5 class="card-title">Accuracy: @attempt.Accuracy%</h5>
+                            <h5 class="card-title">Accuracy: @Math.Round(attempt.Accuracy, 2) %</h5>
                             <p class="card-text">Start date: @attempt.StartDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
                             <p class="card-text">End date: @attempt.EndDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
                             <a href="@Url.Action("AttemptResult", "Attempt", new { attemptId = attempt.AttemptId})" class="btn btn-primary">View the Attempt</a>
