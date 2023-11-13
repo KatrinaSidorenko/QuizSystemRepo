@@ -18,6 +18,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<ConnectionSettings>(builder.Configuration.GetSection("ConnectionSettings"));
+builder.Services.Configure<DocumentSettings>(builder.Configuration.GetSection("DocumentSettings"));
 
 //Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();

@@ -4,6 +4,8 @@ using Core.Enums;
 using Core.Models;
 using DAL.Interfaces;
 using DAL.Repository;
+using GroupDocs.Viewer.Options;
+using GroupDocs.Viewer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuizSystem.ViewModels.AnswerViewModels;
@@ -291,6 +293,29 @@ namespace QuizSystem.Controllers
             return RedirectToAction("Index", "Question", new { testId = testVM.TestId });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> TestDocumentView(int testId)
+        {
+            var pathResult = await _testService.GetTestDocumentPath(testId);
+
+            if(!pathResult.IsSuccessful)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var outputPath = Path.Combine("Output/", pathResult.Data.Item1);
+
+            using (Viewer viewer = new Viewer(pathResult.Data.Item2))
+            {
+                PdfViewOptions options = new PdfViewOptions(outputPath);
+                viewer.View(options);
+            }
+
+            var fileStream = new FileStream(outputPath, FileMode.Open, FileAccess.Read);
+            var result = new FileStreamResult(fileStream, "application/pdf");
+
+            return result;
+        }
         
 
     }
