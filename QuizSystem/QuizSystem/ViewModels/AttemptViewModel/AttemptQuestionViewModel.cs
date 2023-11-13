@@ -8,8 +8,8 @@ namespace QuizSystem.ViewModels.AttemptViewModel
         public int QuestionId { get; set; }
         public string Description { get; set; }
         public QuestionType Type { get; set; }
-        public int Point { get; set; }
-        public int GetedPoints { get; set; }
+        public float Point { get; set; }
+        public float GetedPoints { get; set; }
         public List<AttemptAnswerViewModel> Answers { get; set; }
     }
 }

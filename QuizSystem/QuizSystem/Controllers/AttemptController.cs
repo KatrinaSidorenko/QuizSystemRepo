@@ -35,7 +35,7 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> TakeTest(int testId)
+        public async Task<IActionResult> TakeTest(int testId, int? sharedTestId = null)
         {
             var testResult = await _testService.GetTestById(testId);
 
@@ -84,6 +84,11 @@ namespace QuizSystem.Controllers
 
             testVM.AttemptId = attemptId.Data;
 
+            if(sharedTestId is not null)
+            {
+                testVM.SharedTestId = sharedTestId;
+            }
+            
             return View(testVM);
         }
 
@@ -171,7 +176,8 @@ namespace QuizSystem.Controllers
                 {
                     QuestionId = q.QuestionId,
                     Description = q.Description,
-                    Point = q.Point,
+                    //GetedPoints = ((float)q.Point / answers.Data.Count) * (float)answersVm.Select(a => a.ChoosenByUser && a.IsRight == true).Count(),
+                    Point = (float)q.Point,
                     Type = q.Type,
                     Answers = answersVm
                 };

@@ -1,0 +1,72 @@
+﻿@using Core.Models;
+@using QuizSystem.ViewModels.SharedTestViewModels;
+@model List<IndexSharedTestViewModel>
+
+@{
+    var sharedTests = Model.ToList();
+}
+
+<div class="container mb-5">
+    @*<nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a href="@Url.Action("Create", "Test", new { userId = ViewBag.UserId})" class="btn btn-success btn-rounded">Create Test</a>
+        </div>
+    </nav>*@
+</div>
+
+@if (Model.Count() == 0)
+{
+    <h1>You havn't create tests</h1>
+}
+else
+{
+    <!-- Convert Model to a List for easier manipulation -->
+    @for (int i = 0; i < sharedTests.Count; i += 3)
+    {
+        <div class="row">
+            <!-- Create a row for every three elements -->
+            @for (int j = i; j < Math.Min(i + 3, sharedTests.Count); j++)
+            {
+                var sharedTest = sharedTests[j];
+                <div class="col-md-4">
+                    <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
+                    <div class="card mb-3">
+                        <div class="card-header"><h5>Title: @sharedTest.TestName</h5></div>
+                        <div class="card-body">
+                            @*<h5 class="card-title"></h5>*@
+                            <p class="card-text">Description: @sharedTest.Description</p>
+                            <p class="card-text">Status: @sharedTest.Status.ToString()</p>
+                            <a href="@Url.Action("Details", "SharedTest", new { sharedTestId = sharedTest.SharedTestId})" class="btn btn-primary">Details</a>
+
+                            <!-- Button trigger modal with a unique ID -->
+                            <button type="button" class="btn btn-danger" data-mdb-toggle="modal" data-mdb-target="#exampleModal-@sharedTest.SharedTestId">
+                                Delete
+                            </button>
+
+                            <!-- Modal with a unique ID -->
+                            <div class="modal fade" id="exampleModal-@sharedTest.SharedTestId" tabindex="-1" aria-labelledby="exampleModalLabel-@sharedTest.SharedTestId" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel-@sharedTest.SharedTestId">Are you sure you want to delete this test?</h5>
+                                            <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                                            <a href="@Url.Action("Delete", "SharedTest", new { sharedTestId = sharedTest.SharedTestId})" class="btn btn-danger" data-user-id="@sharedTest.SharedTestId">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+@*                            <a href="@Url.Action("Edit", "Test", new { testId = sharedTest.TestId})" class="btn btn-primary">Edit</a>*@
+
+
+                            <div class="card-footer bg-light px-3 mt-2">@sharedTest.StartDate.ToString("dddd, dd MMMM yyyy HH:mm") - @sharedTest.EndDate.ToString("dddd, dd MMMM yyyy HH:mm")</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
+

@@ -11,6 +11,7 @@ namespace Core.DTO
         public int TestId { get; set; }
         public int TakedTestUserId { get; set; }
         public int AttemptId { get; set; }
+        public int SharedTestId { get; set; }
         public List<AnswerResultDTO> Answers { get; set; }
     }
 }

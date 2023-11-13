@@ -14,6 +14,7 @@ namespace DAL.Interfaces
         Task<List<Attempt>> GetAttempts(int testId, int userId);
         Task<StatisticAttemptsDTO> GetAttemptsStatistic(int testId, int userId);
         Task<double> GetAttemptAccuracy(int attemptId);
+        Task<int> UserAttemptsCount(int sharedTestId, int userId);
 
     }
 }
