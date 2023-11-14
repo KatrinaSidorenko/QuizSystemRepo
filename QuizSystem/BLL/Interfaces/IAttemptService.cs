@@ -18,5 +18,7 @@ namespace BLL.Interfaces
         Task<Result<List<Attempt>>> GetUserTestAttempts(int testId, int userId);
         Task<Result<StatisticAttemptsDTO>> GetTestAttemptsStatistic(int testId, int userId);
         Task<Result<double>> GetAttemptAccuracy(int attemptId);
+        Task<Result<(string, string)>> GetAttemptDocumentPath(int attemptId);
+        Task<Result<bool>> DeleteTestWithAttempts(int testId);
     }
 }

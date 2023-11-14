@@ -74,5 +74,18 @@ namespace DAL.Repository
 
             return null; 
         }
+
+        public async Task DeleteTestResultByAttempt(int attemptId)
+        {
+            string sqlExpression = $"DELETE FROM TestResults WHERE attempt_id={attemptId}";
+            SqlConnection connection = new SqlConnection(_connectionString);
+
+            using (connection)
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                int number = await command.ExecuteNonQueryAsync();
+            }
+        }
     }
 }

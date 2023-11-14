@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using BLL.Interfaces;
 using BLL.Services;
+using Core.Enums;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using QuizSystem.ViewModels.PaginationTestViewModels;
 using QuizSystem.ViewModels.SharedTestViewModels;
 
 namespace QuizSystem.Controllers
@@ -120,8 +122,19 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(SortingParam sortOrder, int page = 1, string searchParam = "")
         {
+            int pageSize = 6;
+            string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
+            ViewBag.SortParam = sortOrder;
+
+            var testPaginationModel = new SharedTestPaginationModel()
+            {
+                CurrentPageIndex = page > 0 ? page : 1,
+                SearchParam = search
+            };
+
+
             var userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
 
             var userIdResult = await _userService.IsUserExist(userId);
@@ -133,7 +146,7 @@ namespace QuizSystem.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var sharedTestsResult = await _sharedTestService.GetUserSharedTests(userId);
+            var sharedTestsResult = await _sharedTestService.GetUserSharedTests(userId, sortOrder, page, pageSize, searchParam);
 
             if (!sharedTestsResult.IsSuccessful)
             {
@@ -142,10 +155,23 @@ namespace QuizSystem.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var sharedVms = sharedTestsResult.Data.Select(t => _mapper.Map<IndexSharedTestViewModel>(t)).ToList();
+            var sharedVms = sharedTestsResult.Data.Item1.Select(t => _mapper.Map<IndexSharedTestViewModel>(t)).ToList();
+            double pageCount;
 
+            if (!string.IsNullOrEmpty(searchParam))
+            {
+                pageCount = (double)((decimal)sharedVms.Count() / Convert.ToDecimal(pageSize));
+            }
+            else
+            {
+                pageCount = (double)((decimal)sharedTestsResult.Data.Item2 / Convert.ToDecimal(pageSize));
+            }
 
-            return View(sharedVms);
+            testPaginationModel.PageCount = (int)Math.Ceiling(pageCount);
+            testPaginationModel.PageSize = pageSize;
+            testPaginationModel.Tests = sharedVms;
+
+            return View(testPaginationModel);
         }
 
         [HttpGet]

@@ -22,14 +22,16 @@ namespace QuizSystem.Controllers
         private readonly ITestService _testService;
         private readonly IAnswerRepository _answerRepository;
         private readonly IQuestionRepository _questionRepository;
+        private readonly IAttemptService _attemptService;
         private readonly IMapper _mapper;
         public TestController(ITestService testRepository, IMapper mapper, IQuestionRepository questionRepository, 
-            IAnswerRepository answerRepository)
+            IAnswerRepository answerRepository, IAttemptService attemptService)
         {
             _testService = testRepository;
             _mapper = mapper;
             _answerRepository = answerRepository;
             _questionRepository = questionRepository;
+            _attemptService = attemptService;
         }
 
 
@@ -249,14 +251,14 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int testId, int userId)
         {
-            var deleteResult = await _testService.DeleteTest(testId);
+            var deleteResult = await _attemptService.DeleteTestWithAttempts(testId);
 
             if (!deleteResult.IsSuccessful)
             {
                 TempData["Error"] = deleteResult.Message;
             }
 
-            return RedirectToAction("Index", new { userId = userId });
+            return RedirectToAction("Index", "Test", new { id = userId });
         }
 
         [HttpGet]
@@ -303,7 +305,7 @@ namespace QuizSystem.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var outputPath = Path.Combine("Output/", pathResult.Data.Item1);
+            var outputPath = Path.Combine("Output/Tests", pathResult.Data.Item1);
 
             using (Viewer viewer = new Viewer(pathResult.Data.Item2))
             {
