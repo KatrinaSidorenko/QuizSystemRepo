@@ -1,17 +1,31 @@
 ﻿using BLL.Interfaces;
+using Core.DocumentModels;
 using Core.Enums;
 using Core.Models;
+using Core.Settings;
 using DAL.Interfaces;
 using DAL.Repository;
+using Microsoft.Extensions.Options;
+using QuestPDF;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
+using System.Text;
 
 namespace BLL.Services
 {
     public class TestService : ITestService
     {
         private readonly ITestRepository _testRepository;
-        public TestService(ITestRepository testRepository)
+        private readonly Core.Settings.DocumentSettings _documentSettings;
+        private readonly IAnswerService _answerService;
+        private readonly IQuestionService _questionService;
+        public TestService(ITestRepository testRepository, IOptions<Core.Settings.DocumentSettings> options, 
+            IAnswerService answerService, IQuestionService questionService)
         {
             _testRepository = testRepository;
+            _answerService = answerService;
+            _questionService = questionService;
+            _documentSettings = options.Value;
         }
 
         public async Task<Result<(List<Test>, int)>> GetAllPublicTests(SortingParam sortingParam, int pageNumber = 1, int pageSize = 6,  string search = "")
@@ -212,6 +226,124 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<(int, double)>(false, "Fail to get questions amount");
+            }
+        }
+
+        public async Task<Result<(string, string)>> GetTestDocumentPath(int testId)
+        {
+            //craete the member view model
+            var documentModelResult = await GetTestDocumentModel(testId);
+
+            if (!documentModelResult.IsSuccessful)
+            {
+                return new Result<(string, string)>(false, documentModelResult.Message);
+            }
+
+            //create the documentService
+            var documentService = new DocumentService(documentModelResult.Data);
+
+            //carete file name na dresturn it
+            var fileName = CreateFileName(testId);
+
+            var filePath = CraeteFilePath(fileName); 
+
+            try
+            {
+                Settings.License = LicenseType.Community;
+                Document.Create(documentService.Compose).GeneratePdf(filePath);
+
+                return new Result<(string, string)>(true, data: (fileName, filePath));
+            }
+            catch (Exception ex)
+            {
+                return new Result<(string, string)>(false, "Fail to create document");
+            }
+        }
+
+        private string CraeteFilePath(string fileName)
+        {
+            return Path.Combine(_documentSettings.SavingPath, fileName);
+        }
+
+        private string CreateFileName(int testId)
+        {
+            StringBuilder fileName = new StringBuilder($"test_{testId}");
+
+            int i = 1;
+            while (DoesTheFileExist(_documentSettings.SavingPath, fileName.ToString() + ".pdf"))
+            {
+                fileName.Append($"_({i})");
+                i++;
+            }
+
+            return fileName.ToString()+ ".pdf";
+        }
+
+        private bool DoesTheFileExist(string folderPath, string fileName)
+        {
+            string fullPath = Path.Combine(folderPath, fileName);
+
+            return File.Exists(fullPath);
+        }
+        private async Task<Result<TestDocumentModel>> GetTestDocumentModel(int testId)
+        {
+            try
+            {
+                var documentModel = new TestDocumentModel();
+                var testResult = await _testRepository.GetTestById(testId);
+                documentModel.Description = testResult.Description;
+                documentModel.Name = testResult.Name;
+                var questionAmountAndMaxMark = await GetQuestionsAmountAndMaxMark(testId);
+
+                if (!questionAmountAndMaxMark.IsSuccessful)
+                {
+                    return new Result<TestDocumentModel>(false, "Fail to create the document model");
+                }
+
+                documentModel.MaxMark = questionAmountAndMaxMark.Data.Item2;
+                documentModel.QuestionsAmount = questionAmountAndMaxMark.Data.Item1;
+
+                var testQuestionsResult = await _questionService.GetTestQuestions(testId);
+
+                if (!testQuestionsResult.IsSuccessful)
+                {
+                    return new Result<TestDocumentModel>(false, "Fail to create the document model");
+                }
+
+                var questions = testQuestionsResult.Data.Select(async q =>
+                {
+                    var model = new QuestionDocumentModel()
+                    {
+                        Point = q.Point,
+                        Type = q.Type,
+                        Description = q.Description
+                    };
+
+                    var answersResult = await _answerService.GetQuestionAnswers(q.QuestionId);
+
+                    var answers = answersResult.Data.Select(a =>
+                    {
+                        var answer = new AnswerDocumentModel()
+                        {
+                            Value = a.Value,
+                        };
+
+                        return answer;
+                    });
+
+                    model.Answers = answers.ToList();
+
+                    return model;
+                });
+
+                documentModel.Questions = Task.WhenAll(questions).Result.ToList();
+
+                return new Result<TestDocumentModel>(true, documentModel);
+
+            }
+            catch (Exception ex)
+            {
+                return new Result<TestDocumentModel>(false, "Fail to create the document model");
             }
         }
     }

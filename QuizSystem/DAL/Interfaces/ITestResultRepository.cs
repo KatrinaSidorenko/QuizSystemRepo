@@ -6,5 +6,6 @@ namespace DAL.Interfaces
     {
         Task<int> AddTestResult(TestResult testResult);
         Task<TestResult> GetTestResultByAttemptIdandQuestionId(int attemptId, int questionId);
+        Task DeleteTestResultByAttempt(int attemptId);
     }
 }

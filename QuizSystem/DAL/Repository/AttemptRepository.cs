@@ -135,6 +135,27 @@ namespace DAL.Repository
             }
         }
 
+        public async Task<List<int>> GetAttemptIdByTest(int testId)
+        {
+            string sqlExpresiion = $"select attempt_id from Attempts where test_id={testId}";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpresiion, connection);
+            List<int> ids = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    ids.Add((int)reader["attempt_id"]);
+                }
+
+                return ids;
+            }
+        }
+
         public async Task<List<Attempt>> GetAttempts(int testId, int userId)
         {
             string sqlExpression = $"select * from [Attempts] where test_id = {testId} and user_id = {userId} order by end_date desc";
@@ -229,6 +250,19 @@ namespace DAL.Repository
                 {
                     return (int)result;
                 }
+            }
+        }
+
+        public async Task DeleteAttemptsByTest(int testId)
+        {
+            string sqlExpression = $"DELETE FROM Attempts WHERE test_id={testId}";
+            SqlConnection connection = new SqlConnection(_connectionString);
+
+            using (connection)
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                int number = await command.ExecuteNonQueryAsync();
             }
         }
 

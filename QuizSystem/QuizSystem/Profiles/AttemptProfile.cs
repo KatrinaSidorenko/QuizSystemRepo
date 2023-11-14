@@ -11,6 +11,7 @@ namespace QuizSystem.Profiles
         {
             CreateMap<Attempt, AttemptViewModel>();   
             CreateMap<StatisticAttemptsDTO, StatisticViewModel>();
+            CreateMap<AttemptResultViewModel, AttemptResultDocumentDTO>();
         }
     }
 }

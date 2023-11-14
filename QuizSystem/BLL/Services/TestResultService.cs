@@ -57,5 +57,26 @@ namespace BLL.Services
                 return new Result<TestResult>(false, "Fail to get test reault");
             }
         }
+
+        public async Task<Result<bool>> DeleteRangeOfTestResults(List<int> attemptIds)
+        {
+            try
+            {
+                var tasks = new List<Task>();
+
+                foreach (var attemptId in attemptIds)
+                {
+                    tasks.Add(_testResultRepository.DeleteTestResultByAttempt(attemptId));
+                }
+
+                await Task.WhenAll(tasks);
+
+                return new Result<bool>(isSuccessful: true);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(isSuccessful: false, "Fail to delete test");
+            }
+        }
     }
 }

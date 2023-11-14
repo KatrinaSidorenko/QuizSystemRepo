@@ -6,6 +6,7 @@ using DAL.Interfaces;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 
@@ -248,7 +249,64 @@ namespace DAL.Repository
                 return (bool)result;
             }
         }
+        public async Task<(List<SharedTestDTO>, int)> GetUserSharedTestsWithTotalRecords(int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "shared_test_id", string sortOrder = "asc")
+        {
+            string sqlExpression = "PagingUserSharedTests"; // The stored procedure name
 
-        
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                List<SharedTestDTO> sharedTests = new();
+                int totalRecords = 0;
+                bool IsNextPageAvailable;
+
+                using (SqlCommand command = new SqlCommand(sqlExpression, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Define the input parameters
+                    command.Parameters.AddWithValue("@PageNumber", pageNumber);
+                    command.Parameters.AddWithValue("@PageSize", pageSize);
+                    command.Parameters.AddWithValue("@OrderBy", orderByProp);
+                    command.Parameters.AddWithValue("@SortOrder", sortOrder);
+                    command.Parameters.AddWithValue("@UserId", userId);
+
+                    // Define the output parameter for total records
+                    SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
+                    totalRecordsParam.Direction = ParameterDirection.Output;
+                    command.Parameters.Add(totalRecordsParam);
+
+                    connection.Open();
+
+                    SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        totalRecords = (int)reader["TotalRecords"];
+                    }
+                    reader.NextResult();
+                    var columns = reader.GetColumnSchema();
+
+                    while (reader.Read())
+                    {
+                        SharedTestDTO sharedTest = new();
+                        sharedTest.TestCode = (Guid)reader["test_code"];
+                        sharedTest.StartDate = (DateTime)reader["start_date"];
+                        sharedTest.EndDate = (DateTime)reader["end_date"];
+                        sharedTest.Description = reader["description"] as string;
+                        sharedTest.AttemptCount = (int)reader["attempt_count"];
+                        sharedTest.AttemptDuration = (DateTime)reader["attempt_duration"];
+                        sharedTest.Status = (SharedTestStatus)reader["status"];
+                        sharedTest.TestId = (int)reader["test_id"];
+                        sharedTest.SharedTestId = (int)reader["shared_test_id"];
+                        sharedTest.TestName = (string)reader["test_name"];
+                        sharedTests.Add(sharedTest);
+                    }
+                }
+
+                return (sharedTests, totalRecords);
+            }
+        }
+
     }
 }

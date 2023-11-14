@@ -78,6 +78,7 @@
 
                     <div class="col-md-12 centered-card">
                         <div class="centered-container justify-content-end">
+                            <a href="@Url.Action("TestDocumentView", "Test", new { testId = Model.TestId})" class="btn btn-secondary">Take document</a>
                             <a href="@Url.Action("TakeTest", "Attempt", new { testId = Model.TestId})" class="btn btn-primary">Take the test</a>
                         </div>
                     </div>

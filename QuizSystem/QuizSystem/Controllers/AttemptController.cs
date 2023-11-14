@@ -4,6 +4,8 @@ using BLL.Services;
 using Core.DTO;
 using Core.Enums;
 using Core.Models;
+using GroupDocs.Viewer.Options;
+using GroupDocs.Viewer;
 using Microsoft.AspNetCore.Mvc;
 using QuizSystem.ViewModels.AnswerViewModels;
 using QuizSystem.ViewModels.AttemptViewModel;
@@ -139,6 +141,7 @@ namespace QuizSystem.Controllers
 
             attemptVm.TestId = testResult.Data.TestId;
             attemptVm.Name = testResult.Data.Name;
+            attemptVm.AttemptId = attemptId;
 
             var questionsResult = await _questionService.GetTestQuestions(testResult.Data.TestId);
 
@@ -189,6 +192,30 @@ namespace QuizSystem.Controllers
             attemptVm.Questions = Task.WhenAll(questionsVM).Result.ToList();
 
             return View(attemptVm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AttemptDocument(int attemptId)
+        {
+            var pathResult = await _attemptService.GetAttemptDocumentPath(attemptId);
+
+            if (!pathResult.IsSuccessful)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var outputPath = Path.Combine("Output/Attempts", pathResult.Data.Item1);
+
+            using (Viewer viewer = new Viewer(pathResult.Data.Item2))
+            {
+                PdfViewOptions options = new PdfViewOptions(outputPath);
+                viewer.View(options);
+            }
+
+            var fileStream = new FileStream(outputPath, FileMode.Open, FileAccess.Read);
+            var result = new FileStreamResult(fileStream, "application/pdf");
+
+            return result;
         }
 
         [HttpGet]

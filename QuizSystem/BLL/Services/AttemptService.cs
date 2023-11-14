@@ -4,6 +4,12 @@ using Core.Enums;
 using Core.Models;
 using DAL.Interfaces;
 using DAL.Repository;
+using QuestPDF.Infrastructure;
+using QuestPDF;
+using System.Text;
+using QuestPDF.Fluent;
+using Core.DocumentModels;
+using Microsoft.Extensions.Options;
 
 namespace BLL.Services
 {
@@ -13,13 +19,17 @@ namespace BLL.Services
         private readonly IAnswerService _answerService;
         private readonly IQuestionService _questionService;
         private readonly ITestResultService _testResultService;
-        public AttemptService(IAttemptRepository attemptRepository, IAnswerService answerService, 
-            IQuestionService questionService, ITestResultService testResultService)
+        private readonly Core.Settings.DocumentSettings _documentSettings;
+        private readonly ITestService _testService;
+        public AttemptService(IAttemptRepository attemptRepository, IAnswerService answerService, IOptions<Core.Settings.DocumentSettings> options,
+            IQuestionService questionService, ITestResultService testResultService, ITestService testService)
         {
             _attemptRepository = attemptRepository;
             _answerService = answerService;
+            _documentSettings = options.Value;
             _questionService = questionService;
             _testResultService = testResultService;
+            _testService = testService;
         }
 
         public async Task<Result<int>> AddAttempt(Attempt attempt)
@@ -204,5 +214,160 @@ namespace BLL.Services
                 return new Result<StatisticAttemptsDTO>(false, "Fail to get statistic");
             }
         }
+
+        public async Task<Result<(string, string)>> GetAttemptDocumentPath(int attemptId)
+        {
+            var documentModelResult = await GetAttemptDocumentModel(attemptId);
+
+            if (!documentModelResult.IsSuccessful)
+            {
+                return new Result<(string, string)>(false, documentModelResult.Message);
+            }
+            //create the documentService
+            var documentService = new AttemptDocumentService(documentModelResult.Data);
+
+            //carete file name na dresturn it
+            var fileName = CreateFileName(attemptId);
+
+            var filePath = CraeteFilePath(fileName);
+
+            try
+            {
+                Settings.License = LicenseType.Community;
+                Document.Create(documentService.Compose).GeneratePdf(filePath);
+
+                return new Result<(string, string)>(true, data: (fileName, filePath));
+            }
+            catch (Exception ex)
+            {
+                return new Result<(string, string)>(false, "Fail to create document");
+            }
+        }
+
+        public async Task<Result<bool>> DeleteTestWithAttempts(int testId)
+        {
+            try
+            {
+                var attemptsIds = await _attemptRepository.GetAttemptIdByTest(testId);
+                var deleteResult = await _testResultService.DeleteRangeOfTestResults(attemptsIds);
+                
+                if (!deleteResult.IsSuccessful)
+                {
+                    return new Result<bool>(false, deleteResult.Message);
+                }
+
+                await _attemptRepository.DeleteAttemptsByTest(testId);
+
+                await _testService.DeleteTest(testId);
+                return new Result<bool>(isSuccessful: true);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(isSuccessful: false, "Fail to delete test and attempts");
+            }
+        }
+
+        private string CraeteFilePath(string fileName)
+        {
+            return Path.Combine(_documentSettings.SavingPath, fileName);
+        }
+
+        private string CreateFileName(int attemptId)
+        {
+            StringBuilder fileName = new StringBuilder($"attempt_{attemptId}");
+
+            int i = 1;
+            while (DoesTheFileExist(_documentSettings.SavingPath, fileName.ToString() + ".pdf"))
+            {
+                fileName.Append($"_({i})");
+                i++;
+            }
+
+            return fileName.ToString() + ".pdf";
+        }
+
+        private bool DoesTheFileExist(string folderPath, string fileName)
+        {
+            string fullPath = Path.Combine(folderPath, fileName);
+
+            return File.Exists(fullPath);
+        }
+        private async Task<Result<AttemptResultDocumentDTO>> GetAttemptDocumentModel(int attemptId)
+        {
+            try
+            {
+                var attemptResult = await GetAttemptById(attemptId);
+
+                if (!attemptResult.IsSuccessful)
+                {
+                    return new Result<AttemptResultDocumentDTO>(false, attemptResult.Message);
+                }
+
+
+                var attemptDocumentModel = new AttemptResultDocumentDTO();
+                var testResult = await _testService.GetTestById(attemptResult.Data.TestId);
+
+                attemptDocumentModel.TestId = testResult.Data.TestId;
+                attemptDocumentModel.Name = testResult.Data.Name;
+                attemptDocumentModel.AttemptId = attemptId;
+                attemptDocumentModel.Mark = attemptResult.Data.Points;
+
+                var questionsResult = await _questionService.GetTestQuestions(testResult.Data.TestId);
+
+                var questionsVM = questionsResult.Data.Select(async q =>
+                {
+                    var answers = await _answerService.GetQuestionAnswers(q.QuestionId);
+                    var testResult = await _testResultService.GetTestResult(attemptId, q.QuestionId);
+
+                    var answersVm = answers.Data.Select(a =>
+                    {
+                        var attemptAnswer = new AttemptAnswerDocumentDTO()
+                        {
+                            AnswerId = a.AnswerId,
+                            IsRight = a.IsRight,
+                            Value = a.Value
+                        };
+
+
+                        if (q.Type.Equals(QuestionType.Open))
+                        {
+                            attemptAnswer.ChoosenByUser = testResult.Data.EnteredValue.ToLower().Equals(a.Value) ? true : false;
+                            attemptAnswer.ValueByUser = testResult.Data.EnteredValue;
+                        }
+                        else
+                        {
+                            attemptAnswer.ChoosenByUser = a.AnswerId == testResult.Data.AnswerId ? true : false;
+                        }
+
+
+                        return attemptAnswer;
+
+                    }).ToList();
+
+                    var question = new AttemptQuestionDocumentDTO()
+                    {
+                        QuestionId = q.QuestionId,
+                        Description = q.Description,
+                        //GetedPoints = ((float)q.Point / answers.Data.Count) * (float)answersVm.Select(a => a.ChoosenByUser && a.IsRight == true).Count(),
+                        Point = (float)q.Point,
+                        Type = q.Type,
+                        Answers = answersVm
+                    };
+
+                    return question;
+
+                }).ToList();
+
+                attemptDocumentModel.Questions = Task.WhenAll(questionsVM).Result.ToList();
+
+                return new Result<AttemptResultDocumentDTO>(true, attemptDocumentModel);
+
+            }
+            catch (Exception ex)
+            {
+                return new Result<AttemptResultDocumentDTO>(false, "Fail to create the document model");
+            }
+        }
+
     }
 }

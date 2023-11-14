@@ -152,25 +152,39 @@ namespace BLL.Services
             }
         }
 
-        public async Task<Result<List<SharedTestDTO>>> GetUserSharedTests(int userId)
+        public async Task<Result<(List<SharedTestDTO>, int)>> GetUserSharedTests(int userId, SortingParam sortingParam, int pageNumber = 1, int pageSize = 6, string search = "")
         {
 
             try
             {
-                var sharedTest = await _sharedTestRepository.GetUserSharedTests(userId);
+                string orderByProp = "shared_test_id";
+                string sortOrder = "asc";
 
-                //validation
-
-                if (sharedTest == null)
+                if (SortingDictionnary.SortingValues.ContainsKey(sortingParam))
                 {
-                    return new Result<List<SharedTestDTO>>(isSuccessful: false, $"Fail to get {nameof(sharedTest)}");
+                     orderByProp = SortingDictionnary.SortingValues[sortingParam].prop;
+                     sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
+                }
+                
+                var sharedTest = await _sharedTestRepository.GetUserSharedTestsWithTotalRecords(userId, pageNumber, pageSize, orderByProp, sortOrder);
+
+                if (sharedTest.Item1 == null)
+                {
+                    return new Result<(List<SharedTestDTO>, int)>(isSuccessful: false, $"Fail to get {nameof(sharedTest)}");
                 }
 
-                return new Result<List<SharedTestDTO>>(true, sharedTest);
+                List<SharedTestDTO> result = sharedTest.Item1;
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    result = sharedTest.Item1.Where(t => t.TestName.ToLower().Contains(search)).ToList();
+                }
+                                
+                return new Result<(List<SharedTestDTO>, int)>(true, (result, sharedTest.Item2));
             }
             catch (Exception ex)
             {
-                return new Result<List<SharedTestDTO>>(isSuccessful: false, $"Fail to get shared test");
+                return new Result<(List<SharedTestDTO>, int)>(isSuccessful: false, $"Fail to get shared test");
             }
         }
 

@@ -11,6 +11,10 @@
         Date,
         DateDesc,
         Created,
-        CreatedDesc
+        CreatedDesc,
+        AttemptCount,
+        AttemptCountDesc,
+        AttemptDuration,
+        AttemptDurationDesc
     }
 }

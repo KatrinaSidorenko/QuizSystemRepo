@@ -4,6 +4,8 @@ using Core.Enums;
 using Core.Models;
 using DAL.Interfaces;
 using DAL.Repository;
+using GroupDocs.Viewer.Options;
+using GroupDocs.Viewer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuizSystem.ViewModels.AnswerViewModels;
@@ -20,14 +22,16 @@ namespace QuizSystem.Controllers
         private readonly ITestService _testService;
         private readonly IAnswerRepository _answerRepository;
         private readonly IQuestionRepository _questionRepository;
+        private readonly IAttemptService _attemptService;
         private readonly IMapper _mapper;
         public TestController(ITestService testRepository, IMapper mapper, IQuestionRepository questionRepository, 
-            IAnswerRepository answerRepository)
+            IAnswerRepository answerRepository, IAttemptService attemptService)
         {
             _testService = testRepository;
             _mapper = mapper;
             _answerRepository = answerRepository;
             _questionRepository = questionRepository;
+            _attemptService = attemptService;
         }
 
 
@@ -247,14 +251,14 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int testId, int userId)
         {
-            var deleteResult = await _testService.DeleteTest(testId);
+            var deleteResult = await _attemptService.DeleteTestWithAttempts(testId);
 
             if (!deleteResult.IsSuccessful)
             {
                 TempData["Error"] = deleteResult.Message;
             }
 
-            return RedirectToAction("Index", new { userId = userId });
+            return RedirectToAction("Index", "Test", new { id = userId });
         }
 
         [HttpGet]
@@ -291,6 +295,29 @@ namespace QuizSystem.Controllers
             return RedirectToAction("Index", "Question", new { testId = testVM.TestId });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> TestDocumentView(int testId)
+        {
+            var pathResult = await _testService.GetTestDocumentPath(testId);
+
+            if(!pathResult.IsSuccessful)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var outputPath = Path.Combine("Output/Tests", pathResult.Data.Item1);
+
+            using (Viewer viewer = new Viewer(pathResult.Data.Item2))
+            {
+                PdfViewOptions options = new PdfViewOptions(outputPath);
+                viewer.View(options);
+            }
+
+            var fileStream = new FileStream(outputPath, FileMode.Open, FileAccess.Read);
+            var result = new FileStreamResult(fileStream, "application/pdf");
+
+            return result;
+        }
         
 
     }
