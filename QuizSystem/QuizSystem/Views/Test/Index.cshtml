@@ -2,11 +2,19 @@
 @using QuizSystem.ViewModels.TestViewModels;
 @model List<IndexTestViewModel>
 
+
 @{
     var tests = Model.ToList();
     var testOrNull = Model.FirstOrDefault();
 }
-
+<style>
+    .overflow-example {
+        width: 100%; /* Set a fixed width for the container */
+        white-space: nowrap; /* Prevent text from wrapping */
+        overflow: hidden; /* Hide content that overflows the container */
+        text-overflow: ellipsis; /* Add ellipsis for overflowed text */
+    }
+</style>
 <div class="container mb-5">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
@@ -41,8 +49,10 @@ else
                     <div class="card mb-3">
                         <div class="card-header"><h5>Title: @test.Name</h5></div>
                         <div class="card-body">
-                            @*<h5 class="card-title"></h5>*@
-                            <p class="card-text">Description: @test.Description</p>
+                            <p class="card-text overflow-example">Description: @test.Description</p>
+                            <a href="@Url.Action("TestView", "Test", new { testId = test.TestId})" class="btn btn-primary">Details</a>
+                            <a href="@Url.Action("Create", "SharedTest", new { testId = test.TestId})" class="btn btn-success btn-rounded">Share</a>
+                            <a href="@Url.Action("Edit", "Test", new { testId = test.TestId})" class="btn btn-primary">Edit</a>
                             <!-- Button trigger modal with a unique ID -->
                             <button type="button" class="btn btn-danger" data-mdb-toggle="modal" data-mdb-target="#exampleModal-@test.TestId">
                                 Delete
@@ -63,11 +73,7 @@ else
                                     </div>
                                 </div>
                             </div>
-                            <a href="@Url.Action("Edit", "Test", new { testId = test.TestId})" class="btn btn-primary">Edit</a>
-                            <a href="@Url.Action("TestView", "Test", new { testId = test.TestId})" class="btn btn-primary">Details</a>
-                            <a href="@Url.Action("Create", "SharedTest", new { testId = test.TestId})" class="btn btn-success btn-rounded">Share</a>
-
-
+                           
                             <div class="card-footer bg-light px-3 mt-2">@test.DateOfCreation.ToString("dddd, dd MMMM yyyy HH:mm")</div>
                             @*<div class="card-footer text-muted"></div>*@
                         </div>

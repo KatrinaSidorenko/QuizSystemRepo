@@ -66,7 +66,7 @@ namespace QuizSystem.Controllers
         {
             await _questionRepository.DeleteQuestion(questionId);
 
-            return RedirectToAction("Index", new {testId = testId});
+            return RedirectToAction("MemberView", "Test",  new {testId = testId});
         }
 
         [HttpGet]

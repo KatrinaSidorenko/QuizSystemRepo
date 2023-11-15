@@ -56,7 +56,7 @@
                                         <hr class="hr" />
                                         @if (question.Type.Equals(QuestionType.Open))
                                         {
-                                            @if(answer.Value.ToLower().Equals(answer.ValueByUser.ToLower()))
+                                            @if(answer.Value.ToLower().Equals(answer.ValueByUser.ToLower() ?? " "))
                                             {
                                                 <div class="note note-success mb-3">
                                                     <strong>Right answer:</strong> Answer Text: @answer.Value

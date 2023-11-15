@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.Enums;
+using Core.Models;
 using Core.Settings;
 using DAL.Interfaces;
 using Microsoft.Extensions.Options;
@@ -49,30 +50,26 @@ namespace DAL.Repository
         public async Task<TestResult> GetTestResultByAttemptIdandQuestionId(int attemptId, int questionId)
         {
             string sqlExpression = $"SELECT * FROM TestResults WHERE attempt_id = {attemptId} and question_id = {questionId}";
-            using (var connection = new SqlConnection(_connectionString))
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+            TestResult test = new();
+
+            using (connection)
             {
-                await connection.OpenAsync();
-                using (var command = new SqlCommand(sqlExpression, connection))
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
                 {
-                    var reader = await command.ExecuteReaderAsync();
-
-                    if (await reader.ReadAsync())
-                    {
-                        var testResult = new TestResult
-                        {
-                            TestResultId = (int)reader["test_result_answer_id"],
-                            QuestionId = (int)reader["question_id"],
-                            AnswerId = (int)reader["answer_id"],
-                            AttemptId = (int)reader["attempt_id"],
-                            EnteredValue = (string)reader["entered_value"] 
-                        };
-
-                        return testResult;
-                    }
+                    test.TestResultId = (int)reader["test_result_answer_id"];
+                    test.QuestionId = (int)reader["question_id"];
+                    test.AnswerId = (int)reader["answer_id"];
+                    test.AttemptId = (int)reader["attempt_id"];
+                    test.EnteredValue = (string)reader["entered_value"];
                 }
             }
 
-            return null; 
+            return test;           
         }
 
         public async Task DeleteTestResultByAttempt(int attemptId)

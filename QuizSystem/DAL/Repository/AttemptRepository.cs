@@ -35,7 +35,7 @@ namespace DAL.Repository
                 command.Parameters.AddWithValue("@Points", attempt.Points);
                 command.Parameters.AddWithValue("@StartDate", attempt.StartDate);
                 command.Parameters.AddWithValue("@EndDate", attempt.EndDate);
-                command.Parameters.AddWithValue("@SharedTestId", attempt.SharedTestId);
+                command.Parameters.AddWithValue("@SharedTestId", attempt.SharedTestId != 0 ? attempt.SharedTestId : DBNull.Value);
                 command.Parameters.AddWithValue("@RightAnswersAmount", attempt.RightAnswersAmount);
                 command.Parameters.AddWithValue("@TestId", attempt.TestId);
                 command.Parameters.AddWithValue("@UserId", attempt.UserId);
@@ -73,7 +73,7 @@ namespace DAL.Repository
                     attempt.EndDate = (DateTime)reader["end_date"];
                     attempt.UserId = (int)reader["user_id"];
                     attempt.RightAnswersAmount = (int)reader["right_answers_amount"];
-                    attempt.SharedTestId = (int)reader["shared_test_id"];
+                    attempt.SharedTestId = reader["shared_test_id"].Equals(DBNull.Value) ? 0 : (int)Convert.ChangeType("shared_test_id", typeof(int));
                     attempt.AttemptId = (int)reader["attempt_id"];
                 }              
             }
@@ -101,7 +101,7 @@ namespace DAL.Repository
                 command.Parameters.AddWithValue("@Points", attempt.Points);
                 command.Parameters.AddWithValue("@StartDate", attempt.StartDate);
                 command.Parameters.AddWithValue("@EndDate", attempt.EndDate);
-                command.Parameters.AddWithValue("@SharedTestId", attempt.SharedTestId);
+                command.Parameters.AddWithValue("@SharedTestId", attempt.SharedTestId != 0 ? attempt.SharedTestId : DBNull.Value);
                 command.Parameters.AddWithValue("@RightAnswersAmount", attempt.RightAnswersAmount);
                 command.Parameters.AddWithValue("@TestId", attempt.TestId);
                 command.Parameters.AddWithValue("@UserId", attempt.UserId);
@@ -179,7 +179,7 @@ namespace DAL.Repository
                         EndDate = (DateTime)reader["end_date"],
                         UserId = (int)reader["user_id"],
                         RightAnswersAmount = (int)reader["right_answers_amount"],
-                        SharedTestId = (int)reader["shared_test_id"],
+                        SharedTestId = reader["shared_test_id"].Equals(DBNull.Value) ? 0 : (int)Convert.ChangeType("shared_test_id", typeof(int)),
                         AttemptId = (int)reader["attempt_id"]
                 });
                     

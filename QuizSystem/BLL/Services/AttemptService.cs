@@ -250,6 +250,7 @@ namespace BLL.Services
             {
                 var attemptsIds = await _attemptRepository.GetAttemptIdByTest(testId);
                 var deleteResult = await _testResultService.DeleteRangeOfTestResults(attemptsIds);
+                //delete attempts
                 
                 if (!deleteResult.IsSuccessful)
                 {

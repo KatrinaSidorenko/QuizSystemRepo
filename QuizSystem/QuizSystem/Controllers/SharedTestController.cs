@@ -202,5 +202,46 @@ namespace QuizSystem.Controllers
 
             return RedirectToAction("Index", "SharedTest");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int sharedTestId)
+        {
+            var sharedTestResult = await _sharedTestService.GetSharedTestById(sharedTestId);
+
+            if (!sharedTestResult.IsSuccessful)
+            {
+                TempData["Error"] = sharedTestResult.Message;
+
+                return RedirectToAction("Details", "SharedTest", new { sharedTestId = sharedTestId });
+            }
+
+            var sharedTestVm = _mapper.Map<EditSharedTestViewModel>(sharedTestResult.Data);
+
+            return View(sharedTestVm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditSharedTestViewModel sharedTestVm)
+        {
+            if(sharedTestVm.AttemptCount <= 0 || (sharedTestVm.EndDate < sharedTestVm.StartDate))
+            {
+                TempData["Error"] = "Invalid input data";
+
+                return View(sharedTestVm);
+            }
+
+            var sharedTest = _mapper.Map<SharedTest>(sharedTestVm);
+            sharedTest.AttemptDuration = new DateTime(2023, 01, 01).AddMinutes(sharedTestVm.NewAttemptDuration);
+            var updateResult = await _sharedTestService.UpdateSharedTest(sharedTest);
+
+            if (!updateResult.IsSuccessful)
+            {
+                TempData["Error"] = updateResult.Message;
+
+                return View(sharedTestVm);
+            }
+
+            return RedirectToAction("Details", "SharedTest", new { sharedTestId = sharedTestVm.SharedTestId });
+        }
     }
 }

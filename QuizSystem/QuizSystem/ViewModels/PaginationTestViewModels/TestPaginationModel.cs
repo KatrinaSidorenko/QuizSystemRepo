@@ -5,7 +5,7 @@ namespace QuizSystem.ViewModels.PaginationTestViewModels
 {
     public class TestPaginationModel
     {
-        public List<IndexTestViewModel> Tests { get; set; }
+        public List<IndexTestViewModel> Tests { get; set; } = new();
         public int? CurrentPageIndex { get; set; }
         public int PageCount { get; set; }
         public int PageSize { get; set; }

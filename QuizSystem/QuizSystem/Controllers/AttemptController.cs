@@ -159,18 +159,19 @@ namespace QuizSystem.Controllers
                         Value = a.Value
                     };
 
-                    
-                    if (q.Type.Equals(QuestionType.Open))
+                    if (testResult.Data.EnteredValue is not null)
                     {
-                        attemptAnswer.ChoosenByUser = testResult.Data.EnteredValue.ToLower().Equals(a.Value)? true : false;
-                        attemptAnswer.ValueByUser = testResult.Data.EnteredValue;
+                        if (q.Type.Equals(QuestionType.Open))
+                        {
+                            attemptAnswer.ChoosenByUser = testResult.Data.EnteredValue.ToLower().Equals(a.Value) ? true : false;
+                            attemptAnswer.ValueByUser = testResult.Data.EnteredValue;
+                        }
+                        else
+                        {
+                            attemptAnswer.ChoosenByUser = a.AnswerId == testResult.Data.AnswerId ? true : false;
+                        }
                     }
-                    else
-                    {
-                        attemptAnswer.ChoosenByUser = a.AnswerId == testResult.Data.AnswerId ? true : false;
-                    }
-
-                    
+                
                     return attemptAnswer;
 
                 }).ToList();
@@ -323,5 +324,11 @@ namespace QuizSystem.Controllers
             return View(statisticVm);
             
         }
+
+        //[HttpGet]
+        //public async Task<IActionResult> SharedAttemptHistory(int sharedTestId)
+        //{
+        //    //get the attempt of user by the sharedTestID
+        //}
     }
 }

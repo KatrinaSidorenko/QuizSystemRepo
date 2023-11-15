@@ -45,7 +45,8 @@
                 <p class="card-text">Start Date: @Model.StartDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
                 <p class="card-text">End Date: @Model.EndDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
 
-                <a href="@Url.Action("AttemptResult", "Attempt")" class="btn btn-primary">Edit</a>
+                <a href="@Url.Action("AttemptResult", "Attempt")" class="btn btn-success">Results</a>
+                <a href="@Url.Action("Edit", "SharedTest",  new { sharedTestId = Model.SharedTestId})" class="btn btn-primary">Edit</a>
 
                 @if (!Model.Status.Equals(SharedTestStatus.Completed))
                 {

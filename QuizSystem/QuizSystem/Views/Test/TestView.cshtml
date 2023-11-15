@@ -46,6 +46,7 @@
                                 <p class="card-text">Max mark: @Model.TotalMark</p>
 
                                 @if (isCreator){
+                                    <a href="@Url.Action("TakeTest", "Attempt", new { testId = Model.TestId})" class="btn btn-primary">Take the test</a>
                                     <a href="@Url.Action("Edit", "Test", new { testId = @Model.TestId })" class="btn btn-primary">Edit</a>
                                     <a href="@Url.Action("Create", "Question", new { testId = @Model.TestId })" class="btn btn-outline-success btn-rounded" data-mdb-ripple-color="dark">Add question</a>
                                 }
@@ -63,11 +64,14 @@
                     {
                         <div class="col-md-12 centered-card">
                             <div class="card">
-                                <div class="card-header">Question: @question.Description (Points: @question.Point)</div>
+                                <div class="card-header">
+                                    <p>(Type: @question.Type)</p>
+                                    <p><strong>Question @question.Description</strong> (Points: @question.Point)</p>
+                                </div>
                                 <div class="card-body">
                                         @foreach(var answer in question.Answers)
                                         {
-                                        <hr class="hr" />
+                                        
                                             @if(answer.IsRight){
                                                 <div class="note note-success mb-3">
                                                     <strong>Right answer:</strong> Answer Text: @answer.Value
@@ -79,7 +83,7 @@
                                                     <strong>Wrong answer:</strong> Answer Text: @answer.Value
                                                 </div>
                                             }
-                                            
+                                        <hr class="hr" />
                                         }  
                                     @if(isCreator){
                                         <button type="button" class="btn btn-danger" data-mdb-toggle="modal" data-mdb-target="#exampleModal-@question.QuestionId">

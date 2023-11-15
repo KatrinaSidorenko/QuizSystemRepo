@@ -98,6 +98,7 @@ namespace BLL.Services
 
             try
             {
+                SetSharedTestStatus(sharedTest);
                 await _sharedTestRepository.UpdateSharedTest(sharedTest);
 
                 return new Result<bool>(isSuccessful: true);

@@ -1,28 +1,37 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-@if (TempData["Error"] != null)
+
+@if (User.Identity.IsAuthenticated)
 {
-    <div class="col-md-12 alert alert-danger">
-        <span><b>Sorry!</b> - @TempData["Error"]</span>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <div style="text-align: center;">
+        <form method="get" asp-controller="SharedTest" asp-action="GetCode" class="mb-4">
+            <div class="row">
+                <!-- Center the input group and button -->
+                <div class="col-md-6">
+                    <div class="input-group" style="width: 350px">
+                        <div class="form-outline">
+                            <input type="search" id="code" name="code" class="form-control" style="background-color: ghostwhite;" />
+                            <label class="form-label" for="code">Enter a join code</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-fire-flame-curved"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 }
-<div style="text-align: center;">
-    <form method="get" asp-controller="SharedTest" asp-action="GetCode" class="mb-4">
-        <div class="row">
-            <!-- Center the input group and button -->
-            <div class="col-md-6">
-                <div class="input-group" style="width: 350px">
-                    <div class="form-outline">
-                        <input type="search" id="code" name="code" class="form-control" style="background-color: ghostwhite;" />
-                        <label class="form-label" for="code">Enter a join code</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-fire-flame-curved"></i>
-                    </button>
-                </div>
-            </div>            
-        </div>
-    </form>
-</div>
+else
+{
+    <h1>Welcome to the QuizHub</h1>
+}
+
 

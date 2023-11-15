@@ -57,17 +57,17 @@
                     {
                         <div class="col-md-12 centered-card">
                             <div class="card">
-                                <div class="card-header">TestId: @question.TestId - Type: @question.Type.ToString()</div>
+                                <div class="card-header">
+                                    <p>(Type: @question.Type)</p>
+                                    <p><strong>Question @question.Description</strong> (Points: @question.Point)</p>
+                                </div>
                                 <div class="card-body">
-                                    <p class="card-text">Question: @question.Description</p>
-                                    <p class="card-text">Points: @question.Point</p>
                                     @foreach (var answer in question.Answers)
-                                    {
-                                        <hr class="hr" />
-
+                                    {                                     
                                         <div class="note note-secondary mb-3">
                                             <strong>Answer Text: </strong> @answer.Value
                                         </div>
+                                        <hr class="hr" />
                                     }
                                 </div>
                             </div>
@@ -75,13 +75,16 @@
                         <div class="mb-3"></div>
                     }
                     <div class="mb-4"></div>
-
-                    <div class="col-md-12 centered-card">
-                        <div class="centered-container justify-content-end">
-                            <a href="@Url.Action("TestDocumentView", "Test", new { testId = Model.TestId})" class="btn btn-secondary">Take document</a>
-                            <a href="@Url.Action("TakeTest", "Attempt", new { testId = Model.TestId})" class="btn btn-primary">Take the test</a>
+                    @if(!(Model.Questions.Count == 0))
+                    {
+                        <div class="col-md-12 centered-card">
+                            <div class="centered-container justify-content-end">
+                                <a href="@Url.Action("TestDocumentView", "Test", new { testId = Model.TestId})" class="btn btn-secondary">Take document</a>
+                                <a href="@Url.Action("TakeTest", "Attempt", new { testId = Model.TestId})" class="btn btn-primary">Take the test</a>
+                            </div>
                         </div>
-                    </div>
+                    }
+                   
 
                 </div>
             </section>

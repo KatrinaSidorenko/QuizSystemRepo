@@ -147,6 +147,7 @@ namespace QuizSystem.Controllers
                 }).ToList();
 
                 var question = _mapper.Map<IndexQuestionViewModel>(q);
+                question.QuestionId = q.QuestionId;
                 question.Answers = answersVm;
 
                 return question;
@@ -182,35 +183,39 @@ namespace QuizSystem.Controllers
                 TempData["Error"] = testsResult.Message;
             }
 
-            var attemptcountResult = await _testService.GetTestAttemptsCount();
-
-            var testVMS = testsResult.Data.Item1.Select(t =>
+            if (testsResult.Data.Item1 is not null)
             {
-                var testVm = _mapper.Map<IndexTestViewModel>(t);
+                var attemptcountResult = await _testService.GetTestAttemptsCount();
 
-                if(attemptcountResult.Data.ContainsKey(t.TestId))
+                var testVMS = testsResult.Data.Item1.Select(t =>
                 {
-                    testVm.UserTakenTestAmount = attemptcountResult.Data[t.TestId];
+                    var testVm = _mapper.Map<IndexTestViewModel>(t);
+
+                    if (attemptcountResult.Data.ContainsKey(t.TestId))
+                    {
+                        testVm.UserTakenTestAmount = attemptcountResult.Data[t.TestId];
+                    }
+
+                    return testVm;
+                });
+
+                testPaginationModel.Tests = testVMS.ToList();
+
+                double pageCount;
+
+                if (!string.IsNullOrEmpty(searchParam))
+                {
+                    pageCount = (double)((decimal)testVMS.Count() / Convert.ToDecimal(pageSize));
+                }
+                else
+                {
+                    pageCount = (double)((decimal)testsResult.Data.Item2 / Convert.ToDecimal(pageSize));
+
                 }
 
-                return testVm;
-            });
-
-            testPaginationModel.Tests = testVMS.ToList();
-            double pageCount;
-
-            if (!string.IsNullOrEmpty(searchParam))
-            {
-                 pageCount = (double)((decimal)testVMS.Count() / Convert.ToDecimal(pageSize));
+                testPaginationModel.PageCount = (int)Math.Ceiling(pageCount);
+                testPaginationModel.PageSize = pageSize;
             }
-            else
-            {
-                 pageCount = (double)((decimal)testsResult.Data.Item2 / Convert.ToDecimal(pageSize));
-
-            }
-
-            testPaginationModel.PageCount = (int)Math.Ceiling(pageCount);
-            testPaginationModel.PageSize = pageSize;
 
             return View(testPaginationModel);
         }

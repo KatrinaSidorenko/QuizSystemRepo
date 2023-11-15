@@ -6,9 +6,17 @@
     var tests = Model.Tests;
 }
 
+<style>
+    .overflow-example {
+        width: 100%; /* Set a fixed width for the container */
+        white-space: nowrap; /* Prevent text from wrapping */
+        overflow: hidden; /* Hide content that overflows the container */
+        text-overflow: ellipsis; /* Add ellipsis for overflowed text */
+    }
+</style>
 @if (Model.Tests.Count() == 0)
 {
-    <h1>You haven't created tests</h1>
+    <h1>No public tests</h1>
 }
 else
 {
@@ -75,7 +83,7 @@ else
                         <div class="card-header"><h5>Title: @test.Name</h5></div>
                         <div class="card-body">
                             <p class="card-text"><strong>Attempts count: <i class="fas fa-bullseye"></i> @test.UserTakenTestAmount</strong></p>
-                            <p class="card-text">Description: @test.Description</p>
+                            <p class="card-text overflow-example">Description: @test.Description</p>
                             <a href="@Url.Action("MemberView", "Test", new { testId = test.TestId })" class="btn btn-primary">View the Test</a>
                             <div class="card-footer bg-light px-3 mt-2">@test.DateOfCreation.ToString("dddd, dd MMMM yyyy HH:mm")</div>
                         </div>

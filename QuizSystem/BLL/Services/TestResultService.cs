@@ -50,7 +50,7 @@ namespace BLL.Services
                     return new Result<TestResult>(false, "Fail to get test reault");
                 }
 
-                return new Result<TestResult>(true, teatResult);
+                return new Result<TestResult>(true, data: teatResult);
             }
             catch (Exception ex)
             {
