@@ -153,7 +153,7 @@ namespace BLL.Services
             }
         }
 
-        public async Task<Result<(List<SharedTestDTO>, int)>> GetUserSharedTests(int userId, SortingParam sortingParam, int pageNumber = 1, int pageSize = 6, string search = "")
+        public async Task<Result<(List<SharedTestDTO>, int)>> GetUserSharedTests(int userId, SortingParam sortingParam, SharedTestStatus? filterParam = null, int pageNumber = 1, int pageSize = 6, string search = "")
         {
 
             try
@@ -167,7 +167,7 @@ namespace BLL.Services
                      sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
                 }
                 
-                var sharedTest = await _sharedTestRepository.GetUserSharedTestsWithTotalRecords(userId, pageNumber, pageSize, orderByProp, sortOrder);
+                var sharedTest = await _sharedTestRepository.GetUserSharedTestsWithTotalRecords(userId, pageNumber, pageSize, orderByProp, sortOrder, filterParam);
 
                 if (sharedTest.Item1 == null)
                 {
@@ -176,12 +176,14 @@ namespace BLL.Services
 
                 List<SharedTestDTO> result = sharedTest.Item1;
 
-                if (!string.IsNullOrEmpty(search))
+
+                 if (!string.IsNullOrEmpty(search))
                 {
                     result = sharedTest.Item1.Where(t => t.TestName.ToLower().Contains(search)).ToList();
                 }
+
                                 
-                return new Result<(List<SharedTestDTO>, int)>(true, (result, sharedTest.Item2));
+                return new Result<(List<SharedTestDTO>, int)>(true, (result, result.Count));
             }
             catch (Exception ex)
             {

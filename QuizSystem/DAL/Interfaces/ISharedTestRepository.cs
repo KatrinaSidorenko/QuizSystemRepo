@@ -1,4 +1,5 @@
 ﻿using Core.DTO;
+using Core.Enums;
 using Core.Models;
 
 namespace DAL.Interfaces
@@ -14,6 +15,6 @@ namespace DAL.Interfaces
         Task<List<SharedTestDTO>> GetUserSharedTests(int userId);
         Task<bool> IsTestShared(int testId);
         Task<bool> IsCodeExist(Guid code);
-        Task<(List<SharedTestDTO>, int)> GetUserSharedTestsWithTotalRecords(int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "shared_test_id", string sortOrder = "asc");
+        Task<(List<SharedTestDTO>, int)> GetUserSharedTestsWithTotalRecords(int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "shared_test_id", string sortOrder = "asc", SharedTestStatus? filterParam = null);
     }
 }

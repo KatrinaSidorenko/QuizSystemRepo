@@ -122,9 +122,9 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(SortingParam sortOrder, int page = 1, string searchParam = "")
+        public async Task<IActionResult> Index(SortingParam sortOrder, SharedTestStatus? filterParam = null, int page = 1, string searchParam = "")
         {
-            int pageSize = 6;
+            int pageSize = 3;
             string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
             ViewBag.SortParam = sortOrder;
 
@@ -146,7 +146,7 @@ namespace QuizSystem.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var sharedTestsResult = await _sharedTestService.GetUserSharedTests(userId, sortOrder, page, pageSize, searchParam);
+            var sharedTestsResult = await _sharedTestService.GetUserSharedTests(userId, sortOrder, filterParam, page, pageSize, searchParam);
 
             if (!sharedTestsResult.IsSuccessful)
             {

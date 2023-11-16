@@ -249,7 +249,7 @@ namespace DAL.Repository
                 return (bool)result;
             }
         }
-        public async Task<(List<SharedTestDTO>, int)> GetUserSharedTestsWithTotalRecords(int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "shared_test_id", string sortOrder = "asc")
+        public async Task<(List<SharedTestDTO>, int)> GetUserSharedTestsWithTotalRecords(int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "shared_test_id", string sortOrder = "asc", SharedTestStatus? filterParam = null)
         {
             string sqlExpression = "PagingUserSharedTests"; // The stored procedure name
 
@@ -269,6 +269,7 @@ namespace DAL.Repository
                     command.Parameters.AddWithValue("@OrderBy", orderByProp);
                     command.Parameters.AddWithValue("@SortOrder", sortOrder);
                     command.Parameters.AddWithValue("@UserId", userId);
+                    command.Parameters.AddWithValue("@FilterParameter", filterParam is null ? DBNull.Value : filterParam);
 
                     // Define the output parameter for total records
                     SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
