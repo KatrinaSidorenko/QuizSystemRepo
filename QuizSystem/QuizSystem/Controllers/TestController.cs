@@ -165,14 +165,14 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> AllTests(SortingParam sortOrder, int page = 1, string searchParam = "")
         {
-            int pageSize = 6;
+            int pageSize = 3;
             string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
-            ViewBag.SortParam = sortOrder;
-
+            
             var testPaginationModel = new TestPaginationModel()
             {
                 CurrentPageIndex = page > 0 ? page : 1,
-                SearchParam = search
+                SearchParam = search,
+                SortingParam = sortOrder
             };
  
 
@@ -297,7 +297,7 @@ namespace QuizSystem.Controllers
                 return RedirectToAction("Index", "Question", new { testId = testVM.TestId });
             }
 
-            return RedirectToAction("Index", "Question", new { testId = testVM.TestId });
+            return RedirectToAction("TestView", "Test", new { testId = testVM.TestId });
         }
 
         [HttpGet]

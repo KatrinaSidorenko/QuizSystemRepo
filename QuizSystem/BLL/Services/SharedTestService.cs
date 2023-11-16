@@ -183,7 +183,7 @@ namespace BLL.Services
                 }
 
                                 
-                return new Result<(List<SharedTestDTO>, int)>(true, (result, result.Count));
+                return new Result<(List<SharedTestDTO>, int)>(true, (result, sharedTest.Item2));
             }
             catch (Exception ex)
             {

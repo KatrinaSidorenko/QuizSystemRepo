@@ -53,7 +53,7 @@
                                     <p class="card-text"></p>
                                     @foreach (var answer in question.Answers)
                                     {
-                                        <hr class="hr" />
+                                       
                                         @if (question.Type.Equals(QuestionType.Open))
                                         {
                                             @if(answer.Value.ToLower().Equals(answer.ValueByUser.ToLower() ?? " "))
@@ -156,6 +156,7 @@
                                                 </div>
                                             }
                                         }
+                                        <hr class="hr" />
                                     }                                   
                                 </div>
                             </div>

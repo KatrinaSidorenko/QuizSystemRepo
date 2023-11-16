@@ -19,7 +19,12 @@
         Points,
         PointsDesc,
         RightAnswers,
-        RightAnswersDesc
-
+        RightAnswersDesc,
+        AvgTime,
+        AvgTimeDesc,
+        AvgPoints,
+        AvgPointsDesc,
+        FirstName,
+        FirstNameDesc
     }
 }

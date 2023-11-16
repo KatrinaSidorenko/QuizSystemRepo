@@ -4,7 +4,14 @@
 @{
     var tests = Model.ToList();
 }
-
+<style>
+    .overflow-example {
+        width: 100%; /* Set a fixed width for the container */
+        white-space: nowrap; /* Prevent text from wrapping */
+        overflow: hidden; /* Hide content that overflows the container */
+        text-overflow: ellipsis; /* Add ellipsis for overflowed text */
+    }
+</style>
 @if (Model.Count() == 0)
 {
     <h1>You havn't create tests</h1>
@@ -26,7 +33,7 @@ else
                     <div class="card mb-3">
                         <div class="card-header"><h4>Title: @test.Name</h4></div>
                         <div class="card-body">
-                            <p class="card-title">Description: @test.Description</p>
+                            <p class="card-title overflow-example">Description: @test.Description</p>
                             <p class="card-text"><strong>Your attempts amount: <i class="fas fa-bullseye"></i> @test.AmountOfAttempts</strong></p>
                             <a href="@Url.Action("History", "Attempt", new { testId = test.TestId, userId = User.Claims.FirstOrDefault(c => c.Type == "id").Value})" class="btn btn-primary">History</a>
                             <a href="@Url.Action("Details", "Attempt", new { testId = test.TestId})" class="btn btn-success btn-rounded">Statistic</a>

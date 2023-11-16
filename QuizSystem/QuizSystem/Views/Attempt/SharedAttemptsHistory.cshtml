@@ -1,1 +1,139 @@
-﻿
+﻿@using QuizSystem.ViewModels.PaginationTestViewModels
+@using Core.Enums
+@model AttemptSharedTestPagingModel
+
+<div style="text-align: center;">
+    <form method="get" asp-controller="Attempt" asp-action="SharedAttemptsHistory" class="mb-4">
+        <div class="row">
+            <!-- Center the input group and button -->
+            <div class="col-md-6">
+                <div class="input-group" style="width: 350px">
+                    <div class="form-outline">
+                        <input type="hidden" id="page" name="page" value="@Model.CurrentPageIndex" />
+                        <input type="hidden" id="sharedTestId" name="sharedTestId" value="@Model.SharedTestId" />
+                        <input type="hidden" id="sortOrder" name="sortOrder" value="@Model.SortingParam" />
+                        <input type="search" id="searchParam" name="searchParam" class="form-control" style="background-color: ghostwhite;" />
+                        <label class="form-label" for="searchParam">Search by email</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-6 d-flex justify-content-end">
+                <div class="dropdown">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-mdb-toggle="dropdown" aria-expanded="false">
+                        Order By
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li>
+                            <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new { sharedTestId = Model.SharedTestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.FirstName})" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> FirstName</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new {sharedTestId = Model.SharedTestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.FirstNameDesc})" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> FirstName</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new {sharedTestId = Model.SharedTestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.AvgPoints })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Points</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new { sharedTestId = Model.SharedTestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.AvgPointsDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Points (better) </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new { sharedTestId = Model.SharedTestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.AvgTime })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Avg Time (faster) </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new {sharedTestId = Model.SharedTestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.AvgTimeDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Avg Time </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new { sharedTestId = Model.SharedTestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.AttemptCount})" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Less attempts</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new {sharedTestId = Model.SharedTestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.AttemptCountDesc})" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> More attempts</a>
+                        </li>
+                        @*<li><a class="dropdown-item" href="#">Attempts</a></li>*@
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@if (Model.UserAttempts.Count() != 0)
+{
+    <div class="container mb-5"> </div>
+    @for (int i = 0; i < Model.UserAttempts.Count; i += 3)
+    {
+        <div class="row">
+            <!-- Create a row for every three elements -->
+            @for (int j = i; j < Math.Min(i + 3, Model.UserAttempts.Count); j++)
+            {
+                var attempt = Model.UserAttempts[j];
+                <div class="col-md-4">
+                    <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <p>@attempt.FirstName @attempt.LastName</p>
+                            <p><strong>@attempt.Email</strong></p>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Average Mark: @attempt.AveragePoints</h5>
+                            <p class="card-text">Attempts: @attempt.AttemptCount</p>
+                            <a href="@Url.Action("History", "Attempt", new {  testId = attempt.TestId, userId = attempt.UserId, sharedTestId = attempt.SharedTestId})" class="btn btn-primary">View History</a>
+
+                            <div class="card-footer bg-light px-3 mt-2">Average time in minutes: @Math.Round(attempt.AverageDuration, 2)</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    <style>
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+    <div class="container mb-5">
+    </div>
+    <div class="pagination-container">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                @if (Model.CurrentPageIndex > 1)
+                {
+                    <li class="page-item">
+                        <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new {sharedTestId = Model.SharedTestId, page = (Model.CurrentPageIndex - 1), searchParam = Model.SearchParam, sortOrder =  Model.SortingParam})" aria-label="Previous" class="page-link">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.PageCount; i++)
+                {
+                    if (i == Model.CurrentPageIndex)
+                    {
+                        <li class="page-item active"> <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new {sharedTestId = Model.SharedTestId, page = @i, searchParam = Model.SearchParam , sortOrder =Model.SortingParam })" class="page-link">@i</a></li>
+                    }
+                    else
+                    {
+                        <li class="page-item"> <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new {sharedTestId = Model.SharedTestId, page = @i, searchParam = Model.SearchParam , sortOrder =Model.SortingParam})" class="page-link">@i</a></li>
+
+                    }
+                }
+
+                @if (Model.CurrentPageIndex < Model.PageCount)
+                {
+                    <li class="page-item">
+                        <a href="@Url.Action("SharedAttemptsHistory", "Attempt", new {sharedTestId = Model.SharedTestId, page = (Model.CurrentPageIndex + 1), searchParam = Model.SearchParam, sortOrder =Model.SortingParam})" aria-label="Next" class="page-link">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+}
+else
+{
+    <h1>No user attempts</h1>
+}

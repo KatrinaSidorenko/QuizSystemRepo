@@ -13,7 +13,8 @@
                         <input type="hidden" id="page" name="page" value="@Model.CurrentPageIndex" />
                         <input type="hidden" id="userId" name="userId" value="@Model.UserId" />
                         <input type="hidden" id="testId" name="testId" value="@Model.TestId" />
-                        <input type="hidden" id="sortOrder" name="sortOrder" value="@Model.TestId" />
+                        <input type="hidden" id="sharedTestId" name="sharedTestId" value="@Model.SharedTestId" />
+                        <input type="hidden" id="sortOrder" name="sortOrder" value="@Model.SortingParam" />
                         <input type="search" id="searchParam" name="searchParam" class="form-control" style="background-color: ghostwhite;" />
                         <label class="form-label" for="searchParam">Search by accuracy</label>
                     </div>
@@ -30,25 +31,25 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <li>
-                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.StartDate})" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Start Date (oldest)</a>
+                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId, sharedTestId = Model.SharedTestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.StartDate})" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Start Date (oldest)</a>
                         </li>
                         <li>
-                            <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.StartDateDesc})" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Start Date (newest)</a>
+                            <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId,  sharedTestId = Model.SharedTestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.StartDateDesc})" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Start Date (newest)</a>
                         </li>
                         <li>
-                            <a href="@Url.Action("History", "Attempt",new { userId = Model.UserId, testId = Model.TestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.EndDate })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> End Date (oldest)</a>
+                            <a href="@Url.Action("History", "Attempt",new { userId = Model.UserId, testId = Model.TestId, sharedTestId = Model.SharedTestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.EndDate })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> End Date (oldest)</a>
                         </li>
                         <li>
-                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.Points })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Points</a>
+                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId, sharedTestId = Model.SharedTestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.Points })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Points</a>
                         </li>
                         <li>
-                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.PointsDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Points (better) </a>
+                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId, sharedTestId = Model.SharedTestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.PointsDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Points (better) </a>
                         </li>
                         <li>
-                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.RightAnswers })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Right answers </a>
+                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId, sharedTestId = Model.SharedTestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.RightAnswers })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Right answers </a>
                         </li>
                         <li>
-                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.RightAnswersDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Right answers (better) </a>
+                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId, sharedTestId = Model.SharedTestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.RightAnswersDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Right answers (better) </a>
                         </li>
                         @*<li><a class="dropdown-item" href="#">Attempts</a></li>*@
                     </ul>
@@ -94,14 +95,15 @@
             justify-content: center;
         }
     </style>
-
+    <div class="container mb-5">
+    </div>
     <div class="pagination-container">
         <nav aria-label="Page navigation example">
             <ul class="pagination">
                 @if (Model.CurrentPageIndex > 1)
                 {
                     <li class="page-item">
-                        <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId, page = (Model.CurrentPageIndex - 1), searchParam = Model.SearchParam, sortOrder =ViewBag.SortParam })" aria-label="Previous" class="page-link">
+                        <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId,  sharedTestId = Model.SharedTestId,page = (Model.CurrentPageIndex - 1), searchParam = Model.SearchParam, sortOrder = Model.SortingParam })" aria-label="Previous" class="page-link">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
@@ -111,11 +113,11 @@
                 {
                     if (i == Model.CurrentPageIndex)
                     {
-                        <li class="page-item active"> <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId, page = @i, searchParam = Model.SearchParam , sortOrder =ViewBag.SortParam})" class="page-link">@i</a></li>
+                        <li class="page-item active"> <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId,  sharedTestId = Model.SharedTestId,page = @i, searchParam = Model.SearchParam , sortOrder = Model.SortingParam})" class="page-link">@i</a></li>
                     }
                     else
                     {
-                        <li class="page-item"> <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId, page = @i, searchParam = Model.SearchParam , sortOrder =ViewBag.SortParam})" class="page-link">@i</a></li>
+                        <li class="page-item"> <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId,  sharedTestId = Model.SharedTestId,page = @i, searchParam = Model.SearchParam , sortOrder = Model.SortingParam})" class="page-link">@i</a></li>
 
                     }
                 }
@@ -123,7 +125,7 @@
                 @if (Model.CurrentPageIndex < Model.PageCount)
                 {
                     <li class="page-item">
-                        <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId, page = (Model.CurrentPageIndex + 1), searchParam = Model.SearchParam, sortOrder =ViewBag.SortParam})" aria-label="Next" class="page-link">
+                        <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId, page = (Model.CurrentPageIndex + 1), searchParam = Model.SearchParam, sortOrder = Model.SortingParam})" aria-label="Next" class="page-link">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>

@@ -24,8 +24,14 @@ namespace Core.Enums
             {SortingParam.AttemptDurationDesc, ("attempt_duration", "desc") },
             {SortingParam.Points, ("points", "asc") },
             {SortingParam.PointsDesc, ("points", "desc") },
-             {SortingParam.RightAnswers, ("right_answers_amount", "asc") },
-            {SortingParam.RightAnswersDesc, ("right_answers_amount", "desc") }
+            {SortingParam.RightAnswers, ("right_answers_amount", "asc") },
+            {SortingParam.RightAnswersDesc, ("right_answers_amount", "desc") },
+            {SortingParam.AvgTime, ("avg_time", "asc") },
+            {SortingParam.AvgTimeDesc, ("avg_time", "desc") },
+            {SortingParam.AvgPoints, ("avg_points", "asc") },
+            {SortingParam.AvgPointsDesc, ("avg_points", "desc") },
+            {SortingParam.FirstName, ("first_name", "asc") },
+            {SortingParam.FirstNameDesc, ("first_name", "desc") }
         };
     }
 }
