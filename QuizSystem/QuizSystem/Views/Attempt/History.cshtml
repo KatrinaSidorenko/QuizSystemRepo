@@ -1,27 +1,73 @@
-﻿@using QuizSystem.ViewModels.AttemptViewModel
-@model List<AttemptViewModel>
-
-@{
-    var attempts = Model.ToList();
-}
+﻿@using QuizSystem.ViewModels.PaginationTestViewModels
+@using Core.Enums
+@model AttempyHistoryPaginationModel
 
 
-@if (Model.Count() == 0)
-{
-    <h1>You havn't create tests</h1>
-}
-else
+<div style="text-align: center;">
+    <form method="get" asp-controller="Attempt" asp-action="History" class="mb-4">
+        <div class="row">
+            <!-- Center the input group and button -->
+            <div class="col-md-6">
+                <div class="input-group" style="width: 350px">
+                    <div class="form-outline">
+                        <input type="hidden" id="page" name="page" value="@Model.CurrentPageIndex" />
+                        <input type="hidden" id="userId" name="userId" value="@Model.UserId" />
+                        <input type="hidden" id="testId" name="testId" value="@Model.TestId" />
+                        <input type="hidden" id="sortOrder" name="sortOrder" value="@Model.TestId" />
+                        <input type="search" id="searchParam" name="searchParam" class="form-control" style="background-color: ghostwhite;" />
+                        <label class="form-label" for="searchParam">Search by accuracy</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-6 d-flex justify-content-end">
+                <div class="dropdown">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-mdb-toggle="dropdown" aria-expanded="false">
+                        Order By
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li>
+                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.StartDate})" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Start Date (oldest)</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId, page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.StartDateDesc})" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Start Date (newest)</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("History", "Attempt",new { userId = Model.UserId, testId = Model.TestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.EndDate })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> End Date (oldest)</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.Points })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Points</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.PointsDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Points (better) </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.RightAnswers })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Right answers </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("History", "Attempt", new { userId = Model.UserId, testId = Model.TestId,page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.RightAnswersDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Right answers (better) </a>
+                        </li>
+                        @*<li><a class="dropdown-item" href="#">Attempts</a></li>*@
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@if (Model.Attempts.Count() != 0)
 {
     <div class="container mb-5"> </div>
-
-    <!-- Convert Model to a List for easier manipulation -->
-    @for (int i = 0; i < attempts.Count; i += 3)
+    @for (int i = 0; i < Model.Attempts.Count; i += 3)
     {
         <div class="row">
             <!-- Create a row for every three elements -->
-            @for (int j = i; j < Math.Min(i + 3, attempts.Count); j++)
+            @for (int j = i; j < Math.Min(i + 3, Model.Attempts.Count); j++)
             {
-                var attempt = attempts[j];
+                    var attempt = Model.Attempts[j];
                 <div class="col-md-4">
                     <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
                     <div class="card mb-3">
@@ -42,5 +88,55 @@ else
             }
         </div>
     }
+    <style>
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+
+    <div class="pagination-container">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                @if (Model.CurrentPageIndex > 1)
+                {
+                    <li class="page-item">
+                        <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId, page = (Model.CurrentPageIndex - 1), searchParam = Model.SearchParam, sortOrder =ViewBag.SortParam })" aria-label="Previous" class="page-link">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.PageCount; i++)
+                {
+                    if (i == Model.CurrentPageIndex)
+                    {
+                        <li class="page-item active"> <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId, page = @i, searchParam = Model.SearchParam , sortOrder =ViewBag.SortParam})" class="page-link">@i</a></li>
+                    }
+                    else
+                    {
+                        <li class="page-item"> <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId, page = @i, searchParam = Model.SearchParam , sortOrder =ViewBag.SortParam})" class="page-link">@i</a></li>
+
+                    }
+                }
+
+                @if (Model.CurrentPageIndex < Model.PageCount)
+                {
+                    <li class="page-item">
+                        <a href="@Url.Action("History", "Attempt", new {userId = Model.UserId, testId = Model.TestId, page = (Model.CurrentPageIndex + 1), searchParam = Model.SearchParam, sortOrder =ViewBag.SortParam})" aria-label="Next" class="page-link">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
 }
+else
+{
+    <h1>No attempts</h1>
+}
+
+   
+
 

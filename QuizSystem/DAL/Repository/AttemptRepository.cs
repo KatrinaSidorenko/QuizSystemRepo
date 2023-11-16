@@ -5,6 +5,7 @@ using Core.Settings;
 using DAL.Interfaces;
 using Microsoft.Extensions.Options;
 using System.ComponentModel;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace DAL.Repository
@@ -156,39 +157,62 @@ namespace DAL.Repository
             }
         }
 
-        public async Task<List<Attempt>> GetAttempts(int testId, int userId)
-        {
-            string sqlExpression = $"select * from [Attempts] where test_id = {testId} and user_id = {userId} order by end_date desc";
-            SqlConnection connection = new SqlConnection(_connectionString);
-            SqlCommand command = new SqlCommand(sqlExpression, connection);
+        public async Task<(List<Attempt>, int)> GetAttempts(int testId, int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "attempt_id", string sortOrder = "asc")
+        {           
+            string sqlExpression = "PagingAttempts"; // The stored procedure name
 
-            List<Attempt> attempts = new();
-
-            using (connection)
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
-                SqlDataReader reader = await command.ExecuteReaderAsync();
+                List<Attempt> attempts = new();
+                int totalRecords = 0;
+                bool IsNextPageAvailable;
 
-                while (reader.Read())
+                using (SqlCommand command = new SqlCommand(sqlExpression, connection))
                 {
-                    var attempt = new Attempt();
-                    attempt.TestId = (int)reader["test_id"];
-                    attempt.Points = (double)reader["points"];
-                    attempt.StartDate = (DateTime)reader["start_date"];
-                    attempt.EndDate = (DateTime)reader["end_date"];
-                    attempt.UserId = (int)reader["user_id"];
-                    attempt.RightAnswersAmount = (int)reader["right_answers_amount"];
-                    attempt.SharedTestId = reader["shared_test_id"].Equals(DBNull.Value) ? 0 : (int)Convert.ChangeType("shared_test_id", typeof(int));
-                    attempt.AttemptId = (int)reader["attempt_id"];
+                    command.CommandType = CommandType.StoredProcedure;
 
-                    attempts.Add(attempt);
-                    
+                    // Define the input parameters
+                    command.Parameters.AddWithValue("@PageNumber", pageNumber);
+                    command.Parameters.AddWithValue("@PageSize", pageSize);
+                    command.Parameters.AddWithValue("@OrderBy", orderByProp);
+                    command.Parameters.AddWithValue("@SortOrder", sortOrder);
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    command.Parameters.AddWithValue("@TestId", testId);
+                    // Define the output parameter for total records
+                    SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
+                    totalRecordsParam.Direction = ParameterDirection.Output;
+                    command.Parameters.Add(totalRecordsParam);
+
+                    connection.Open();
+
+                    SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        totalRecords = (int)reader["TotalRecords"];
+                    }
+                    reader.NextResult();
+                    var columns = reader.GetColumnSchema();
+
+                    while (reader.Read())
+                    {
+                        var attempt = new Attempt();
+                        attempt.TestId = (int)reader["test_id"];
+                        attempt.Points = (double)reader["points"];
+                        attempt.StartDate = (DateTime)reader["start_date"];
+                        attempt.EndDate = (DateTime)reader["end_date"];
+                        attempt.UserId = (int)reader["user_id"];
+                        attempt.RightAnswersAmount = (int)reader["right_answers_amount"];
+                        attempt.SharedTestId = reader["shared_test_id"].Equals(DBNull.Value) ? 0 : (int)Convert.ChangeType("shared_test_id", typeof(int));
+                        attempt.AttemptId = (int)reader["attempt_id"];
+
+                        attempts.Add(attempt);
+                    }
                 }
-                
-                return attempts;
-            }
 
-            
+                return (attempts, totalRecords);
+            }
         }
 
         public async Task<StatisticAttemptsDTO> GetAttemptsStatistic(int testId, int userId)

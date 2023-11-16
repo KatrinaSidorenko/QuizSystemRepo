@@ -21,7 +21,11 @@ namespace Core.Enums
             {SortingParam.AttemptCount, ("attempt_count", "asc") },
             {SortingParam.AttemptCountDesc, ("attempt_count", "desc") },
             {SortingParam.AttemptDuration, ("attempt_duration", "asc") },
-            {SortingParam.AttemptDurationDesc, ("attempt_duration", "desc") }
+            {SortingParam.AttemptDurationDesc, ("attempt_duration", "desc") },
+            {SortingParam.Points, ("points", "asc") },
+            {SortingParam.PointsDesc, ("points", "desc") },
+             {SortingParam.RightAnswers, ("right_answers_amount", "asc") },
+            {SortingParam.RightAnswersDesc, ("right_answers_amount", "desc") }
         };
     }
 }

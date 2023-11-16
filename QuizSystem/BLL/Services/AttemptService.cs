@@ -10,6 +10,7 @@ using System.Text;
 using QuestPDF.Fluent;
 using Core.DocumentModels;
 using Microsoft.Extensions.Options;
+using System.Data.SqlClient;
 
 namespace BLL.Services
 {
@@ -173,17 +174,68 @@ namespace BLL.Services
             }
         }
 
-        public async Task<Result<List<Attempt>>> GetUserTestAttempts(int testId, int userId)
+        public async Task<Result<(List<AttemptHistoryDTO>, int)>> GetUserTestAttempts(int testId, int userId, SortingParam sortingParam, int pageNumber = 1, int pageSize = 6, string search = "")
         {
             try
             {
-                var attempts = await _attemptRepository.GetAttempts(testId, userId);
+                string orderByProp = "attempt_id";
+                string sortOrder = "asc";
 
-                return new Result<List<Attempt>>(true, attempts);
+                if (SortingDictionnary.SortingValues.ContainsKey(sortingParam))
+                {
+                    orderByProp = SortingDictionnary.SortingValues[sortingParam].prop;
+                    sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
+                }
+
+                var attempts = await _attemptRepository.GetAttempts(testId, userId, pageNumber, pageSize, orderByProp, sortOrder);
+
+                if (attempts.Item1 == null)
+                {
+                    return new Result<(List<AttemptHistoryDTO>, int)>(isSuccessful: false, $"Fail to get {nameof(attempts)}");
+                }
+
+                //get accuracy
+                var attemptsDTO = attempts.Item1.Select(async a =>
+                {
+                    var attemptDTO = new AttemptHistoryDTO()
+                    {
+                        Points = a.Points,
+                        UserId = a.UserId,
+                        TestId = a.TestId,
+                        EndDate = a.EndDate,
+                        SharedTestId = a.SharedTestId,
+                        StartDate = a.StartDate,
+                        AttemptId = a.AttemptId,
+                        RightAnswersAmount = a.RightAnswersAmount
+                    };
+
+                    var attemptAccuracy = await GetAttemptAccuracy(a.AttemptId);
+
+                    if (attemptAccuracy.IsSuccessful)
+                    {
+                        attemptDTO.Accuracy = attemptAccuracy.Data;
+                    }
+
+                    return attemptDTO;
+                });
+
+
+                List<AttemptHistoryDTO> result = Task.WhenAll(attemptsDTO).Result.ToList();
+
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    var attemptsResult = result.Where(t => t.Accuracy.Equals(Convert.ToDouble(search))).ToList();
+
+                    return new Result<(List<AttemptHistoryDTO>, int)>(true, (attemptsResult, attempts.Item2));
+                }
+
+
+                return new Result<(List<AttemptHistoryDTO>, int)>(true, (result, attempts.Item2));
             }
             catch(Exception ex)
             {
-                return new Result<List<Attempt>>(false, "Fail to get attempts");
+                return new Result<(List<AttemptHistoryDTO>, int)>(false, "Fail to get attempts");
             }
         }
 

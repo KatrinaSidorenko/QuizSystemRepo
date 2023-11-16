@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Core.DTO;
 using Core.Models;
-using QuizSystem.ViewModels.AttemptViewModel;
+using QuizSystem.ViewModels.AttemptViewModels;
+using QuizSystem.ViewModels.PaginationTestViewModels;
 
 namespace QuizSystem.Profiles
 {
@@ -12,6 +13,7 @@ namespace QuizSystem.Profiles
             CreateMap<Attempt, AttemptViewModel>();   
             CreateMap<StatisticAttemptsDTO, StatisticViewModel>();
             CreateMap<AttemptResultViewModel, AttemptResultDocumentDTO>();
+            CreateMap<AttemptHistoryDTO, AttemptViewModel>();
         }
     }
 }

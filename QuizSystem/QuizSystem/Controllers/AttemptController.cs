@@ -7,10 +7,10 @@ using Core.Models;
 using GroupDocs.Viewer.Options;
 using GroupDocs.Viewer;
 using Microsoft.AspNetCore.Mvc;
-using QuizSystem.ViewModels.AnswerViewModels;
-using QuizSystem.ViewModels.AttemptViewModel;
+using QuizSystem.ViewModels.AttemptViewModels;
 using QuizSystem.ViewModels.QuestionViewModel;
 using QuizSystem.ViewModels.TakeTestViewModels;
+using QuizSystem.ViewModels.PaginationTestViewModels;
 
 namespace QuizSystem.Controllers
 {
@@ -274,9 +274,21 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> History(int testId, int userId)
+        public async Task<IActionResult> History(int testId, int userId, SortingParam sortOrder, int page = 1, string searchParam = "")
         {
-            var attemptsResult = await _attemptService.GetUserTestAttempts(testId, userId);
+            int pageSize = 3;
+            string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
+            ViewBag.SortParam = sortOrder;
+
+            var attemptViewModel = new AttempyHistoryPaginationModel()
+            {
+                CurrentPageIndex = page > 0 ? page : 1,
+                SearchParam = search,
+                UserId = userId,
+                TestId = testId
+            };
+
+            var attemptsResult = await _attemptService.GetUserTestAttempts(testId, userId, sortOrder, page, pageSize, searchParam);
 
             if (!attemptsResult.IsSuccessful)
             {
@@ -285,20 +297,28 @@ namespace QuizSystem.Controllers
                 return RedirectToAction("Activity", "Attempt");
             }
 
-            var attemptsVM = attemptsResult.Data.Select(async a =>
+            var attemptsVm = attemptsResult.Data.Item1.Select(a =>
             {
-                var attemptVM = _mapper.Map<AttemptViewModel>(a);
-                var attemptAccuracy = await _attemptService.GetAttemptAccuracy(a.AttemptId);
-
-                if (attemptAccuracy.IsSuccessful)
-                {
-                    attemptVM.Accuracy = attemptAccuracy.Data;
-                }
-                
-                return attemptVM;
+                var attempt = _mapper.Map<AttemptViewModel>(a);
+                return attempt;
             });
 
-            return View(Task.WhenAll(attemptsVM).Result.ToList());
+            double pageCount;
+
+            if (!string.IsNullOrEmpty(searchParam))
+            {
+                pageCount = (double)((decimal)attemptsVm.Count() / Convert.ToDecimal(pageSize));
+            }
+            else
+            {
+                pageCount = (double)((decimal)attemptsResult.Data.Item2 / Convert.ToDecimal(pageSize));
+            }
+
+            attemptViewModel.PageCount = (int)Math.Ceiling(pageCount);
+            attemptViewModel.PageSize = pageSize;
+            attemptViewModel.Attempts = attemptsVm.ToList();
+
+            return View(attemptViewModel);
         }
 
         [HttpGet]

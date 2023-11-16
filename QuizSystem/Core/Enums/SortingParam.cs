@@ -15,6 +15,11 @@
         AttemptCount,
         AttemptCountDesc,
         AttemptDuration,
-        AttemptDurationDesc
+        AttemptDurationDesc,
+        Points,
+        PointsDesc,
+        RightAnswers,
+        RightAnswersDesc
+
     }
 }

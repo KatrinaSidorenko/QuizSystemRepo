@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Core.DTO;
 using Core.Models;
-using QuizSystem.ViewModels.AttemptViewModel;
+using QuizSystem.ViewModels.AttemptViewModels;
 using QuizSystem.ViewModels.TakeTestViewModels;
 using QuizSystem.ViewModels.TestViewModels;
 
