@@ -39,11 +39,11 @@ namespace BLL.Services
             }
         }
 
-        public async Task<Result<TestResult>> GetTestResult(int attemptId, int questionId)
+        public async Task<Result<TestResult>> GetTestResult(int attemptId, int questionId, int answerId)
         {
             try
             {
-                var teatResult = await _testResultRepository.GetTestResultByAttemptIdandQuestionId(attemptId, questionId);
+                var teatResult = await _testResultRepository.GetTestResultByAttemptIdandQuestionId(attemptId, questionId, answerId);
 
                 if (teatResult == null)
                 {

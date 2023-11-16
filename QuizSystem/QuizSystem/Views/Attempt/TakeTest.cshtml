@@ -105,6 +105,24 @@
                                     <div class="card-header">
                                         <strong>Question: @question.Description</strong>
                                     </div>
+
+                                    @foreach (var answer in question.QuestionAnswers)
+                                    {
+                                        <div class="form-outline answer-form">
+                                            <input type="hidden" name="Point" value="@question.Point" />
+                                            <input type="hidden" name="Type" value="@question.Type" />
+                                            <input type="hidden" name="AnswerId" value="@answer.AnswerId" />
+                                            <input type="hidden" name="QuestionId" value="@answer.QuestionId" />
+
+                                            <div class="card-header">
+                                                <input type="radio" class="form-check-input" name="IsRight_@question.QuestionId" />
+                                                <label class="form-label"><strong> @answer.Value</strong></label>
+                                            </div>
+                                        </div>
+                                    }
+                                    @*<div class="card-header">
+                                        <strong>Question: @question.Description</strong>
+                                    </div>
                                    
 
                                     @foreach (var answer in question.QuestionAnswers)
@@ -119,7 +137,7 @@
                                                 <label class="form-label"><strong> @answer.Value</strong></label>
                                             </div>
                                         </div>
-                                    }
+                                    }*@
                                 }
                             </div>
                         </div>
@@ -142,13 +160,9 @@
     </main>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        if ($("input[name='Type']").val() === "Single") {
-            $(document).on('click', '.form-check-input', function () {
-                // Uncheck other radio buttons in the same group
-                $('.form-check-input').prop('checked', false);
-                $(this).prop('checked', true);
-            });
-        }
+
+      
+
         $(document).ready(function () {
             // Handle form submission
             $(document).on('click', '.btn-save-answer', function (event) {
@@ -175,7 +189,7 @@
                         };
                         formData.Answers.push(answer);
                     } else if (type === "Multiple" || type === "Single") {
-                        if ($(this).find("input[name='IsRight']").is(':checked')){
+                        if ($(this).find("input[name^='IsRight']").is(':checked')) {
                             var answer = {
                                 AnswerId: $(this).find("input[name='AnswerId']").val(),
                                 Value: "",
@@ -184,7 +198,7 @@
                             };
                             formData.Answers.push(answer);
                         }
-                        
+
                     }
                 });
 
@@ -202,63 +216,16 @@
                     }
                 });
             });
+            // Handle radio button clicks for single-choice questions
+            $(document).on('click', 'input[type=radio][name^=IsRight]', function () {
+                // Uncheck other radio buttons in the same question
+                var questionContainer = $(this).closest('.answer-form');
+                questionContainer.find('input[type=radio][name^=IsRight]').not(this).prop('checked', false);
+            });
         });
 
-
-        //$(document).ready(function () {
-        //    // Handle form submission
-        //    $(document).on('click', '.btn-save-answer', function () {
-        //        event.preventDefault(); // Prevent the default form submission
-
-        //        var formData = {
-        //            TestId: $("input[name='TestId']").val(),
-        //            TakedTestUserId: $("input[name='TakedTestUserId']").val(),
-        //            Answers: []
-        //        };
-
-        //        // Collect answers
-        //        $(".answer-form").each(function () {
-        //            if ($("input[name='Type']").val() === "Open"){
-        //                var answer = {
-        //                    AnswerId: $(this).find("input[name='AnswerId']").val(),
-        //                    IsRight: true,
-        //                    Value: $(this).find("textarea[name='Answers']").val(),
-        //                    QuestionId: $(this).find("input[name='QuestionId']").val()
-        //                };
-        //                formData.Answers.push(answer);
-        //            }
-        //            else{
-        //                if ($(this).find("input[name='IsRight']").is(':checked')) {
-                           
-        //                    var answer = {
-        //                        AnswerId: $(this).find("input[name='AnswerId']").val(),
-        //                        Value: "",
-        //                        QuestionId: $(this).find("input[name='QuestionId']").val()
-        //                            IsRight: true
-        //                    };
-
-        //                    formData.Answers.push(answer);
-        //                }
-        //            }
-        //        });
-
-        //        // Send the data to the endpoint
-        //        $.ajax({
-        //            url: "/Test/TakeTest",
-        //            type: "POST",
-        //            data: formData,
-        //            success: function (response) {
-        //                // Check if the response indicates success (you can customize this condition)
-        //                window.location.href = response.redirectUrl;
-        //            },
-        //            error: function (error) {
-        //                window.location.href = response.redirectUrl;
-        //            }
-        //        });
-        //    });
-
-        //});
     </script>
+
 </body>
 </html>
 

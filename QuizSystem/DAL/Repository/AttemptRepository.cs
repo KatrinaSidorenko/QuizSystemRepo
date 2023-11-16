@@ -171,22 +171,24 @@ namespace DAL.Repository
 
                 while (reader.Read())
                 {
-                    attempts.Add(new Attempt()
-                    {
-                        TestId = (int)reader["test_id"],
-                        Points = (double)reader["points"],
-                        StartDate = (DateTime)reader["start_date"],
-                        EndDate = (DateTime)reader["end_date"],
-                        UserId = (int)reader["user_id"],
-                        RightAnswersAmount = (int)reader["right_answers_amount"],
-                        SharedTestId = reader["shared_test_id"].Equals(DBNull.Value) ? 0 : (int)Convert.ChangeType("shared_test_id", typeof(int)),
-                        AttemptId = (int)reader["attempt_id"]
-                });
+                    var attempt = new Attempt();
+                    attempt.TestId = (int)reader["test_id"];
+                    attempt.Points = (double)reader["points"];
+                    attempt.StartDate = (DateTime)reader["start_date"];
+                    attempt.EndDate = (DateTime)reader["end_date"];
+                    attempt.UserId = (int)reader["user_id"];
+                    attempt.RightAnswersAmount = (int)reader["right_answers_amount"];
+                    attempt.SharedTestId = reader["shared_test_id"].Equals(DBNull.Value) ? 0 : (int)Convert.ChangeType("shared_test_id", typeof(int));
+                    attempt.AttemptId = (int)reader["attempt_id"];
+
+                    attempts.Add(attempt);
                     
                 }
+                
+                return attempts;
             }
 
-            return attempts;
+            
         }
 
         public async Task<StatisticAttemptsDTO> GetAttemptsStatistic(int testId, int userId)

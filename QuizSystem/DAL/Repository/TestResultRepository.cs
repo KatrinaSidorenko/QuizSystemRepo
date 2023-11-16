@@ -47,9 +47,9 @@ namespace DAL.Repository
                 }
             }
         }
-        public async Task<TestResult> GetTestResultByAttemptIdandQuestionId(int attemptId, int questionId)
+        public async Task<TestResult> GetTestResultByAttemptIdandQuestionId(int attemptId, int questionId, int answerId)
         {
-            string sqlExpression = $"SELECT * FROM TestResults WHERE attempt_id = {attemptId} and question_id = {questionId}";
+            string sqlExpression = $"SELECT * FROM TestResults WHERE attempt_id = {attemptId} and question_id = {questionId} and answer_id = {answerId}";
             SqlConnection connection = new SqlConnection(_connectionString);
             SqlCommand command = new SqlCommand(sqlExpression, connection);
             TestResult test = new();

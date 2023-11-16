@@ -148,10 +148,11 @@ namespace QuizSystem.Controllers
             var questionsVM = questionsResult.Data.Select(async q =>
             {
                 var answers = await _answerService.GetQuestionAnswers(q.QuestionId);
-                var testResult = await _resultService.GetTestResult(attemptId, q.QuestionId);
+                
 
-                var answersVm = answers.Data.Select( a =>
+                var answersVm = answers.Data.Select(async a =>
                 {
+                    var testResult = await _resultService.GetTestResult(attemptId, q.QuestionId, a.AnswerId);
                     var attemptAnswer = new AttemptAnswerViewModel()
                     {
                         AnswerId = a.AnswerId,
@@ -159,7 +160,7 @@ namespace QuizSystem.Controllers
                         Value = a.Value
                     };
 
-                    if (testResult.Data.EnteredValue is not null)
+                    if (testResult.IsSuccessful)
                     {
                         if (q.Type.Equals(QuestionType.Open))
                         {
@@ -171,7 +172,11 @@ namespace QuizSystem.Controllers
                             attemptAnswer.ChoosenByUser = a.AnswerId == testResult.Data.AnswerId ? true : false;
                         }
                     }
-                
+                    else
+                    {
+                        attemptAnswer.ChoosenByUser = false;
+                    }
+                          
                     return attemptAnswer;
 
                 }).ToList();
@@ -183,7 +188,7 @@ namespace QuizSystem.Controllers
                     //GetedPoints = ((float)q.Point / answers.Data.Count) * (float)answersVm.Select(a => a.ChoosenByUser && a.IsRight == true).Count(),
                     Point = (float)q.Point,
                     Type = q.Type,
-                    Answers = answersVm
+                    Answers = Task.WhenAll(answersVm).Result.ToList()
                 };
 
                 return question;

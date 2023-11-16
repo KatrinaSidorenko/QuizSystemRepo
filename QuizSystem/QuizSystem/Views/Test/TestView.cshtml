@@ -46,7 +46,11 @@
                                 <p class="card-text">Max mark: @Model.TotalMark</p>
 
                                 @if (isCreator){
-                                    <a href="@Url.Action("TakeTest", "Attempt", new { testId = Model.TestId})" class="btn btn-primary">Take the test</a>
+                                    if(Model.Questions.Count != 0)
+                                    {
+                                        <a href="@Url.Action("TakeTest", "Attempt", new { testId = Model.TestId})" class="btn btn-primary">Take the test</a>
+                                    }
+                                    
                                     <a href="@Url.Action("Edit", "Test", new { testId = @Model.TestId })" class="btn btn-primary">Edit</a>
                                     <a href="@Url.Action("Create", "Question", new { testId = @Model.TestId })" class="btn btn-outline-success btn-rounded" data-mdb-ripple-color="dark">Add question</a>
                                 }

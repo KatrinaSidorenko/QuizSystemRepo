@@ -181,7 +181,7 @@ namespace BLL.Services
 
                 return new Result<List<Attempt>>(true, attempts);
             }
-            catch
+            catch(Exception ex)
             {
                 return new Result<List<Attempt>>(false, "Fail to get attempts");
             }
@@ -318,10 +318,11 @@ namespace BLL.Services
                 var questionsVM = questionsResult.Data.Select(async q =>
                 {
                     var answers = await _answerService.GetQuestionAnswers(q.QuestionId);
-                    var testResult = await _testResultService.GetTestResult(attemptId, q.QuestionId);
+                    
 
-                    var answersVm = answers.Data.Select(a =>
+                    var answersVm = answers.Data.Select(async a =>
                     {
+                        var testResult = await _testResultService.GetTestResult(attemptId, q.QuestionId, a.AnswerId);
                         var attemptAnswer = new AttemptAnswerDocumentDTO()
                         {
                             AnswerId = a.AnswerId,
@@ -352,7 +353,7 @@ namespace BLL.Services
                         //GetedPoints = ((float)q.Point / answers.Data.Count) * (float)answersVm.Select(a => a.ChoosenByUser && a.IsRight == true).Count(),
                         Point = (float)q.Point,
                         Type = q.Type,
-                        Answers = answersVm
+                        Answers = Task.WhenAll(answersVm).Result.ToList()
                     };
 
                     return question;
