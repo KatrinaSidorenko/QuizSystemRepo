@@ -395,6 +395,8 @@ namespace BLL.Services
 
 
                 var attemptDocumentModel = new AttemptResultDocumentDTO();
+                attemptDocumentModel.StartDate = attemptResult.Data.StartDate;
+                attemptDocumentModel.EndDate = attemptResult.Data.EndDate;
                 var testResult = await _testService.GetTestById(attemptResult.Data.TestId);
 
                 attemptDocumentModel.TestId = testResult.Data.TestId;
@@ -416,7 +418,8 @@ namespace BLL.Services
                         {
                             AnswerId = a.AnswerId,
                             IsRight = a.IsRight,
-                            Value = a.Value
+                            Value = a.Value,
+                            StartDate = a.S
                         };
 
 

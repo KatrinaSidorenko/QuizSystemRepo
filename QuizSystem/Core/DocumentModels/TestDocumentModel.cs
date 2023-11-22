@@ -7,6 +7,7 @@ namespace Core.DocumentModels
         public string Description { get; set; }
         public int QuestionsAmount { get; set; }
         public double MaxMark { get; set; }
+        public DateTime CreatedAt { get; set; }
         public List<QuestionDocumentModel> Questions { get; set; }
     }
 }

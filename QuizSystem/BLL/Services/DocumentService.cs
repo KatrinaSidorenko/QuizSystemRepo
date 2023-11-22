@@ -3,15 +3,16 @@ using Core.Enums;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System.Globalization;
 
 namespace BLL.Services
 {
     public class DocumentService : IDocument
     {
-        private readonly TestDocumentModel _memberViewModel;
-        public DocumentService(TestDocumentModel memberViewModel)
+        private readonly TestDocumentModel _testDocumentModel;
+        public DocumentService(TestDocumentModel testDocumentModel)
         {
-            _memberViewModel = memberViewModel;   
+            _testDocumentModel = testDocumentModel;   
         }
         public void Compose(IDocumentContainer container)
         {
@@ -41,24 +42,30 @@ namespace BLL.Services
             {
                 row.RelativeItem().Column(column =>
                 {
-                    column.Item().Text($"Test title: {_memberViewModel.Name}").Style(titleStyle);
+                    column.Item().Text($"Test title: {_testDocumentModel.Name}").Style(titleStyle);
 
                     column.Item().Text(text =>
                     {
                         text.Span($"Description: ").SemiBold();
-                        text.Span($" {_memberViewModel.Description}");
+                        text.Span($" {_testDocumentModel.Description}");
                     });
 
                     column.Item().Text(text =>
                     {
                         text.Span($"Questions amount: ").SemiBold();
-                        text.Span($" {_memberViewModel.QuestionsAmount}");
+                        text.Span($" {_testDocumentModel.QuestionsAmount}");
                     });
 
                     column.Item().Text(text =>
                     {
                         text.Span($"Max mark: ").SemiBold();
-                        text.Span($"{_memberViewModel.MaxMark}");
+                        text.Span($"{_testDocumentModel.MaxMark}");
+                    });
+
+                    column.Item().Text(text =>
+                    {
+                        text.Span($"Printed at: ").SemiBold();
+                        text.Span($"{_testDocumentModel.CreatedAt.ToString("dddd, dd MMMM yyyy HH:mm", CultureInfo.InvariantCulture)}");
                     });
                 });
             });
@@ -71,9 +78,9 @@ namespace BLL.Services
             {
                 column.Spacing(10);
 
-                for (int i = 1; i <= _memberViewModel.Questions.Count; i++)
+                for (int i = 1; i <= _testDocumentModel.Questions.Count; i++)
                 {
-                    var question = _memberViewModel.Questions[i - 1];
+                    var question = _testDocumentModel.Questions[i - 1];
                     // Question Header
                     column.Item().Column(questionColumn =>
                     {

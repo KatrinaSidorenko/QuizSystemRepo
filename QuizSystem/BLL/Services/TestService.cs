@@ -290,6 +290,7 @@ namespace BLL.Services
             try
             {
                 var documentModel = new TestDocumentModel();
+                documentModel.CreatedAt = DateTime.Now;
                 var testResult = await _testRepository.GetTestById(testId);
                 documentModel.Description = testResult.Description;
                 documentModel.Name = testResult.Name;
