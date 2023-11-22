@@ -37,27 +37,44 @@ namespace QuizSystem.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> Index(int id)
+        public async Task<IActionResult> Index(int id, SortingParam sortOrder, Visibility? filterParam = null, int page = 1, string searchParam = "")
         {
+            int pageSize = 3;
+            string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
 
-            var testsResult = await _testService.GetUserTests(id);
+            var testPaginationModel = new TestPaginationModel()
+            {
+                CurrentPageIndex = page > 0 ? page : 1,
+                SearchParam = search,
+                UserId = id,
+                SortingParam = sortOrder,
+                FilterParam = filterParam
+            };
+            var testsResult = await _testService.GetUserTests(id, sortOrder, filterParam,
+                page, pageSize, search);
 
             if (!testsResult.IsSuccessful)
             {
                 TempData["Error"] = testsResult.Message;
 
-                return View(testsResult.Data);
+                return View(testPaginationModel);
             }
 
-            var testVm = new List<IndexTestViewModel>();
 
-            testsResult.Data.ForEach(
-                t => testVm.Add(_mapper.Map<IndexTestViewModel>(t))
+            var testVm = testsResult.Data.Item1.Select( t => 
+                {
+                    var test = _mapper.Map<IndexTestViewModel>(t);
+                    return test;
+                }
             );
+            var pageCount = (double)((decimal)testsResult.Data.Item2 / Convert.ToDecimal(pageSize));
+            testPaginationModel.Tests = testVm.ToList();
+            testPaginationModel.PageCount = (int)Math.Ceiling(pageCount);
+            testPaginationModel.PageSize = pageSize;
 
             ViewBag.UserId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
 
-            return View(testVm);
+            return View(testPaginationModel);
         }
 
 

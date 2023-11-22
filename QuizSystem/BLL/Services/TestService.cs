@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using QuestPDF;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using System.Data.SqlClient;
 using System.Text;
 
 namespace BLL.Services
@@ -68,17 +69,26 @@ namespace BLL.Services
             }
         }
 
-        public async Task<Result<List<Test>>> GetUserTests(int userId)
+        public async Task<Result<(List<Test>, int)>> GetUserTests(int userId, SortingParam sortingParam, Visibility? filterParam = null, int pageNumber = 1, int pageSize = 6, string search = "")
         {
             try
             {
-                var tests = await _testRepository.GetUserTests(userId);
+                string orderByProp = "test_id";
+                string sortOrder = "acs";
 
-                return new Result<List<Test>>(true, tests);
+                if (SortingDictionnary.SortingValues.ContainsKey(sortingParam))
+                {
+                    orderByProp = SortingDictionnary.SortingValues[sortingParam].prop;
+                    sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
+                }
+
+                var tests = await _testRepository.GetAllUserTests(userId, filterParam, pageNumber, pageSize, orderByProp, sortOrder, search);
+
+                return new Result<(List<Test>, int)>(true, tests);
             }
             catch (Exception ex)
             {
-                return new Result<List<Test>>(isSuccessful: false, "Fail to get tests");
+                return new Result<(List<Test>, int)>(isSuccessful: false, "Fail to get tests");
             }
         }
 
