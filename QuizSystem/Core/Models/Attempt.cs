@@ -16,5 +16,6 @@ namespace Core.Models
         public int RightAnswersAmount { get; set; }
         public int TestId { get; set; }
         public int UserId { get; set; }
+        public double Accuracy { get; set; }
     }
 }

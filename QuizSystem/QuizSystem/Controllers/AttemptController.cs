@@ -273,7 +273,8 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> History(int testId, int userId, SortingParam sortOrder, int? sharedTestId = null, int page = 1, string searchParam = "")
+        public async Task<IActionResult> History(int testId, int userId, SortingParam sortOrder, FilterParam filterParam, 
+            int? sharedTestId = null, int page = 1, string searchParam = "")
         {
             int pageSize = 3;
             string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
@@ -285,10 +286,14 @@ namespace QuizSystem.Controllers
                 UserId = userId,
                 TestId = testId,
                 SharedTestId = sharedTestId,
-                SortingParam = sortOrder
+                SortingParam = sortOrder,
+                FilterParam = filterParam
             };
 
-            var attemptsResult = await _attemptService.GetUserTestAttempts(testId, userId, sortOrder, sharedTestId, page, pageSize, searchParam);
+            var attemptsResult = await _attemptService.GetUserTestAttempts(testId, userId, sortOrder,
+                sharedTestId, page, pageSize,
+                searchParam, FilterDictionary.FilterParamDict[filterParam].start, 
+                FilterDictionary.FilterParamDict[filterParam].end);
 
             if (!attemptsResult.IsSuccessful)
             {
@@ -351,7 +356,7 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SharedAttemptsHistory(int sharedTestId, SortingParam sortOrder, int page = 1, string searchParam = "")
+        public async Task<IActionResult> SharedAttemptsHistory(int sharedTestId, SortingParam sortOrder, int page = 1, string searchParam = "" )
         {
             int pageSize = 3;
             string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();

@@ -11,7 +11,7 @@ namespace DAL.Interfaces
         Task<Attempt> GetAttemptById(int attemptId);
         Task<List<Attempt>> GetUserAttempts(int userId, int testId);
         Task<Dictionary<int, int>> GetUserTestAttemptsId(int userId);
-        Task<(List<Attempt>, int)> GetAttempts(int testId, int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "attempt_id", string sortOrder = "asc", int? sharedTestId = null);
+        Task<(List<Attempt>, int)> GetAttempts(int testId, int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "attempt_id", string sortOrder = "asc", int? sharedTestId = null, int startAccuracy = 0, int endAccuracy = 100);
         Task<(List<SharedAttemptDTO>, int)> GetSharedAttempts(int sharedTestId, int pageNumber = 1, int pageSize = 6, string orderByProp = "shared_test_id", string sortOrder = "asc");
         Task<StatisticAttemptsDTO> GetAttemptsStatistic(int testId, int userId);
         Task<double> GetAttemptAccuracy(int attemptId);

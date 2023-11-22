@@ -13,6 +13,7 @@ namespace QuizSystem.ViewModels.PaginationTestViewModels
         public int PageSize { get; set; }
         public string SearchParam { get; set; }
         public SortingParam SortingParam { get; set; }
+        public FilterParam FilterParam { get; set; }
         public List<AttemptViewModel> Attempts { get; set; }
     }
 }

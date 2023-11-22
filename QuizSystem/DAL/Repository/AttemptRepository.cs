@@ -157,7 +157,7 @@ namespace DAL.Repository
             }
         }
 
-        public async Task<(List<Attempt>, int)> GetAttempts(int testId, int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "attempt_id", string sortOrder = "asc", int? sharedTestId = null)
+        public async Task<(List<Attempt>, int)> GetAttempts(int testId, int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "attempt_id", string sortOrder = "asc", int? sharedTestId = null, int startAccuracy = 0, int endAccuracy = 100)
         {           
             string sqlExpression = "PagingAttempts"; // The stored procedure name
 
@@ -179,6 +179,8 @@ namespace DAL.Repository
                     command.Parameters.AddWithValue("@UserId", userId);
                     command.Parameters.AddWithValue("@TestId", testId);
                     command.Parameters.AddWithValue("@SharedTestId", sharedTestId != null ? sharedTestId: DBNull.Value);
+                    command.Parameters.AddWithValue("@StartAccuracy", startAccuracy);
+                    command.Parameters.AddWithValue("@EndAccuracy", endAccuracy);
                     // Define the output parameter for total records
                     SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
                     totalRecordsParam.Direction = ParameterDirection.Output;
@@ -207,6 +209,7 @@ namespace DAL.Repository
                         attempt.RightAnswersAmount = (int)reader["right_answers_amount"];
                         attempt.SharedTestId = reader["shared_test_id"].Equals(DBNull.Value) ? 0 : (int)Convert.ChangeType(reader["shared_test_id"], typeof(int));
                         attempt.AttemptId = (int)reader["attempt_id"];
+                        attempt.Accuracy = (double)reader["accuracy"];
 
                         attempts.Add(attempt);
                     }
@@ -236,7 +239,8 @@ namespace DAL.Repository
                     command.Parameters.AddWithValue("@OrderBy", orderByProp);
                     command.Parameters.AddWithValue("@SortOrder", sortOrder);
                     command.Parameters.AddWithValue("@SharedTestId", sharedTestId);
-                   
+                    
+
                     // Define the output parameter for total records
                     SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
                     totalRecordsParam.Direction = ParameterDirection.Output;
@@ -266,6 +270,7 @@ namespace DAL.Repository
                         attempt.AveragePoints = (double)reader["avg_points"];
                         attempt.AverageDuration = (double)reader["avg_time"];
                         attempt.AttemptCount = (int)reader["attempt_count"];
+                       
                         attempts.Add(attempt);
                     }
                 }

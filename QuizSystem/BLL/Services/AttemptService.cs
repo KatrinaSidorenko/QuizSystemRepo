@@ -174,7 +174,7 @@ namespace BLL.Services
             }
         }
 
-        public async Task<Result<(List<AttemptHistoryDTO>, int)>> GetUserTestAttempts(int testId, int userId, SortingParam sortingParam, int? sharedTestId = null, int pageNumber = 1, int pageSize = 6, string search = "")
+        public async Task<Result<(List<AttemptHistoryDTO>, int)>> GetUserTestAttempts(int testId, int userId, SortingParam sortingParam, int? sharedTestId = null, int pageNumber = 1, int pageSize = 6, string search = "", int startAccuracy = 0, int endAccuracy = 100)
         {
             try
             {
@@ -187,7 +187,7 @@ namespace BLL.Services
                     sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
                 }
 
-                var attempts = await _attemptRepository.GetAttempts(testId, userId, pageNumber, pageSize, orderByProp, sortOrder, sharedTestId);
+                var attempts = await _attemptRepository.GetAttempts(testId, userId, pageNumber, pageSize, orderByProp, sortOrder, sharedTestId, startAccuracy, endAccuracy);
 
                 if (attempts.Item1 == null)
                 {
@@ -195,7 +195,7 @@ namespace BLL.Services
                 }
 
                 //get accuracy
-                var attemptsDTO = attempts.Item1.Select(async a =>
+                var attemptsDTO = attempts.Item1.Select(a =>
                 {
                     var attemptDTO = new AttemptHistoryDTO()
                     {
@@ -206,21 +206,15 @@ namespace BLL.Services
                         SharedTestId = a.SharedTestId,
                         StartDate = a.StartDate,
                         AttemptId = a.AttemptId,
-                        RightAnswersAmount = a.RightAnswersAmount
+                        RightAnswersAmount = a.RightAnswersAmount,
+                        Accuracy = a.Accuracy
                     };
-
-                    var attemptAccuracy = await GetAttemptAccuracy(a.AttemptId);
-
-                    if (attemptAccuracy.IsSuccessful)
-                    {
-                        attemptDTO.Accuracy = attemptAccuracy.Data;
-                    }
 
                     return attemptDTO;
                 });
 
 
-                List<AttemptHistoryDTO> result = Task.WhenAll(attemptsDTO).Result.ToList();
+                List<AttemptHistoryDTO> result = attemptsDTO.ToList();
 
 
                 if (!string.IsNullOrEmpty(search))
@@ -418,8 +412,7 @@ namespace BLL.Services
                         {
                             AnswerId = a.AnswerId,
                             IsRight = a.IsRight,
-                            Value = a.Value,
-                            StartDate = a.S
+                            Value = a.Value
                         };
 
 

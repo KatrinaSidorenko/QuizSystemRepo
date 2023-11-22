@@ -17,5 +17,6 @@ namespace Core.DTO
         public int AttemptCount { get; set; }
         public int TestId { get; set; }
         public int SharedTestId { get; set; }
+
     }
 }
