@@ -8,6 +8,8 @@
         EndDate,
         StartDate,
         StartDateDesc,
+        LastDate,
+        LastDateDesc,
         Date,
         DateDesc,
         Created,

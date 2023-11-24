@@ -1,5 +1,6 @@
 ﻿using BLL.Interfaces;
 using Core.DocumentModels;
+using Core.DTO;
 using Core.Enums;
 using Core.Models;
 using Core.Settings;
@@ -36,27 +37,12 @@ namespace BLL.Services
                 string orderByProp = "test_id";
                 string sortOrder = "acs";
 
-                switch (sortingParam)
+                if (SortingDictionnary.SortingValues.ContainsKey(sortingParam))
                 {
-                    case SortingParam.Name:
-                        orderByProp = "test_name";
-                        sortOrder = "acs";
-                        break;
-                    case SortingParam.NameDesc:
-                        orderByProp = "test_name";
-                        sortOrder = "desc";
-                        break;
-                    case SortingParam.Date:
-                        orderByProp = "date_of_creation";
-                        sortOrder = "acs";
-                        break;
-                    case SortingParam.DateDesc:
-                        orderByProp = "date_of_creation";
-                        sortOrder = "desc";
-                        break;
+                    orderByProp = SortingDictionnary.SortingValues[sortingParam].prop;
+                    sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
                 }
 
-                   
                 var pablicTestsAndRecordsAmount = await _testRepository.GetAllPublicTestsWithTotalRecords(pageNumber, pageSize, orderByProp, sortOrder);
 
                 var result = pablicTestsAndRecordsAmount.Item1.Where(t => t.Name.ToLower().Contains(search)).ToList();
@@ -89,6 +75,29 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<(List<Test>, int)>(isSuccessful: false, "Fail to get tests");
+            }
+        }
+
+        public async Task<Result<(List<TestActivityDTO>, int)>> GetUserActivityTests(int userId, SortingParam sortingParam, Visibility? filterParam = null, int pageNumber = 1, int pageSize = 6, string search = "")
+        {
+            try
+            {
+                string orderByProp = "test_id";
+                string sortOrder = "acs";
+
+                if (SortingDictionnary.SortingValues.ContainsKey(sortingParam))
+                {
+                    orderByProp = SortingDictionnary.SortingValues[sortingParam].prop;
+                    sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
+                }
+
+                var tests = await _testRepository.GetUserActivityTests(userId, filterParam, pageNumber, pageSize, orderByProp, sortOrder, search);
+
+                return new Result<(List<TestActivityDTO>, int)>(true, tests);
+            }
+            catch (Exception ex)
+            {
+                return new Result<(List<TestActivityDTO>, int)>(isSuccessful: false, "Fail to get tests");
             }
         }
 
@@ -229,7 +238,7 @@ namespace BLL.Services
         {
             try
             {
-                var result = await _testRepository.GetQyestionAmountAndPoints(testId);
+                var result = await _testRepository.GetQuestionAmountAndPoints(testId);
 
                 return new Result<(int, double)>(true, result);
             }

@@ -1,9 +1,12 @@
-﻿@using QuizSystem.ViewModels.AttemptViewModels;
-@model List<ActivityViewModel>
+﻿@using QuizSystem.ViewModels.PaginationTestViewModels
+@using Core.Enums
+@model ActivityTestsPaginationModel
 
 @{
-    var tests = Model.ToList();
+    var tests = Model.Activities.ToList();
+    var testOrNull = Model.Activities.FirstOrDefault();
 }
+
 <style>
     .overflow-example {
         width: 100%; /* Set a fixed width for the container */
@@ -12,38 +15,151 @@
         text-overflow: ellipsis; /* Add ellipsis for overflowed text */
     }
 </style>
-@if (Model.Count() == 0)
+<div class="container mb-5">
+</div>
+<div style="text-align: center;">
+    <form method="get" asp-controller="Attempt" asp-action="Activity" class="mb-4">
+        <div class="row">
+            <!-- Center the input group and button -->
+            <div class="col-md-6">
+                <div class="input-group" style="width: 350px">
+                    <div class="form-outline">
+                        <input type="hidden" id="page" name="page" value="@Model.CurrentPageIndex" />
+                        <input type="hidden" id="filterParam" name="filterParam" value="@Model.FilterParam" />
+                        <input asp-for=@Model.SearchParam type="search" id="searchParam" name="searchParam" class="form-control" style="background-color: ghostwhite;" />
+                        <label asp-for=@Model.SearchParam class="form-label" for="searchParam">Search by title</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end">
+                <div class="dropdown">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-mdb-toggle="dropdown" aria-expanded="false">
+                        Filter By Visibility
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li>
+                            <a href="@Url.Action("Activity", "Attempt", new {id = Model.UserId,  searchParam = Model.SearchParam, sortOrder =Model.SortingParam, filterParam = Visibility.Public})" class="dropdown-item">Public</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Activity", "Attempt", new {id = Model.UserId,  searchParam = Model.SearchParam, sortOrder =Model.SortingParam, filterParam = Visibility.Private})" class="dropdown-item">Private</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dropdown">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-mdb-toggle="dropdown" aria-expanded="false">
+                        Order By
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li>
+                            <a href="@Url.Action("Activity", "Attempt", new {id = Model.UserId,  searchParam = Model.SearchParam, filterParam = Model.FilterParam, sortOrder = SortingParam.LastDate })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Date (oldest)</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Activity", "Attempt", new {id = Model.UserId,  searchParam = Model.SearchParam, filterParam = Model.FilterParam,sortOrder = SortingParam.LastDateDesc})" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Date (newest)</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Activity", "Attempt", new {id = Model.UserId,  searchParam = Model.SearchParam, filterParam = Model.FilterParam, sortOrder = SortingParam.Name })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Title </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Activity", "Attempt", new {id = Model.UserId,  searchParam = Model.SearchParam, filterParam = Model.FilterParam, sortOrder = SortingParam.NameDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Title</a>
+                        </li>
+                        @*<li><a class="dropdown-item" href="#">Attempts</a></li>*@
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@if (Model.Activities.Count() != 0)
 {
-    <h1>You havn't create tests</h1>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <div class="container mb-5">
+    </div>
+
+        @for (int i = 0; i < tests.Count; i += 3)
+        {
+            <div class="row">
+                <!-- Create a row for every three elements -->
+                @for (int j = i; j < Math.Min(i + 3, tests.Count); j++)
+                {
+                    var test = tests[j];
+                    <div class="col-md-4">
+                        <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
+                        <div class="card mb-3">
+                            <div class="card-header"><h4>Title: @test.Name</h4></div>
+                            <div class="card-body">
+                                <p class="card-title overflow-example">Description: @test.Description</p>
+                                <p class="card-text"><strong>Your attempts amount: <i class="fas fa-bullseye"></i> @test.AttemptsAmount</strong></p>
+                                <a href="@Url.Action("History", "Attempt", new { testId = test.TestId, userId = User.Claims.FirstOrDefault(c => c.Type == "id").Value})" class="btn btn-primary">History</a>
+                                <a href="@Url.Action("Details", "Attempt", new { testId = test.TestId})" class="btn btn-success btn-rounded">Statistic</a>
+                                <a href="@Url.Action("MemberView", "Test", new { testId = test.TestId})" class="btn btn-primary">View the Test</a>
+                                <div class="card-footer bg-light px-3 mt-2">Last attempt: @test.LastAttemptDate.ToString("dddd, dd MMMM yyyy HH:mm")</div>
+                                @*<div class="card-footer text-muted"></div>*@
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="container mb-5">
+        </div>
+        <!-- Add CSS styles to center the pagination bar -->
+        <style>
+            .pagination-container {
+                display: flex;
+                justify-content: center;
+            }
+        </style>
+
+        <div class="pagination-container">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    @if (Model.CurrentPageIndex > 1)
+                    {
+                        <li class="page-item">
+                            <a href="@Url.Action("Activity", "Attempt", new { id = Model.UserId, page = (Model.CurrentPageIndex - 1), searchParam = Model.SearchParam, sortOrder =Model.SortingParam, filterParam = Model.FilterParam})" aria-label="Previous" class="page-link">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    }
+
+                    @for (int j = 1; j <= Model.PageCount; j++)
+                    {
+                        if (j == Model.CurrentPageIndex)
+                        {
+                        <li class="page-item active"> <a href="@Url.Action("Activity", "Attempt", new {  id = Model.UserId,page = j, searchParam = Model.SearchParam , sortOrder = Model.SortingParam, filterParam = Model.FilterParam})" class="page-link">@j</a></li>
+                        }
+                        else
+                        {
+                        <li class="page-item"> <a href="@Url.Action("Activity", "Attempt", new { id = Model.UserId, page = j, searchParam = Model.SearchParam , sortOrder =Model.SortingParam, filterParam = Model.FilterParam})" class="page-link">@j</a></li>
+
+                        }
+                    }
+
+                    @if (Model.CurrentPageIndex < Model.PageCount)
+                    {
+                        <li class="page-item">
+                        <a href="@Url.Action("Activity", "Attempt", new {  id = Model.UserId, page = (Model.CurrentPageIndex + 1), searchParam = Model.SearchParam, sortOrder = Model.SortingParam , filterParam = Model.FilterParam})" aria-label="Next" class="page-link">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div> 
 }
 else
 {
-    <div class="container mb-5"> </div>
-
-    <!-- Convert Model to a List for easier manipulation -->
-    @for (int i = 0; i < tests.Count; i += 3)
-    {
-        <div class="row">
-            <!-- Create a row for every three elements -->
-            @for (int j = i; j < Math.Min(i + 3, tests.Count); j++)
-            {
-                var test = tests[j];
-                <div class="col-md-4">
-                    <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
-                    <div class="card mb-3">
-                        <div class="card-header"><h4>Title: @test.Name</h4></div>
-                        <div class="card-body">
-                            <p class="card-title overflow-example">Description: @test.Description</p>
-                            <p class="card-text"><strong>Your attempts amount: <i class="fas fa-bullseye"></i> @test.AmountOfAttempts</strong></p>
-                            <a href="@Url.Action("History", "Attempt", new { testId = test.TestId, userId = User.Claims.FirstOrDefault(c => c.Type == "id").Value})" class="btn btn-primary">History</a>
-                            <a href="@Url.Action("Details", "Attempt", new { testId = test.TestId})" class="btn btn-success btn-rounded">Statistic</a>
-                            <a href="@Url.Action("MemberView", "Test", new { testId = test.TestId})" class="btn btn-primary">View the Test</a>
-                            <div class="card-footer bg-light px-3 mt-2">@test.DateOfCreation.ToString("dddd, dd MMMM yyyy HH:mm")</div>
-                            @*<div class="card-footer text-muted"></div>*@
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    }
+    <h1>No activity</h1>
 }
+
+

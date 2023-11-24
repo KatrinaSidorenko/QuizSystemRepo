@@ -11,6 +11,7 @@ using QuizSystem.ViewModels.AttemptViewModels;
 using QuizSystem.ViewModels.QuestionViewModel;
 using QuizSystem.ViewModels.TakeTestViewModels;
 using QuizSystem.ViewModels.PaginationTestViewModels;
+using QuizSystem.ViewModels.TestViewModels;
 
 namespace QuizSystem.Controllers
 {
@@ -224,52 +225,59 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Activity()
+        public async Task<IActionResult> Activity(SortingParam sortOrder, int id = 0,  Visibility? filterParam = null, int page = 1, string searchParam = "")
         {
-            var userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+            int userId = id;
 
-            var userIdResult = await _userService.IsUserExist(userId);
-
-            if (!userIdResult.IsSuccessful)
+            if(userId == 0)
             {
-                TempData["Error"] = userIdResult.Message;
+                var temUserId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+                var userIdResult = await _userService.IsUserExist(temUserId);
 
-                return RedirectToAction("Index", "Home");
+                if (!userIdResult.IsSuccessful)
+                {
+                    TempData["Error"] = userIdResult.Message;
+
+                    return RedirectToAction("Index", "Home");
+                }
+
+                userId = temUserId;
             }
+          
+            int pageSize = 3;
+            string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
 
-            var testIdsResult = await _attemptService.GetUserTestAttemptsId(userId);
-
-            if (!testIdsResult.IsSuccessful)
+            var activityPaginationModel = new ActivityTestsPaginationModel()
             {
-                TempData["Error"] = testIdsResult.Message;
-
-                return RedirectToAction("Index", "Home");
-            }
-
-            var testsResult = await _testService.GetRangeOfTests(testIdsResult.Data.Keys.ToList());
+                CurrentPageIndex = page > 0 ? page : 1,
+                SearchParam = search,
+                UserId = userId,
+                SortingParam = sortOrder,
+                FilterParam = filterParam
+            };
+            var testsResult = await _testService.GetUserActivityTests(userId, sortOrder, filterParam,
+                page, pageSize, search);
 
             if (!testsResult.IsSuccessful)
             {
                 TempData["Error"] = testsResult.Message;
 
-                return RedirectToAction("Index", "Home");
+                return View(activityPaginationModel);
             }
 
-            var activityVms = new List<ActivityViewModel>();
 
-            foreach(var test in testsResult.Data)
+            var testVm = testsResult.Data.Item1.Select(t =>
             {
-                var activityVM = _mapper.Map<ActivityViewModel>(test);
-
-                if (test is not null)
-                {
-                    activityVM.AmountOfAttempts = testIdsResult.Data[test.TestId];
-                }
-
-                activityVms.Add(activityVM);
+                var test = _mapper.Map<ActivityViewModel>(t);
+                return test;
             }
+            );
+            var pageCount = (double)((decimal)testsResult.Data.Item2 / Convert.ToDecimal(pageSize));
+            activityPaginationModel.Activities = testVm.ToList();
+            activityPaginationModel.PageCount = (int)Math.Ceiling(pageCount);
+            activityPaginationModel.PageSize = pageSize;
 
-            return View(activityVms);
+            return View(activityPaginationModel);
         }
 
         [HttpGet]

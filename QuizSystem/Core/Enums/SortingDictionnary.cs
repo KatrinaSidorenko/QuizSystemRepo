@@ -31,7 +31,9 @@ namespace Core.Enums
             {SortingParam.AvgPoints, ("avg_points", "asc") },
             {SortingParam.AvgPointsDesc, ("avg_points", "desc") },
             {SortingParam.FirstName, ("first_name", "asc") },
-            {SortingParam.FirstNameDesc, ("first_name", "desc") }
+            {SortingParam.FirstNameDesc, ("first_name", "desc") },
+            {SortingParam.LastDate, ("last_attempt_date", "asc") },
+            {SortingParam.LastDateDesc, ("last_attempt_date", "desc") }
         };
     }
 }
