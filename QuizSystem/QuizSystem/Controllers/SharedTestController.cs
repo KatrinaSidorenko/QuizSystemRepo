@@ -59,6 +59,28 @@ namespace QuizSystem.Controllers
                 return View(createShareTest);
             }
 
+            if (createShareTest.AttemptCount <= 0)
+            {
+                TempData["Error"] = "Attempt count can be 0 or less";
+
+                return View(createShareTest);
+            }
+
+            if (createShareTest.EndDate < createShareTest.StartDate)
+            {
+                TempData["Error"] = "End date can't be earlier than start date";
+
+                return View(createShareTest);
+            }
+
+            if (createShareTest.EndDate < DateTime.Now)
+            {
+                TempData["Error"] = "Test can't be completed at start";
+
+                return View(createShareTest);
+            }
+
+
             var sharedTest = _mapper.Map<SharedTest>(createShareTest);
            
             sharedTest.AttemptDuration = new DateTime(2023, 01, 01).AddMinutes(createShareTest.AttemptDuration);
@@ -122,16 +144,16 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(SortingParam sortOrder, int page = 1, string searchParam = "")
+        public async Task<IActionResult> Index(SortingParam sortOrder, SharedTestStatus? filterParam = null, int page = 1, string searchParam = "")
         {
-            int pageSize = 6;
+            int pageSize = 3;
             string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
-            ViewBag.SortParam = sortOrder;
-
+            
             var testPaginationModel = new SharedTestPaginationModel()
             {
                 CurrentPageIndex = page > 0 ? page : 1,
-                SearchParam = search
+                SearchParam = search,
+                SortingParam = sortOrder
             };
 
 
@@ -146,7 +168,7 @@ namespace QuizSystem.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var sharedTestsResult = await _sharedTestService.GetUserSharedTests(userId, sortOrder, page, pageSize, searchParam);
+            var sharedTestsResult = await _sharedTestService.GetUserSharedTests(userId, sortOrder, filterParam, page, pageSize, searchParam);
 
             if (!sharedTestsResult.IsSuccessful)
             {
@@ -223,9 +245,23 @@ namespace QuizSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditSharedTestViewModel sharedTestVm)
         {
-            if(sharedTestVm.AttemptCount <= 0 || (sharedTestVm.EndDate < sharedTestVm.StartDate))
+            if(sharedTestVm.AttemptCount <= 0)
             {
-                TempData["Error"] = "Invalid input data";
+                TempData["Error"] = "Attempt count can be 0 or less";
+
+                return View(sharedTestVm);
+            }
+
+            if (sharedTestVm.EndDate < sharedTestVm.StartDate)
+            {
+                TempData["Error"] = "End date can't be earlier than start date";
+
+                return View(sharedTestVm);
+            }
+
+            if (sharedTestVm.EndDate < DateTime.Now)
+            {
+                TempData["Error"] = "Test can't be completed at start";
 
                 return View(sharedTestVm);
             }

@@ -1,4 +1,4 @@
-﻿namespace QuizSystem.ViewModels.AttemptViewModel
+﻿namespace QuizSystem.ViewModels.AttemptViewModels
 {
     public class AttemptViewModel
     {

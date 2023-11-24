@@ -8,13 +8,8 @@
 }
 
 
-@if (Model.Tests.Count() == 0)
-{
-    <h1>You don't have any unshared tests.</h1>
-}
-else
-{
-    <div style="text-align: center;">
+<div class="container mb-5"> </div>
+  <div style="text-align: center;">
         <form method="get" asp-controller="SharedTest" asp-action="Index" class="mb-4">
             <div class="row">
                 <!-- Center the input group and button -->
@@ -22,6 +17,7 @@ else
                     <div class="input-group" style="width: 350px">
                         <div class="form-outline">
                             <input type="hidden" id="page" name="page" value="@Model.CurrentPageIndex" />
+                        <input type="hidden" id="sortOrder" name="sortOrder" value="@Model.SortingParam" />
                             <input type="search" id="searchParam" name="searchParam" class="form-control" style="background-color: ghostwhite;" />
                             <label class="form-label" for="searchParam">Search by title</label>
                         </div>
@@ -30,36 +26,52 @@ else
                         </button>
                     </div>
                 </div>
+                  
                 <div class="col-md-6 d-flex justify-content-end">
-                    <!-- Align the dropdown to the right -->
+                    <div class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-mdb-toggle="dropdown" aria-expanded="false">
+                            Filter By
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li>
+                            <a href="@Url.Action("Index", "SharedTest", new {  searchParam = Model.SearchParam, sortOrder = Model.SortingParam, filterParam = SharedTestStatus.Planned })" class="dropdown-item"> Planned</a>
+                            </li>
+                            <li>
+                            <a href="@Url.Action("Index", "SharedTest", new { searchParam = Model.SearchParam, sortOrder = Model.SortingParam, filterParam = SharedTestStatus.InProgress})" class="dropdown-item"> In Progress</a>
+                            </li>
+                            <li>
+                            <a href="@Url.Action("Index", "SharedTest", new {   searchParam = Model.SearchParam, sortOrder = Model.SortingParam, filterParam = SharedTestStatus.Completed })" class="dropdown-item"> Completed</a>
+                            </li>
+                        </ul>
+                    </div>
                     <div class="dropdown">
                         <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-mdb-toggle="dropdown" aria-expanded="false">
                             Order By
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                             <li>
-                                <a href="@Url.Action("Index", "SharedTest", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.StartDate })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Start Date (oldest)</a>
+                                <a href="@Url.Action("Index", "SharedTest", new {  searchParam = Model.SearchParam, sortOrder = SortingParam.StartDate, filterParam = Model.FilterParam})" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Start Date (oldest)</a>
                             </li>
                             <li>
-                                <a href="@Url.Action("Index", "SharedTest", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.StartDateDesc})" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Start Date (newest)</a>
+                                <a href="@Url.Action("Index", "SharedTest", new {  searchParam = Model.SearchParam, sortOrder = SortingParam.StartDateDesc, filterParam = Model.FilterParam})" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Start Date (newest)</a>
                             </li>
                             <li>
-                                <a href="@Url.Action("Index", "SharedTest", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.EndDate })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> End Date (oldest)</a>
+                                <a href="@Url.Action("Index", "SharedTest", new {  searchParam = Model.SearchParam, sortOrder = SortingParam.EndDate, filterParam = Model.FilterParam })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> End Date (oldest)</a>
                             </li>
                             <li>
-                                <a href="@Url.Action("Index", "SharedTest", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.EndDateDesc})" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> End Date (newest)</a>
+                                <a href="@Url.Action("Index", "SharedTest", new {  searchParam = Model.SearchParam, sortOrder = SortingParam.EndDateDesc, filterParam = Model.FilterParam})" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> End Date (newest)</a>
                             </li>
                             <li>
-                                <a href="@Url.Action("Index", "SharedTest", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.AttemptCount })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Attempts count </a>
+                                <a href="@Url.Action("Index", "SharedTest", new {  searchParam = Model.SearchParam, sortOrder = SortingParam.AttemptCount, filterParam = Model.FilterParam })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Attempts count </a>
                             </li>
                             <li>
-                                <a href="@Url.Action("Index", "SharedTest", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.AttemptCountDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Attempts count</a>
+                                <a href="@Url.Action("Index", "SharedTest", new { searchParam = Model.SearchParam, sortOrder = SortingParam.AttemptCountDesc, filterParam = Model.FilterParam })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Attempts count</a>
                             </li>
                             <li>
-                                <a href="@Url.Action("Index", "SharedTest", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.AttemptDuration })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Attempt duration </a>
+                                <a href="@Url.Action("Index", "SharedTest", new { searchParam = Model.SearchParam, sortOrder = SortingParam.AttemptDuration, filterParam = Model.FilterParam })" class="dropdown-item"><i class="fa fa-arrow-up" aria-hidden="true"></i> Attempt duration </a>
                             </li>
                             <li>
-                                <a href="@Url.Action("Index", "SharedTest", new { page = Model.CurrentPageIndex, searchParam = Model.SearchParam, sortOrder = SortingParam.AttemptDurationDesc })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Attempts duration</a>
+                                <a href="@Url.Action("Index", "SharedTest", new { searchParam = Model.SearchParam, sortOrder = SortingParam.AttemptDurationDesc, filterParam = Model.FilterParam })" class="dropdown-item"><i class="fa fa-arrow-down" aria-hidden="true"></i> Attempts duration</a>
                             </li>
                             @*<li><a class="dropdown-item" href="#">Attempts</a></li>*@
                         </ul>
@@ -68,7 +80,15 @@ else
             </div>
         </form>
     </div>
-    <!-- Convert Model to a List for easier manipulation -->
+
+    @if (Model.Tests.Count() == 0)
+    {
+        <h1>You don't have any unshared tests.</h1>
+    }
+    else
+    {
+    <div class="container mb-5">
+    </div>
     @for (int i = 0; i < sharedTests.Count; i += 3)
     {
         <div class="row">
@@ -84,7 +104,7 @@ else
                             @*<h5 class="card-title"></h5>*@
                             <p class="card-text">Description: @sharedTest.Description</p>
                             <p class="card-text">Status: @sharedTest.Status.ToString()</p>
-                            <p class="card-text">Attempts count: @sharedTest.AttemptCount</p>
+                            <p class="card-text">Possible attempts count: @sharedTest.AttemptCount</p>
 
                             @{
                                 var time = sharedTest.AttemptDuration - new DateTime(2023, 01, 01);
@@ -113,7 +133,7 @@ else
                                     </div>
                                 </div>
                             </div>
-@*                            <a href="@Url.Action("Edit", "Test", new { testId = sharedTest.TestId})" class="btn btn-primary">Edit</a>*@
+                            @*                            <a href="@Url.Action("Edit", "Test", new { testId = sharedTest.TestId})" class="btn btn-primary">Edit</a>*@
 
 
                             <div class="card-footer bg-light px-3 mt-2">@sharedTest.StartDate.ToString("dddd, dd MMMM yyyy HH:mm") - @sharedTest.EndDate.ToString("dddd, dd MMMM yyyy HH:mm")</div>
@@ -123,8 +143,9 @@ else
             }
         </div>
         <!-- Add CSS styles to center the pagination bar -->
-        
     }
+    <div class="container mb-5">
+    </div>
     <style>
         .pagination-container {
             display: flex;
@@ -138,21 +159,22 @@ else
                 @if (Model.CurrentPageIndex > 1)
                 {
                     <li class="page-item">
-                        <a href="@Url.Action("Index", "SharedTest", new { page = (Model.CurrentPageIndex - 1), searchParam = Model.SearchParam, sortOrder =ViewBag.SortParam })" aria-label="Previous" class="page-link">
+                        <a href="@Url.Action("Index", "SharedTest", new { page = (Model.CurrentPageIndex - 1), searchParam = Model.SearchParam, sortOrder =Model.SortingParam , filterParam = Model.FilterParam})" aria-label="Previous" class="page-link">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                 }
 
+
                 @for (int i = 1; i <= Model.PageCount; i++)
                 {
                     if (i == Model.CurrentPageIndex)
                     {
-                        <li class="page-item active"> <a href="@Url.Action("Index", "SharedTest", new { page = @i, searchParam = Model.SearchParam , sortOrder =ViewBag.SortParam})" class="page-link">@i</a></li>
+                        <li class="page-item active"> <a href="@Url.Action("Index", "SharedTest", new { page = @i, searchParam = Model.SearchParam , sortOrder =Model.SortingParam, filterParam = Model.FilterParam})" class="page-link">@i</a></li>
                     }
                     else
                     {
-                        <li class="page-item"> <a href="@Url.Action("Index", "SharedTest", new { page = @i, searchParam = Model.SearchParam , sortOrder =ViewBag.SortParam})" class="page-link">@i</a></li>
+                        <li class="page-item"> <a href="@Url.Action("Index", "SharedTest", new { page = @i, searchParam = Model.SearchParam , sortOrder =Model.SortingParam, filterParam = Model.FilterParam})" class="page-link">@i</a></li>
 
                     }
                 }
@@ -160,7 +182,7 @@ else
                 @if (Model.CurrentPageIndex < Model.PageCount)
                 {
                     <li class="page-item">
-                        <a href="@Url.Action("Index", "SharedTest", new { page = (Model.CurrentPageIndex + 1), searchParam = Model.SearchParam, sortOrder =ViewBag.SortParam })" aria-label="Next" class="page-link">
+                        <a href="@Url.Action("Index", "SharedTest", new { page = (Model.CurrentPageIndex + 1), searchParam = Model.SearchParam, sortOrder = Model.SortingParam, filterParam = Model.FilterParam})" aria-label="Next" class="page-link">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
@@ -168,5 +190,8 @@ else
             </ul>
         </nav>
     </div>
-}
+    }
+<!-- Convert Model to a List for easier manipulation -->
+   
+
 

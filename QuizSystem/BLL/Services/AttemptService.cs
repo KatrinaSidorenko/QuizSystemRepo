@@ -10,6 +10,7 @@ using System.Text;
 using QuestPDF.Fluent;
 using Core.DocumentModels;
 using Microsoft.Extensions.Options;
+using System.Data.SqlClient;
 
 namespace BLL.Services
 {
@@ -51,11 +52,11 @@ namespace BLL.Services
             }
         }
 
-        public async Task<Result<Attempt>> SaveAttemptData(AttemptResultDTO attemptResultDTO)
+        public async Task<Result<int>> SaveAttemptData(AttemptResultDTO attemptResultDTO)
         {
             if (attemptResultDTO == null)
             {
-                return new Result<Attempt>(isSuccessful: false, $"{nameof(attemptResultDTO)} is null");
+                return new Result<int>(isSuccessful: false, $"{nameof(attemptResultDTO)} is null");
             }
 
             try
@@ -94,13 +95,13 @@ namespace BLL.Services
                 }
 
                 await _attemptRepository.UpdateAttempt(attempt);
-                var updatedAttempt = await _attemptRepository.GetAttemptById(attemptResultDTO.AttemptId);
+                //var updatedAttempt = await _attemptRepository.GetAttemptById(attemptResultDTO.AttemptId);
 
-                return new Result<Attempt>(true, updatedAttempt);
+                return new Result<int>(true, attemptResultDTO.AttemptId);
             }
             catch (Exception ex)
             {
-                return new Result<Attempt>(isSuccessful: false, $"{nameof(attemptResultDTO)} is null");
+                return new Result<int>(isSuccessful: false, $"{nameof(attemptResultDTO)} is null");
             }
         }
         public async Task<Result<Attempt>> GetAttemptById(int attemptId)
@@ -173,17 +174,99 @@ namespace BLL.Services
             }
         }
 
-        public async Task<Result<List<Attempt>>> GetUserTestAttempts(int testId, int userId)
+        public async Task<Result<(List<AttemptHistoryDTO>, int)>> GetUserTestAttempts(int testId, int userId, SortingParam sortingParam, int? sharedTestId = null, int pageNumber = 1, int pageSize = 6, string search = "", int startAccuracy = 0, int endAccuracy = 100)
         {
             try
             {
-                var attempts = await _attemptRepository.GetAttempts(testId, userId);
+                string orderByProp = "attempt_id";
+                string sortOrder = "asc";
 
-                return new Result<List<Attempt>>(true, attempts);
+                if (SortingDictionnary.SortingValues.ContainsKey(sortingParam))
+                {
+                    orderByProp = SortingDictionnary.SortingValues[sortingParam].prop;
+                    sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
+                }
+
+                var attempts = await _attemptRepository.GetAttempts(testId, userId, pageNumber, pageSize, orderByProp, sortOrder, sharedTestId, startAccuracy, endAccuracy);
+
+                if (attempts.Item1 == null)
+                {
+                    return new Result<(List<AttemptHistoryDTO>, int)>(isSuccessful: false, $"Fail to get {nameof(attempts)}");
+                }
+
+                //get accuracy
+                var attemptsDTO = attempts.Item1.Select(a =>
+                {
+                    var attemptDTO = new AttemptHistoryDTO()
+                    {
+                        Points = a.Points,
+                        UserId = a.UserId,
+                        TestId = a.TestId,
+                        EndDate = a.EndDate,
+                        SharedTestId = a.SharedTestId,
+                        StartDate = a.StartDate,
+                        AttemptId = a.AttemptId,
+                        RightAnswersAmount = a.RightAnswersAmount,
+                        Accuracy = a.Accuracy
+                    };
+
+                    return attemptDTO;
+                });
+
+
+                List<AttemptHistoryDTO> result = attemptsDTO.ToList();
+
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    var attemptsResult = result.Where(t => t.Accuracy.Equals(Convert.ToDouble(search))).ToList();
+
+                    return new Result<(List<AttemptHistoryDTO>, int)>(true, (attemptsResult, attempts.Item2));
+                }
+
+
+                return new Result<(List<AttemptHistoryDTO>, int)>(true, (result, attempts.Item2));
             }
             catch(Exception ex)
             {
-                return new Result<List<Attempt>>(false, "Fail to get attempts");
+                return new Result<(List<AttemptHistoryDTO>, int)>(false, "Fail to get attempts");
+            }
+        }
+
+        public async Task<Result<(List<SharedAttemptDTO>, int)>> GetSharedAttempts(int sharedTestId, SortingParam sortingParam, int pageNumber = 1, int pageSize = 6, string search = "")
+        {
+            try
+            {
+                string orderByProp = "shared_test_id";
+                string sortOrder = "asc";
+
+                if (SortingDictionnary.SortingValues.ContainsKey(sortingParam))
+                {
+                    orderByProp = SortingDictionnary.SortingValues[sortingParam].prop;
+                    sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
+                }
+
+                var attempts = await _attemptRepository.GetSharedAttempts(sharedTestId, pageNumber, pageSize, orderByProp, sortOrder);
+
+                if (attempts.Item1 == null)
+                {
+                    return new Result<(List<SharedAttemptDTO>, int)>(isSuccessful: false, $"Fail to get {nameof(attempts)}");
+                }
+
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    var attemptsResult = attempts.Item1.Where(a => a.Email.ToLower().Contains(search.ToLower())).ToList();
+
+                    return new Result<(List<SharedAttemptDTO>, int)>(true, (attemptsResult, attempts.Item2));
+                }
+
+
+                return new Result<(List<SharedAttemptDTO>, int)>(true, (attempts.Item1, attempts.Item2));
+            }
+            catch (Exception ex)
+            {
+                return new Result<(List<SharedAttemptDTO>, int)>(false, "Fail to get attempts");
             }
         }
 
@@ -306,6 +389,8 @@ namespace BLL.Services
 
 
                 var attemptDocumentModel = new AttemptResultDocumentDTO();
+                attemptDocumentModel.StartDate = attemptResult.Data.StartDate;
+                attemptDocumentModel.EndDate = attemptResult.Data.EndDate;
                 var testResult = await _testService.GetTestById(attemptResult.Data.TestId);
 
                 attemptDocumentModel.TestId = testResult.Data.TestId;

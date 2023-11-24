@@ -1,7 +1,7 @@
 ﻿using Core.Enums;
 using Core.Models;
 
-namespace QuizSystem.ViewModels.AttemptViewModel
+namespace QuizSystem.ViewModels.AttemptViewModels
 {
     public class AttemptQuestionViewModel
     {

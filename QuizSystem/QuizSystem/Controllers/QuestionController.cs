@@ -66,7 +66,7 @@ namespace QuizSystem.Controllers
         {
             await _questionRepository.DeleteQuestion(questionId);
 
-            return RedirectToAction("MemberView", "Test",  new {testId = testId});
+            return RedirectToAction("TestView", "Test",  new {testId = testId});
         }
 
         [HttpGet]
@@ -152,23 +152,6 @@ namespace QuizSystem.Controllers
             if (!result.IsSuccessful)
             {
                 TempData["Error"] = result.Message;
-
-                //if (createQuestionViewModel.Type.Equals(QuestionType.Multiple))
-                //{
-                //    return View("AddAnswerMultiple", createQuestionViewModel);
-                //}
-                //else if (createQuestionViewModel.Type.Equals(QuestionType.Single))
-                //{
-                //    return View("AddAnswerSingle", createQuestionViewModel);
-
-                //    //return Json(new { redirectUrl = Url.Action("AddAnswerSingle", new { createQuestionViewModel }) });
-                //}
-                //else
-                //{
-                //    return View("AddAnswerOpen", createQuestionViewModel);
-
-                //    //return Json(new { redirectUrl = Url.Action("AddAnswerOpen", new { createQuestionViewModel }) });
-                //}
 
             }
 

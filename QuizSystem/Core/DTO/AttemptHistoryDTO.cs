@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Models
+namespace Core.DTO
 {
-    public class Attempt
+    public  class AttemptHistoryDTO
     {
         public int AttemptId { get; set; }
         public double Points { get; set; }

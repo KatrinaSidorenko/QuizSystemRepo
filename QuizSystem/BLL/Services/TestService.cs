@@ -1,5 +1,6 @@
 ﻿using BLL.Interfaces;
 using Core.DocumentModels;
+using Core.DTO;
 using Core.Enums;
 using Core.Models;
 using Core.Settings;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Options;
 using QuestPDF;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using System.Data.SqlClient;
 using System.Text;
 
 namespace BLL.Services
@@ -35,27 +37,12 @@ namespace BLL.Services
                 string orderByProp = "test_id";
                 string sortOrder = "acs";
 
-                switch (sortingParam)
+                if (SortingDictionnary.SortingValues.ContainsKey(sortingParam))
                 {
-                    case SortingParam.Name:
-                        orderByProp = "test_name";
-                        sortOrder = "acs";
-                        break;
-                    case SortingParam.NameDesc:
-                        orderByProp = "test_name";
-                        sortOrder = "desc";
-                        break;
-                    case SortingParam.Date:
-                        orderByProp = "date_of_creation";
-                        sortOrder = "acs";
-                        break;
-                    case SortingParam.DateDesc:
-                        orderByProp = "date_of_creation";
-                        sortOrder = "desc";
-                        break;
+                    orderByProp = SortingDictionnary.SortingValues[sortingParam].prop;
+                    sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
                 }
 
-                   
                 var pablicTestsAndRecordsAmount = await _testRepository.GetAllPublicTestsWithTotalRecords(pageNumber, pageSize, orderByProp, sortOrder);
 
                 var result = pablicTestsAndRecordsAmount.Item1.Where(t => t.Name.ToLower().Contains(search)).ToList();
@@ -68,17 +55,49 @@ namespace BLL.Services
             }
         }
 
-        public async Task<Result<List<Test>>> GetUserTests(int userId)
+        public async Task<Result<(List<Test>, int)>> GetUserTests(int userId, SortingParam sortingParam, Visibility? filterParam = null, int pageNumber = 1, int pageSize = 6, string search = "")
         {
             try
             {
-                var tests = await _testRepository.GetUserTests(userId);
+                string orderByProp = "test_id";
+                string sortOrder = "acs";
 
-                return new Result<List<Test>>(true, tests);
+                if (SortingDictionnary.SortingValues.ContainsKey(sortingParam))
+                {
+                    orderByProp = SortingDictionnary.SortingValues[sortingParam].prop;
+                    sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
+                }
+
+                var tests = await _testRepository.GetAllUserTests(userId, filterParam, pageNumber, pageSize, orderByProp, sortOrder, search);
+
+                return new Result<(List<Test>, int)>(true, tests);
             }
             catch (Exception ex)
             {
-                return new Result<List<Test>>(isSuccessful: false, "Fail to get tests");
+                return new Result<(List<Test>, int)>(isSuccessful: false, "Fail to get tests");
+            }
+        }
+
+        public async Task<Result<(List<TestActivityDTO>, int)>> GetUserActivityTests(int userId, SortingParam sortingParam, Visibility? filterParam = null, int pageNumber = 1, int pageSize = 6, string search = "")
+        {
+            try
+            {
+                string orderByProp = "test_id";
+                string sortOrder = "acs";
+
+                if (SortingDictionnary.SortingValues.ContainsKey(sortingParam))
+                {
+                    orderByProp = SortingDictionnary.SortingValues[sortingParam].prop;
+                    sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
+                }
+
+                var tests = await _testRepository.GetUserActivityTests(userId, filterParam, pageNumber, pageSize, orderByProp, sortOrder, search);
+
+                return new Result<(List<TestActivityDTO>, int)>(true, tests);
+            }
+            catch (Exception ex)
+            {
+                return new Result<(List<TestActivityDTO>, int)>(isSuccessful: false, "Fail to get tests");
             }
         }
 
@@ -219,7 +238,7 @@ namespace BLL.Services
         {
             try
             {
-                var result = await _testRepository.GetQyestionAmountAndPoints(testId);
+                var result = await _testRepository.GetQuestionAmountAndPoints(testId);
 
                 return new Result<(int, double)>(true, result);
             }
@@ -290,6 +309,7 @@ namespace BLL.Services
             try
             {
                 var documentModel = new TestDocumentModel();
+                documentModel.CreatedAt = DateTime.Now;
                 var testResult = await _testRepository.GetTestById(testId);
                 documentModel.Description = testResult.Description;
                 documentModel.Name = testResult.Name;

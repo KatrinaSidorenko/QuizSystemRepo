@@ -8,6 +8,8 @@
         EndDate,
         StartDate,
         StartDateDesc,
+        LastDate,
+        LastDateDesc,
         Date,
         DateDesc,
         Created,
@@ -15,6 +17,16 @@
         AttemptCount,
         AttemptCountDesc,
         AttemptDuration,
-        AttemptDurationDesc
+        AttemptDurationDesc,
+        Points,
+        PointsDesc,
+        RightAnswers,
+        RightAnswersDesc,
+        AvgTime,
+        AvgTimeDesc,
+        AvgPoints,
+        AvgPointsDesc,
+        FirstName,
+        FirstNameDesc
     }
 }

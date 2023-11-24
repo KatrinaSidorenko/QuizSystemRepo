@@ -3,6 +3,7 @@ using Core.Enums;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System.Globalization;
 
 namespace BLL.Services
 {
@@ -60,6 +61,18 @@ namespace BLL.Services
                     {
                         text.Span($"Geted points: ").SemiBold();
                         text.Span($"{_documentModel.Mark}");
+                    });
+
+                    column.Item().Text(text =>
+                    {
+                        text.Span($"Start Date: ").SemiBold();
+                        text.Span($"{_documentModel.StartDate.ToString("dddd, dd MMMM yyyy HH:mm", CultureInfo.InvariantCulture)}");
+                    });
+
+                    column.Item().Text(text =>
+                    {
+                        text.Span($"End Date: ").SemiBold();
+                        text.Span($"{_documentModel.EndDate.ToString("dddd, dd MMMM yyyy HH:mm", CultureInfo.InvariantCulture)}");
                     });
                 });
             });

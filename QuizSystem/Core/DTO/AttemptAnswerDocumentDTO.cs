@@ -8,5 +8,6 @@ namespace Core.DTO
         public bool IsRight { get; set; }
         public bool ChoosenByUser { get; set; }
         public string ValueByUser { get; set; }
+       
     }
 }
