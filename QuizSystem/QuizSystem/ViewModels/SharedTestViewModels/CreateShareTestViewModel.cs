@@ -17,5 +17,7 @@ namespace QuizSystem.ViewModels.SharedTestViewModels
 
         [Required]
         public int AttemptDuration { get; set; }
+        [Required]
+        public string PassScore { get; set; }
     }
 }

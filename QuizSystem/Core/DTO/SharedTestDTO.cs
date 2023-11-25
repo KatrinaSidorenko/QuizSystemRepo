@@ -19,5 +19,6 @@ namespace Core.DTO
         public int TestId { get; set; }
         public string TestName { get; set; }
         public SharedTestStatus Status { get; set; }
+        public double PassingScore { get; set; }
     }
 }

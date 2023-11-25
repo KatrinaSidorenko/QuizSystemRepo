@@ -85,6 +85,8 @@ namespace QuizSystem.Controllers
            
             sharedTest.AttemptDuration = new DateTime(2023, 01, 01).AddMinutes(createShareTest.AttemptDuration);
 
+            sharedTest.PassingScore = Convert.ToDouble(createShareTest.PassScore.Replace('.', ','));
+
             var addResult = await _sharedTestService.AddSharedTest(sharedTest);
 
             if (!addResult.IsSuccessful)
@@ -268,6 +270,7 @@ namespace QuizSystem.Controllers
 
             var sharedTest = _mapper.Map<SharedTest>(sharedTestVm);
             sharedTest.AttemptDuration = new DateTime(2023, 01, 01).AddMinutes(sharedTestVm.NewAttemptDuration);
+            sharedTest.PassingScore = Convert.ToDouble(sharedTestVm.PassScore.Replace('.', ','));
             var updateResult = await _sharedTestService.UpdateSharedTest(sharedTest);
 
             if (!updateResult.IsSuccessful)
@@ -278,6 +281,12 @@ namespace QuizSystem.Controllers
             }
 
             return RedirectToAction("Details", "SharedTest", new { sharedTestId = sharedTestVm.SharedTestId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Statistic(int sharedTestId)
+        {
+            return View();
         }
     }
 }

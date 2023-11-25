@@ -25,8 +25,8 @@ namespace DAL.Repository
                 throw new ArgumentNullException(nameof(sharedTest));
             }
 
-            var sqlExpression = "INSERT INTO SharedTests (test_code, start_date, end_date, description, attempt_count, attempt_duration, status, test_id) " +
-                     "VALUES (@TestCode, @StartDate, @EndDate, @Description, @AttemptCount, @AttemptDuration, @Status, @TestId);"+
+            var sqlExpression = "INSERT INTO SharedTests (test_code, start_date, end_date, description, attempt_count, attempt_duration, status, test_id, passing_score) " +
+                     "VALUES (@TestCode, @StartDate, @EndDate, @Description, @AttemptCount, @AttemptDuration, @Status, @TestId, @PassingScore);"+
                                "SELECT SCOPE_IDENTITY();";
 
 
@@ -42,6 +42,8 @@ namespace DAL.Repository
                 command.Parameters.AddWithValue("@AttemptDuration", sharedTest.AttemptDuration);
                 command.Parameters.AddWithValue("@Status", (int)sharedTest.Status);
                 command.Parameters.AddWithValue("@TestId", sharedTest.TestId);
+                command.Parameters.AddWithValue("@PassingScore", sharedTest.PassingScore);
+
 
                 var insertedId = await command.ExecuteScalarAsync();
 
@@ -81,6 +83,7 @@ namespace DAL.Repository
                     sharedTest.Status = (SharedTestStatus)reader["status"];
                     sharedTest.TestId = (int)reader["test_id"];
                     sharedTest.SharedTestId = (int)reader["shared_test_id"];
+                    sharedTest.PassingScore = reader["passing_score"].Equals(DBNull.Value) ? 0 : (double)Convert.ChangeType(reader["passing_score"], typeof(double));
                 }
             }
 
@@ -109,6 +112,7 @@ namespace DAL.Repository
                     sharedTest.Status = (SharedTestStatus)reader["status"];
                     sharedTest.TestId = (int)reader["test_id"];
                     sharedTest.SharedTestId = (int)reader["shared_test_id"];
+                    sharedTest.PassingScore = reader["passing_score"].Equals(DBNull.Value) ? 0 : (double)Convert.ChangeType(reader["passing_score"], typeof(double));
                 }
             }
 
@@ -140,6 +144,8 @@ namespace DAL.Repository
                     sharedTest.Status = (SharedTestStatus)reader["status"];
                     sharedTest.TestId = (int)reader["test_id"];
                     sharedTest.SharedTestId = (int)reader["shared_test_id"];
+                    sharedTest.PassingScore = reader["passing_score"].Equals(DBNull.Value) ? 0 : (double)Convert.ChangeType(reader["passing_score"], typeof(double));
+
                     sharedTests.Add(sharedTest);
                 }
             }
@@ -172,6 +178,8 @@ namespace DAL.Repository
                     sharedTest.TestId = (int)reader["test_id"];
                     sharedTest.SharedTestId = (int)reader["shared_test_id"];
                     sharedTest.TestName = (string)reader["test_name"];
+                    sharedTest.PassingScore = reader["passing_score"].Equals(DBNull.Value) ? 0 : (double)Convert.ChangeType(reader["passing_score"], typeof(double));
+
                     sharedTests.Add(sharedTest);
                 }
 
@@ -207,7 +215,8 @@ namespace DAL.Repository
                                    $"attempt_count={sharedTest.AttemptCount}, " +
                                    $"attempt_duration='{sharedTest.AttemptDuration}', " +
                                    $"status={(int)sharedTest.Status}, " +
-                                   $"test_id={sharedTest.TestId} " +
+                                   $"test_id={sharedTest.TestId}," +
+                                   $"passing_score={sharedTest.PassingScore}" +
                                    $"WHERE shared_test_id={sharedTest.SharedTestId}";
 
             SqlConnection connection = new SqlConnection(_connectionString);
@@ -301,6 +310,8 @@ namespace DAL.Repository
                         sharedTest.TestId = (int)reader["test_id"];
                         sharedTest.SharedTestId = (int)reader["shared_test_id"];
                         sharedTest.TestName = (string)reader["test_name"];
+                        sharedTest.PassingScore = reader["passing_score"].Equals(DBNull.Value) ? 0 : (double)Convert.ChangeType(reader["passing_score"], typeof(double));
+
                         sharedTests.Add(sharedTest);
                     }
                 }

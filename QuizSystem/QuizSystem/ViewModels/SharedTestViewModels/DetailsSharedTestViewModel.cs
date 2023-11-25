@@ -12,6 +12,7 @@ namespace QuizSystem.ViewModels.SharedTestViewModels
         public int AttemptCount { get; set; }
         public DateTime AttemptDuration { get; set; }
         public int TestId { get; set; }
+        public double PassingScore { get; set; }
         public string TestName { get; set; }
         public SharedTestStatus Status { get; set; }
     }

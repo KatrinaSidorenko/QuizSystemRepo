@@ -244,7 +244,7 @@ namespace QuizSystem.Controllers
                 userId = temUserId;
             }
           
-            int pageSize = 3;
+            int pageSize = 6;
             string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
 
             var activityPaginationModel = new ActivityTestsPaginationModel()

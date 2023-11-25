@@ -65,7 +65,11 @@
                                     <input asp-for="AttemptCount" type="number" class="form-control">
                                     <span asp-validation-for="AttemptCount" class="text-danger"></span>
                                 </div>
-
+                                <div class="form-outline mb-3">
+                                    <label asp-for="PassScore" class="form-label">Passing score</label>
+                                    <input asp-for="PassScore" type="text" class="form-control" pattern="[0-9]+(\.[0-9]+)?" title="Enter a valid number (use '.')">
+                                    <span asp-validation-for="PassScore" class="text-danger"></span>
+                                </div>
                                 <label class="form-label" for="customRange1">Time duration (in minutes): <span id="customRange1Label">0</span></label>
                                 <div class="range">
                                     <input asp-for="AttemptDuration" type="range" class="form-range" id="customRange1" min="0" max="120" step="1" value="0" />

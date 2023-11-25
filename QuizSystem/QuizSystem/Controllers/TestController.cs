@@ -39,7 +39,7 @@ namespace QuizSystem.Controllers
 
         public async Task<IActionResult> Index(int id, SortingParam sortOrder, Visibility? filterParam = null, int page = 1, string searchParam = "")
         {
-            int pageSize = 3;
+            int pageSize = 6;
             string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
 
             var testPaginationModel = new TestPaginationModel()
@@ -182,7 +182,7 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> AllTests(SortingParam sortOrder, int page = 1, string searchParam = "")
         {
-            int pageSize = 3;
+            int pageSize = 6;
             string search = string.IsNullOrEmpty(searchParam) ? "" : searchParam.ToLower();
             
             var testPaginationModel = new TestPaginationModel()
