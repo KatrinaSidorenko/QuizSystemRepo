@@ -64,38 +64,45 @@ namespace BLL.Services
                 var attempt = await _attemptRepository.GetAttemptById(attemptResultDTO.AttemptId);
                 attempt.EndDate = DateTime.Now;
                 attempt.SharedTestId = attemptResultDTO.SharedTestId;
+                var attemptData = await _testResultService.GetAttemptData(attemptResultDTO.AttemptId);
 
-                var rightAnswers = await _questionService.GetTestQuestionsWithRightAnswers(attemptResultDTO.TestId);
-
-                foreach(var answer in attemptResultDTO.Answers)
+                if (!attemptData.IsSuccessful)
                 {
-                    if(rightAnswers.Data.TryGetValue(answer.QuestionId, out var answerIds))
-                    {
-                        if(answerIds.Contains(answer.AnswerId))
-                        {
-                            var question = await _questionService.GetQuestionById(answer.QuestionId);
-
-                            if (question.Data.Type.Equals(QuestionType.Open))
-                            {
-                                var openAnswer = await _answerService.GetQuestionAnswers(question.Data.QuestionId);
-
-                                if(openAnswer.Data.FirstOrDefault().Value.ToLower().Equals(answer.Value?.ToLower() ?? ""))
-                                {
-                                    attempt.Points += question.Data.Point;
-                                    attempt.RightAnswersAmount++;
-                                }
-                            }
-                            else
-                            {
-                                attempt.Points += (double)question.Data.Point / answerIds.Count;
-                                attempt.RightAnswersAmount++;
-                            }                         
-                        }
-                    }
+                    return new Result<int>(isSuccessful: false, attemptData.Message);
                 }
 
+                attempt.Points = attemptData.Data.sum;
+                attempt.RightAnswersAmount = attemptData.Data.rA;
+                //var rightAnswers = await _questionService.GetTestQuestionsWithRightAnswers(attemptResultDTO.TestId);
+
+                //foreach(var answer in attemptResultDTO.Answers)
+                //{
+                //    if(rightAnswers.Data.TryGetValue(answer.QuestionId, out var answerIds))
+                //    {
+                //        if(answerIds.Contains(answer.AnswerId))
+                //        {
+                //            var question = await _questionService.GetQuestionById(answer.QuestionId);
+
+                //            if (question.Data.Type.Equals(QuestionType.Open))
+                //            {
+                //                var openAnswer = await _answerService.GetQuestionAnswers(question.Data.QuestionId);
+
+                //                if(openAnswer.Data.FirstOrDefault().Value.ToLower().Equals(answer.Value?.ToLower() ?? ""))
+                //                {
+                //                    attempt.Points += question.Data.Point;
+                //                    attempt.RightAnswersAmount++;
+                //                }
+                //            }
+                //            else
+                //            {
+                //                attempt.Points += (double)question.Data.Point / answerIds.Count;
+                //                attempt.RightAnswersAmount++;
+                //            }                         
+                //        }
+                //    }
+                //}
+
                 await _attemptRepository.UpdateAttempt(attempt);
-                //var updatedAttempt = await _attemptRepository.GetAttemptById(attemptResultDTO.AttemptId);
 
                 return new Result<int>(true, attemptResultDTO.AttemptId);
             }
@@ -134,13 +141,41 @@ namespace BLL.Services
 
             foreach (var answer in givenAnswers)
             {
-                testResults.Add(new TestResult()
+                var testResult = new TestResult()
                 {
                     AnswerId = answer.AnswerId,
                     QuestionId = answer.QuestionId,
                     AttemptId = attemptId,
                     EnteredValue = answer.Value
-                });
+                };
+
+                var attempt = await _attemptRepository.GetAttemptById(attemptId);
+                var rightAnswers = await _questionService.GetTestQuestionsWithRightAnswers(attempt.TestId);
+
+                if (rightAnswers.Data.TryGetValue(answer.QuestionId, out var answerIds))
+                {
+                    if (answerIds.Contains(answer.AnswerId))
+                    {
+                        var question = await _questionService.GetQuestionById(answer.QuestionId);
+
+                        if (question.Data.Type.Equals(QuestionType.Open))
+                        {
+                            var openAnswer = await _answerService.GetQuestionAnswers(question.Data.QuestionId);
+
+                            if (openAnswer.Data.FirstOrDefault().Value.ToLower().Equals(answer.Value?.ToLower() ?? ""))
+                            {
+                                testResult.GainedPoints = question.Data.Point;
+                            }
+                        }
+                        else
+                        {
+                            testResult.GainedPoints += (double)question.Data.Point / answerIds.Count;
+                        }
+                    }
+                }
+
+                testResults.Add(testResult);
+
             }
 
             try

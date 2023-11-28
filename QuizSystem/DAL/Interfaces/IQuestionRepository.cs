@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.DTO;
+using Core.Models;
 
 namespace DAL.Interfaces
 {
@@ -9,5 +10,6 @@ namespace DAL.Interfaces
         Task DeleteQuestion(int questionId);
         Task<Question> GetQuestionById(int questionId);
         Task UpdateQuestion(Question question);
+        Task<List<QuestionStatDTO>> GetTestQuestionsDTO(int testId);
     }
 }

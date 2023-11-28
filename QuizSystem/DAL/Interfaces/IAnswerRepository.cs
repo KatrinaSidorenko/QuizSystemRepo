@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.DTO;
+using Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,6 @@ namespace DAL.Interfaces
         Task DeleteAnswer(int answerId);
         Task<Answer> GetAnswerById(int answerId);
         Task<List<Answer>> GetQuestionAnswers(int questionId);
+        Task<List<AnswerStatDTO>> GetAnswersDTO(int questionId);
     }
 }

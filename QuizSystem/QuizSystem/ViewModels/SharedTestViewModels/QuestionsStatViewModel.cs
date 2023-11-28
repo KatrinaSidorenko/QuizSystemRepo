@@ -7,6 +7,7 @@ namespace QuizSystem.ViewModels.SharedTestViewModels
         public string Description { get; set; }
         public QuestionType Type { get; set; }
         public int Point { get; set; }
-        public double GetMaxPointProcent { get; set; }
+        //public double GetMaxPointProcent { get; set; }
+        public List<AnswerStatViewModel> Answers { get; set; }
     }
 }

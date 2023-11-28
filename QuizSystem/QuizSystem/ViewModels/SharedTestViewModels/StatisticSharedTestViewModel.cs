@@ -6,5 +6,6 @@
         public double AvgPoints { get; set; }
         public double PassedUsersProcent { get; set; }
         public List<UserStatViewModel> UsersStat { get; set; }
+        public List<QuestionsStatViewModel> QuestionsStat { get; set; }
     }
 }

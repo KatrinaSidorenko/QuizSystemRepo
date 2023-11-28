@@ -14,6 +14,7 @@ namespace QuizSystem.Profiles
             CreateMap<SharedTestDTO, IndexSharedTestViewModel>();
             CreateMap<SharedTest, EditSharedTestViewModel>();
             CreateMap<EditSharedTestViewModel, SharedTest>();
+            CreateMap<SharedTestStatDTO, StatisticSharedTestViewModel>();
         }
     }
 }

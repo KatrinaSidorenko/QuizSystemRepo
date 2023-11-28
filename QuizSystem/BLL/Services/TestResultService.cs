@@ -78,5 +78,19 @@ namespace BLL.Services
                 return new Result<bool>(isSuccessful: false, "Fail to delete test");
             }
         }
+
+        public async Task<Result<(double sum, int rA)>> GetAttemptData(int attemptId)
+        {
+            try
+            {
+               var result = await _testResultRepository.GetAttemptPointsData(attemptId);
+
+                return new Result<(double sum, int rA)>(isSuccessful: true, result);
+            }
+            catch (Exception ex)
+            {
+                return new Result<(double sum, int rA)> (isSuccessful: false, "Fail to get attempt data");
+            }
+        }
     }
 }

@@ -1,8 +1,10 @@
-﻿using Core.Enums;
+﻿using Core.DTO;
+using Core.Enums;
 using Core.Models;
 using Core.Settings;
 using DAL.Interfaces;
 using Microsoft.Extensions.Options;
+using System.ComponentModel;
 using System.Data.SqlClient;
 
 namespace DAL.Repository
@@ -110,5 +112,31 @@ namespace DAL.Repository
             }
         }
 
+        public async Task<List<AnswerStatDTO>> GetAnswersDTO(int questionId)
+        {
+            string sqlExpression = $"select  A.answer_description, A.answer_id, A.is_right, A.question_id,  count(T.answer_id) as choose_this_answer\r\nfrom [TestResults] T \r\nright join [Answers] A\r\non T.answer_id = A.answer_id\r\nwhere T.question_id = {questionId}\r\ngroup by A.answer_description, A.answer_id, A.is_right, A.question_id\r\nunion \r\nselect A.answer_description, A.answer_id, A.is_right, A.question_id, 0 as choose_this_answer\r\nfrom [Answers] A\r\nwhere A.question_id = {questionId} and A.answer_id not in (select T.answer_id from [TestResults] T where T.question_id = {questionId});";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+            List<AnswerStatDTO> answers = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    AnswerStatDTO answer = new();
+                    answer.Value = (string)reader["answer_description"];
+                    answer.IsRight = (int)reader["is_right"] == 1 ? true : false;
+                    answer.AnswerId = (int)reader["answer_id"];
+                    answer.QuestionId = (int)reader["question_id"];
+                    answer.UserChooseAmount = (int)reader["choose_this_answer"];
+                    answers.Add(answer);
+                }
+            }
+
+            return answers;
+        }
     }
 }

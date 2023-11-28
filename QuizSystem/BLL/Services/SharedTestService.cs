@@ -11,11 +11,15 @@ namespace BLL.Services
     {
         private readonly ISharedTestRepository _sharedTestRepository;
         private readonly IAttemptRepository _attemptRepository;
+        private readonly IQuestionRepository _questionRepository;
+        private readonly IAnswerRepository _answerRepository;
 
-        public SharedTestService(ISharedTestRepository sharedTestRepository, IAttemptRepository attemptRepository)
+        public SharedTestService(ISharedTestRepository sharedTestRepository, IAttemptRepository attemptRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository)
         {
             _sharedTestRepository = sharedTestRepository;
             _attemptRepository = attemptRepository;
+            _questionRepository = questionRepository;
+            _answerRepository = answerRepository;
         }
 
         public async Task<Result<int>> AddSharedTest(SharedTest sharedTest)
@@ -230,6 +234,43 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<bool>(false, "Fail to check shared test");
+            }
+        }
+
+        public async Task<Result<SharedTestStatDTO>> GetSharedTestStatistic(int sharedTestId)
+        {
+            var sharedTestStat = new SharedTestStatDTO();
+
+            try
+            {
+                var sharedTestData = await _sharedTestRepository.GetSharedTestById(sharedTestId);
+
+                var userStat = await _sharedTestRepository.UsersStatistic(sharedTestId);
+
+                if (userStat.Count == 0)
+                {
+                    return new Result<SharedTestStatDTO>(false, "Users don't take this test yet");
+                }
+
+                sharedTestStat.UsersStat = userStat;
+                sharedTestStat.TakenCountByUsers = userStat.Count;
+                sharedTestStat.PassedUsersProcent = (userStat.Count(u => u.BestResult >= sharedTestData.PassingScore) / userStat.Count) *100;
+                sharedTestStat.AvgPoints = userStat.Sum(u => u.AvgResult) / userStat.Count;
+
+                var questions = await _questionRepository.GetTestQuestionsDTO(sharedTestData.TestId);
+                sharedTestStat.QuestionsStat = questions;
+
+                foreach (var question in questions)
+                {
+                    var answers = await _answerRepository.GetAnswersDTO(question.QuestionId);
+                    question.Answers = answers;
+                }
+
+                return new Result<SharedTestStatDTO>(true, sharedTestStat);
+            }
+            catch (Exception ex)
+            {
+                return new Result<SharedTestStatDTO>(false, "Fail to get shared test statistic");
             }
         }
         private void SetSharedTestStatus(SharedTest sharedTest)

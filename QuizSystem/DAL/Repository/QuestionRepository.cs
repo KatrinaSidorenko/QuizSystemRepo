@@ -1,9 +1,11 @@
-﻿using Core.Enums;
+﻿using Core.DTO;
+using Core.Enums;
 using Core.Models;
 using Core.Settings;
 using DAL.Interfaces;
 using Microsoft.Extensions.Options;
 using System.Data.SqlClient;
+using static System.Collections.Specialized.BitVector32;
 
 namespace DAL.Repository
 {
@@ -82,6 +84,32 @@ namespace DAL.Repository
                 {
                     Question question = new Question();
                     question.TestId = (int)reader["test_id"];
+                    question.Description = (string)reader["question_description"];
+                    question.Type = (QuestionType)reader["question_type"];
+                    question.Point = (int)reader["point"];
+                    question.QuestionId = (int)reader["question_id"];
+                    questions.Add(question);
+                }
+            }
+
+            return questions;
+        }
+
+        public async Task<List<QuestionStatDTO>> GetTestQuestionsDTO(int testId)
+        {
+            string sqlExpression = $"SELECT * FROM Questions Where test_id = {testId}";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+            List<QuestionStatDTO> questions = new ();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    QuestionStatDTO question = new();
                     question.Description = (string)reader["question_description"];
                     question.Type = (QuestionType)reader["question_type"];
                     question.Point = (int)reader["point"];

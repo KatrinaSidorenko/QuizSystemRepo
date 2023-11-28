@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Core.DTO;
 using Core.Models;
 using QuizSystem.ViewModels.QuestionViewModel;
+using QuizSystem.ViewModels.SharedTestViewModels;
 using QuizSystem.ViewModels.TakeTestViewModels;
 
 namespace QuizSystem.Profiles
@@ -15,6 +17,7 @@ namespace QuizSystem.Profiles
             CreateMap<EditQuestionAnswerViewModel, Question> ();
             CreateMap<Question, EditQuestionAnswerViewModel>();
             CreateMap<Question, TakeTestQuestionViewModel>();
+            CreateMap<QuestionStatDTO, QuestionsStatViewModel>();
         }
     }
 }

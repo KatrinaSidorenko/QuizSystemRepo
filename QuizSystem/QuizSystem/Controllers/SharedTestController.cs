@@ -286,7 +286,16 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Statistic(int sharedTestId)
         {
-            return View();
+            var sharedTestResult = await _sharedTestService.GetSharedTestStatistic(sharedTestId);
+            if (!sharedTestResult.IsSuccessful)
+            {
+                TempData["Error"] = sharedTestResult.Message;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var sharedTestVm = _mapper.Map<StatisticSharedTestViewModel>(sharedTestResult.Data);
+            return View(sharedTestVm);
         }
     }
 }

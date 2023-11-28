@@ -15,5 +15,6 @@ namespace BLL.Interfaces
         Task<Result<(List<SharedTestDTO>, int)>> GetUserSharedTests(int userId, SortingParam sortingParam, SharedTestStatus? filterParam = null, int pageNumber = 1, int pageSize = 6, string search = "");
         Task<Result<bool>> FinishSharedTest(int sharedTestId);
         Task<Result<bool>> IsTestShared(int testId);
+        Task<Result<SharedTestStatDTO>> GetSharedTestStatistic(int sharedTestId);
     }
 }
