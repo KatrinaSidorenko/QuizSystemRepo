@@ -157,7 +157,9 @@ namespace DAL.Repository
             }
         }
 
-        public async Task<(List<Attempt>, int)> GetAttempts(int testId, int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "attempt_id", string sortOrder = "asc", int? sharedTestId = null, int startAccuracy = 0, int endAccuracy = 100)
+        public async Task<(List<Attempt>, int)> GetAttempts(int testId, int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "attempt_id", 
+            string sortOrder = "asc", int? sharedTestId = null, int startAccuracy = 0, int endAccuracy = 100,
+            DateTime? startDate = null, DateTime? endDate = null)
         {           
             string sqlExpression = "PagingAttempts"; // The stored procedure name
 
@@ -181,6 +183,10 @@ namespace DAL.Repository
                     command.Parameters.AddWithValue("@SharedTestId", sharedTestId != null ? sharedTestId: DBNull.Value);
                     command.Parameters.AddWithValue("@StartAccuracy", startAccuracy);
                     command.Parameters.AddWithValue("@EndAccuracy", endAccuracy);
+                    command.Parameters.AddWithValue("@StartDate", startDate != null ? startDate : DBNull.Value);
+                    command.Parameters.AddWithValue("@EndDate", endDate != null ? endDate : DBNull.Value);
+
+
                     // Define the output parameter for total records
                     SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
                     totalRecordsParam.Direction = ParameterDirection.Output;

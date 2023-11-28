@@ -209,7 +209,9 @@ namespace BLL.Services
             }
         }
 
-        public async Task<Result<(List<AttemptHistoryDTO>, int)>> GetUserTestAttempts(int testId, int userId, SortingParam sortingParam, int? sharedTestId = null, int pageNumber = 1, int pageSize = 6, string search = "", int startAccuracy = 0, int endAccuracy = 100)
+        public async Task<Result<(List<AttemptHistoryDTO>, int)>> GetUserTestAttempts(int testId, int userId, SortingParam sortingParam, int? sharedTestId = null, 
+            int pageNumber = 1, int pageSize = 6, string search = "", int startAccuracy = 0, int endAccuracy = 100,
+            DateTime? startDate = null, DateTime? endDate = null)
         {
             try
             {
@@ -222,7 +224,8 @@ namespace BLL.Services
                     sortOrder = SortingDictionnary.SortingValues[sortingParam].order;
                 }
 
-                var attempts = await _attemptRepository.GetAttempts(testId, userId, pageNumber, pageSize, orderByProp, sortOrder, sharedTestId, startAccuracy, endAccuracy);
+                var attempts = await _attemptRepository.GetAttempts(testId, userId, pageNumber, pageSize, orderByProp, sortOrder, 
+                    sharedTestId, startAccuracy, endAccuracy, startDate, endDate);
 
                 if (attempts.Item1 == null)
                 {

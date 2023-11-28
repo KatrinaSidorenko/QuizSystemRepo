@@ -281,7 +281,7 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> History(int testId, int userId, SortingParam sortOrder, FilterParam filterParam, DateTime startDate, DateTime endDate,
+        public async Task<IActionResult> History(int testId, int userId, SortingParam sortOrder, FilterParam filterParam, DateTime? startDate = null, DateTime? endDate = null,
             int? sharedTestId = null, int page = 1, string searchParam = "")
         {
             int pageSize = 3;
@@ -303,7 +303,7 @@ namespace QuizSystem.Controllers
             var attemptsResult = await _attemptService.GetUserTestAttempts(testId, userId, sortOrder,
                 sharedTestId, page, pageSize,
                 searchParam, FilterDictionary.FilterParamDict[filterParam].start, 
-                FilterDictionary.FilterParamDict[filterParam].end);
+                FilterDictionary.FilterParamDict[filterParam].end, startDate, endDate);
 
             if (!attemptsResult.IsSuccessful)
             {
