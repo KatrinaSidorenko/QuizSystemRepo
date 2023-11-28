@@ -2,12 +2,73 @@
 @using Core.Enums
 @model AttempyHistoryPaginationModel
 
+<style>
+    .form-group-date {
+        display: flex;
+        justify-content: space-between; /* Adjust as needed */
+        align-items: center;
+    }
+
+    .field {
+        flex: 1;
+        margin-right: 10px; /* Adjust as needed for spacing between fields */
+    }
+
+        /* Optional: Set the width of the datetime-local inputs */
+        .field input[type="datetime-local"] {
+            width: 100%; /* Adjust as needed */
+        }
+
+</style>
 <div class="container mb-5"> </div>
 <div style="text-align: center;">
     <form method="get" asp-controller="Attempt" asp-action="History" class="mb-4">
         <div class="row">
-            <!-- Center the input group and button -->
             <div class="col-md-6">
+                <div class="form-group-date d-flex">
+                    <label asp-for="StartDate" class="control-label">Start: </label>
+                    <div class="field flex-grow-1">
+                        @*<label asp-for="StartDate" class="control-label">Start Date</label>*@
+                        <input asp-for="StartDate" class="form-control" type="datetime-local">
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                    <label asp-for="EndDate" class="control-label">End: </label>
+                    <div class="field flex-grow-1">
+                        @*<label asp-for="EndDate" class="control-label">End Date</label>*@
+                        <input asp-for="EndDate" class="form-control" type="datetime-local">
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+                    <div class="input-group" style="margin-top: 4px;">
+                        <input type="hidden" id="page" name="page" value="@Model.CurrentPageIndex" />
+                        <input type="hidden" id="userId" name="userId" value="@Model.UserId" />
+                        <input type="hidden" id="testId" name="testId" value="@Model.TestId" />
+                        <input type="hidden" id="sharedTestId" name="sharedTestId" value="@Model.SharedTestId" />
+                        <input type="hidden" id="sortOrder" name="sortOrder" value="@Model.SortingParam" />
+                        <input type="hidden" id="startDate" name="startDate" value="@Model.StartDate" />
+                        <input type="hidden" id="endDate" name="endDate" value="@Model.EndDate" />
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+         @*   <!-- Center the input group and button -->
+            <div class="col-md-6">
+                <div class="form-group-date">
+                    <div class="field">
+                        <label asp-for="StartDate" class="control-label"></label>
+                        <input asp-for="StartDate" class="form-control" type="datetime-local">
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="EndDate" class="control-label"></label>
+                        <input asp-for="EndDate" class="form-control" type="datetime-local">
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+                </div>
                 <div class="input-group" style="width: 350px">
                     <div class="form-outline">
                         <input type="hidden" id="page" name="page" value="@Model.CurrentPageIndex" />
@@ -16,13 +77,15 @@
                         <input type="hidden" id="sharedTestId" name="sharedTestId" value="@Model.SharedTestId" />
                         <input type="hidden" id="sortOrder" name="sortOrder" value="@Model.SortingParam" />
                         <input type="search" id="searchParam" name="searchParam" class="form-control" style="background-color: ghostwhite;" />
+                       
                         <label class="form-label" for="searchParam">Search by accuracy</label>
                     </div>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
-            </div>
+            </div>*@
+           
 
             <div class="col-md-6 d-flex justify-content-end">
                 <div class="dropdown">
@@ -157,6 +220,17 @@ else
 {
     <h1>No attempts</h1>
 }
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Get the current year
+        var currentYear = new Date().getFullYear();
+
+        // Set the start year for both datetime-local inputs
+        $("input[type='datetime-local']").prop("min", currentYear + "-01-01T00:00");
+    });
+</script>
+
 
    
 

@@ -9,6 +9,8 @@ namespace QuizSystem.ViewModels.PaginationTestViewModels
         public int TestId { get; set; }
         public int? SharedTestId { get; set; }
         public int? CurrentPageIndex { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public int PageCount { get; set; }
         public int PageSize { get; set; }
         public string SearchParam { get; set; }
