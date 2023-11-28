@@ -19,6 +19,8 @@ namespace DAL.Interfaces
         Task<int> UserAttemptsCount(int sharedTestId, int userId);
         Task DeleteAttemptsByTest(int testId);
         Task<List<int>> GetAttemptIdByTest(int testId);
+        Task<List<int>> GetAttemptIdBySharedTest(int sharedTestId);
+        Task DeleteAttemptsBySharedTest(int sharedTestId);
 
     }
 }

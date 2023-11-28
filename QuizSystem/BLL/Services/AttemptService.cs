@@ -389,6 +389,28 @@ namespace BLL.Services
             }
         }
 
+        public async Task<Result<bool>> DeleteSharedTestAttempts(int sharedTestId)
+        {
+            try
+            {
+                var attemptIds = await _attemptRepository.GetAttemptIdBySharedTest(sharedTestId);
+                var deleteResult = await _testResultService.DeleteRangeOfTestResults(attemptIds);
+                //delete attempts
+
+                if (!deleteResult.IsSuccessful)
+                {
+                    return new Result<bool>(false, deleteResult.Message);
+                }
+
+                await _attemptRepository.DeleteAttemptsBySharedTest(sharedTestId);
+                return new Result<bool>(isSuccessful: true);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(isSuccessful: false, "Fail to delete attempts");
+            }
+        }
+
         private string CraeteFilePath(string fileName)
         {
             return Path.Combine(_documentSettings.SavingPath, fileName);

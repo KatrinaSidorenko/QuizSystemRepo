@@ -23,5 +23,6 @@ namespace BLL.Interfaces
         Task<Result<double>> GetAttemptAccuracy(int attemptId);
         Task<Result<(string, string)>> GetAttemptDocumentPath(int attemptId);
         Task<Result<bool>> DeleteTestWithAttempts(int testId);
+        Task<Result<bool>> DeleteSharedTestAttempts(int sharedTestId);
     }
 }

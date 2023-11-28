@@ -13,13 +13,16 @@ namespace BLL.Services
         private readonly IAttemptRepository _attemptRepository;
         private readonly IQuestionRepository _questionRepository;
         private readonly IAnswerRepository _answerRepository;
+        private readonly ITestResultService _testResultService;
 
-        public SharedTestService(ISharedTestRepository sharedTestRepository, IAttemptRepository attemptRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository)
+        public SharedTestService(ISharedTestRepository sharedTestRepository, IAttemptRepository attemptRepository, 
+            IQuestionRepository questionRepository, IAnswerRepository answerRepository, ITestResultService testResultService)
         {
             _sharedTestRepository = sharedTestRepository;
             _attemptRepository = attemptRepository;
             _questionRepository = questionRepository;
             _answerRepository = answerRepository;
+            _testResultService = testResultService;
         }
 
         public async Task<Result<int>> AddSharedTest(SharedTest sharedTest)
@@ -50,6 +53,16 @@ namespace BLL.Services
         {
             try
             {
+                var attemptIds = await _attemptRepository.GetAttemptIdBySharedTest(sharedTestId);
+                var deleteResult = await _testResultService.DeleteRangeOfTestResults(attemptIds);
+                //delete attempts
+
+                if (!deleteResult.IsSuccessful)
+                {
+                    return new Result<bool>(false, deleteResult.Message);
+                }
+
+                await _attemptRepository.DeleteAttemptsBySharedTest(sharedTestId);
                 await _sharedTestRepository.DeleteSharedTest(sharedTestId);
 
                 return new Result<bool>(isSuccessful: true);
