@@ -291,7 +291,7 @@ namespace QuizSystem.Controllers
             {
                 TempData["Error"] = sharedTestResult.Message;
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Deatils", "SharedTest", new {sharedTestId = sharedTestId});
             }
 
             var sharedTestVm = _mapper.Map<StatisticSharedTestViewModel>(sharedTestResult.Data);

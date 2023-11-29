@@ -262,7 +262,7 @@ namespace BLL.Services
 
                 if (userStat.Count == 0)
                 {
-                    return new Result<SharedTestStatDTO>(false, "Users don't take this test yet");
+                    return new Result<SharedTestStatDTO>(false, "Users have not yet taken this test");
                 }
 
                 sharedTestStat.UsersStat = userStat;
