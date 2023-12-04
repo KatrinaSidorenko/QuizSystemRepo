@@ -88,6 +88,19 @@ namespace DAL.Repository
             }
         }
 
+        public async Task DeleteTestResultByQuestion(int questionId)
+        {
+            string sqlExpression = $"DELETE FROM TestResults WHERE question_id={questionId}";
+            SqlConnection connection = new SqlConnection(_connectionString);
+
+            using (connection)
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                int number = await command.ExecuteNonQueryAsync();
+            }
+        }
+
         public async Task<(double sum, int rightAmount)> GetAttemptPointsData(int attemptId)
         {
             string sqlExpression = $"select sum(gained_points) as total_points, count(*) as right_answers_amount from [TestResults] where gained_points != 0 and attempt_id ={attemptId} group by attempt_id";

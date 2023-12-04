@@ -9,10 +9,12 @@ namespace BLL.Services
     {
         private readonly IAnswerService _answerService;
         private readonly IQuestionRepository _questionRepository;
-        public QuestionService(IQuestionRepository questionRespository, IAnswerService answerService)
+        private readonly ITestResultService _testResultService;
+        public QuestionService(IQuestionRepository questionRespository, IAnswerService answerService, ITestResultService testResultService)
         {
             _answerService = answerService;
             _questionRepository = questionRespository;
+            _testResultService = testResultService;
         }
 
         public async Task<Result<Question>> AddQuestionWithAnswers(Question question, List<Answer> answers)
@@ -169,6 +171,27 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<Question>(isSuccessful: false, "Fail to get question");
+            }
+        }
+
+        public async Task<Result<bool>> DeleteQuestion(int questionId)
+        {
+            try
+            {
+                var result = await _testResultService.DeleteTestResultsByQuestion(questionId);
+
+                if (!result.IsSuccessful)
+                {
+                    return new Result<bool>(isSuccessful: false, "Fail to delete question");
+                }
+
+                await _questionRepository.DeleteQuestion(questionId);
+
+                return new Result<bool>(isSuccessful: true);
+            }
+            catch
+            {
+                return new Result<bool>(isSuccessful: false, "Fail to delete question");
             }
         }
 

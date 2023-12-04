@@ -64,7 +64,12 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int questionId, int testId)
         {
-            await _questionRepository.DeleteQuestion(questionId);
+            var deleteResult = await _questionService.DeleteQuestion(questionId);
+
+            if (!deleteResult.IsSuccessful)
+            {
+                TempData["Error"] = deleteResult.Message;
+            }
 
             return RedirectToAction("TestView", "Test",  new {testId = testId});
         }
