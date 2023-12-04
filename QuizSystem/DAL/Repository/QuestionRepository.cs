@@ -151,5 +151,31 @@ namespace DAL.Repository
             }
         }
 
+        public async Task<bool> IsInTestQuestions(int testId)
+        {
+            string sqlExpression = $"select count(*) as questions_amount from [Questions] where test_id = {testId}";
+
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+            int questionAmount = 0;
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    questionAmount = (int)reader["questions_amount"];
+                }
+            }
+
+            if (questionAmount < 1)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

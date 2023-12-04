@@ -195,5 +195,23 @@ namespace BLL.Services
             }
         }
 
+        public async Task<Result<bool>> IsInTestQuestions(int testId)
+        {
+            try
+            {
+                var result = await _questionRepository.IsInTestQuestions(testId);
+
+                if (!result)
+                {
+                    return new Result<bool>(isSuccessful: false, "There are not enough questions in the test");
+                }
+
+                return new Result<bool>(isSuccessful: true);
+            }
+            catch(Exception ex)
+            {
+                return new Result<bool>(isSuccessful: false, "Fail to check test questions");
+            }
+        }
     }
 }

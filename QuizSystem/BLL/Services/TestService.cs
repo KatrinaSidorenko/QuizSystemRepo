@@ -279,6 +279,11 @@ namespace BLL.Services
             }
         }
 
+        public async Task<Result<bool>> IsInTestQuestions(int testId)
+        {
+            return await _questionService.IsInTestQuestions(testId);
+        }
+
         private string CraeteFilePath(string fileName)
         {
             return Path.Combine(_documentSettings.SavingPath, fileName);

@@ -15,5 +15,6 @@ namespace BLL.Interfaces
         Task<Result<Dictionary<int, List<int>>>> GetTestQuestionsWithRightAnswers(int testId);
         Task<Result<Question>> GetQuestionById(int questionId);
         Task<Result<bool>> DeleteQuestion(int questionId);
+        Task<Result<bool>> IsInTestQuestions(int testId);
     }
 }

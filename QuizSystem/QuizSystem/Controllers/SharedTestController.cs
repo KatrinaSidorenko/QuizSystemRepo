@@ -27,6 +27,16 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(int testId)
         {
+            var questionsAmountAllow = await _testService.IsInTestQuestions(testId);
+
+            if (!questionsAmountAllow.IsSuccessful || !questionsAmountAllow.Data)
+            {
+                var userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+                TempData["Error"] = questionsAmountAllow.Message;
+
+                return RedirectToAction("Index", "Test", new { id = userId });
+            }
+
             var permissionResult = await _sharedTestService.IsTestShared(testId);
 
             if (!permissionResult.IsSuccessful)
