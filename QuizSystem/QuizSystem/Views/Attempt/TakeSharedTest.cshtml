@@ -31,18 +31,15 @@
             <span><b>Sorry!</b> - @TempData["Error"]</span>
         </div>
     }
-
+    <div id="timerDisplay"></div>
     <!--Main layout-->
     <main class="my-5">
         <div class="container">
             <!--Section: Content-->
-
-          
             <section class="text-center text-md-start">
                 <div class="row">
-                    
                     <div class="col-md-12 centered-card">
-                        <div id="timerDisplay" style="margin-bottom: 10px;"></div>
+                        <!-- Centered card with 60% width -->
                         <div class="card">
                             <div class="card-body">
                                 <input type="hidden" name="TestId" value="@Model.TestId" />
@@ -67,9 +64,9 @@
                                 {
                                     <div class="form-outline answer-form">
                                         <div class="card-header">
-                                              <strong>Question: @question.Description</strong>                                  
+                                            <strong>Question: @question.Description</strong>
                                         </div>
-                                        <input type="hidden" name="Point" value="@question.Point"/>
+                                        <input type="hidden" name="Point" value="@question.Point" />
                                         <input type="hidden" name="Type" value="@question.Type" />
 
                                         <div class="card-body">
@@ -80,17 +77,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                   
+
                                 }
                                 else if (question.Type.Equals(QuestionType.Multiple))
                                 {
                                     <div class="card-header">
                                         <strong>Question: @question.Description</strong>
                                     </div>
-                                    
 
 
-                                    @foreach(var answer in question.QuestionAnswers)
+
+                                    @foreach (var answer in question.QuestionAnswers)
                                     {
                                         <div class="form-outline answer-form">
                                             <input type="hidden" name="Point" value="@question.Point" />
@@ -125,23 +122,23 @@
                                         </div>
                                     }
                                     @*<div class="card-header">
-                                        <strong>Question: @question.Description</strong>
-                                    </div>
-                                   
+                            <strong>Question: @question.Description</strong>
+                            </div>
 
-                                    @foreach (var answer in question.QuestionAnswers)
-                                    {
-                                        <div class="form-outline answer-form">
-                                            <input type="hidden" name="Point" value="@question.Point" />
-                                            <input type="hidden" name="Type" value="@question.Type" />
-                                            <input type="hidden" name="AnswerId" value="@answer.AnswerId" />
-                                            <input type="hidden" name="QuestionId" value="@answer.QuestionId" />
-                                            <div class="card-header">
-                                                <input type="radio" class="form-check-input" name="IsRight" />
-                                                <label class="form-label"><strong> @answer.Value</strong></label>
-                                            </div>
-                                        </div>
-                                    }*@
+
+                            @foreach (var answer in question.QuestionAnswers)
+                            {
+                            <div class="form-outline answer-form">
+                            <input type="hidden" name="Point" value="@question.Point" />
+                            <input type="hidden" name="Type" value="@question.Type" />
+                            <input type="hidden" name="AnswerId" value="@answer.AnswerId" />
+                            <input type="hidden" name="QuestionId" value="@answer.QuestionId" />
+                            <div class="card-header">
+                            <input type="radio" class="form-check-input" name="IsRight" />
+                            <label class="form-label"><strong> @answer.Value</strong></label>
+                            </div>
+                            </div>
+                            }*@
                                 }
                             </div>
                         </div>
@@ -156,93 +153,15 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
             </section>
         </div>
+        @{
+            var timerDuration = Model.AttemptDuration;
+        }
     </main>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-
-        var timerDisplay = document.getElementById('timerDisplay');
-        var redirectButton = document.getElementById('.btn-save-answer');
-        var timerDuration = @(Model.AttemptDuration.Value.Minute * 60);
-
-        function startTimer() {
-            var minutes, seconds;
-            var timeRemaining = timerDuration;
-
-            var countdown = setInterval(function () {
-                minutes = Math.floor(timeRemaining / 60);
-                seconds = timeRemaining % 60;
-
-                // Add leading zero if needed
-                minutes = minutes < 10 ? '0' + minutes : minutes;
-                seconds = seconds < 10 ? '0' + seconds : seconds;
-
-                timerDisplay.innerHTML = 'Time Remaining: ' + minutes + ':' + seconds;
-
-                if (timeRemaining <= 0) {
-                    clearInterval(countdown);
-                    submitFormData();
-                } else {
-                    timeRemaining--;
-                }
-            }, 1000); // Update every second
-        }
-
-        function submitFormData() {
-            var formData = {
-                TestId: $("input[name='TestId']").val(),
-                TakedTestUserId: $("input[name='TakedTestUserId']").val(),
-                AttemptId: $("input[name='AttemptId']").val(),
-                SharedTestId: $("input[name='SharedTestId']").val(),
-                Answers: []
-            };
-
-            // Collect answers
-            $(".answer-form").each(function () {
-                var type = $(this).find("input[name='Type']").val();
-
-                if (type === "Open") {
-                    var answer = {
-                        AnswerId: $(this).find("input[name='AnswerId']").val(),
-                        IsRight: true,
-                        Value: $(this).find("textarea[name='Answers']").val(),
-                        QuestionId: $(this).find("input[name='QuestionId']").val()
-                    };
-                    formData.Answers.push(answer);
-                } else if (type === "Multiple" || type === "Single") {
-                    if ($(this).find("input[name^='IsRight']").is(':checked')) {
-                        var answer = {
-                            AnswerId: $(this).find("input[name='AnswerId']").val(),
-                            Value: "",
-                            QuestionId: $(this).find("input[name='QuestionId']").val(),
-                            IsRight: true
-                        };
-                        formData.Answers.push(answer);
-                    }
-                }
-            });
-
-            // Send the data to the endpoint
-            $.ajax({
-                url: "/Attempt/TakeTest",
-                type: "POST",
-                data: formData,
-                success: function (response) {
-                    // Check if the response indicates success (you can customize this condition)
-                    window.location.href = response.redirectUrl;
-                },
-                error: function (error) {
-                    window.location.href = response.redirectUrl;
-                }
-            });
-        }
-
-        // Start the timer when the page loads
-        window.onload = startTimer;
-
         $(document).ready(function () {
             // Handle form submission
             $(document).on('click', '.btn-save-answer', function (event) {
@@ -303,6 +222,34 @@
                 questionContainer.find('input[type=radio][name^=IsRight]').not(this).prop('checked', false);
             });
         });
+
+        
+
+        var timerDisplay = document.getElementById('timerDisplay');
+        var redirectButton = document.getElementById('.btn-save-answer');
+
+        function startTimer() {
+            var timeRemaining = timerDuration / 1000; // Convert milliseconds to seconds
+            timerDisplay.innerHTML = 'Time Remaining: ' + timeRemaining + ' seconds';
+
+            var countdown = setInterval(function () {
+                timeRemaining--;
+                timerDisplay.innerHTML = 'Time Remaining: ' + timeRemaining + ' seconds';
+
+                if (timeRemaining <= 0) {
+                    clearInterval(countdown);
+                    simulateButtonClick();
+                }
+            }, 1000); // Update every second
+        }
+
+        function simulateButtonClick() {
+            redirectButton.click();
+        }
+
+
+        // Start the timer when the page loads
+        window.onload = startTimer;
     </script>
 
 </body>

@@ -1,0 +1,47 @@
+﻿@using QuizSystem.ViewModels.SharedTestViewModels
+@model AgreementSharedTestViewModel
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .card {
+            max-width: 600px;
+            width: 100%;
+            padding: 30px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            background-color: #FBFBFB;
+        }
+
+    </style>
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <div class="container">
+        <div class="card text-center">
+            <div class="card-header">Are you sure that do you want to start take attempt?</div>
+            <div class="card-footer text-muted">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Close</a>
+                <a href="@Url.Action("TakeTest", "Attempt", new { testId = Model.TestId, sharedTestId = Model.SharedTestId })" class="btn btn-success">Start</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+

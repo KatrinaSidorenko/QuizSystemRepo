@@ -151,8 +151,14 @@ namespace QuizSystem.Controllers
             }
             //checks of attempts amount, start and end date
 
-            //rediraction to attempt
-            return RedirectToAction("TakeTest", "Attempt", new {testId = sharedTestResult.Data.TestId, sharedTestId = sharedTestResult.Data.SharedTestId});
+            //rediraction to agreement
+            var agreement = new AgreementSharedTestViewModel()
+            {
+                TestId = sharedTestResult.Data.TestId,
+                SharedTestId = sharedTestResult.Data.SharedTestId
+            };
+
+            return View("Agreement", agreement);
         }
 
         [HttpGet]
