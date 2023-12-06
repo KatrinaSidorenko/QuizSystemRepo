@@ -395,5 +395,27 @@ namespace DAL.Repository
             }
         }
 
+        public async Task<int> TotalAmountOfAttemptsBySharedId(int sharedTestId)
+        {
+            string sqlExpression = $"select count(*) as amount from Attempts where shared_test_id = {sharedTestId}";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+            using (connection)
+            {
+                connection.Open();
+                var result = await command.ExecuteScalarAsync();
+
+                if (result is null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return (int)result;
+                }
+            }
+        }
+
     }
 }

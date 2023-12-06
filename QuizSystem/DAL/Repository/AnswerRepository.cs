@@ -112,9 +112,11 @@ namespace DAL.Repository
             }
         }
 
-        public async Task<List<AnswerStatDTO>> GetAnswersDTO(int questionId)
+        public async Task<List<AnswerStatDTO>> GetAnswersDTO(int questionId, int sharedTestId)
         {
-            string sqlExpression = $"select  A.answer_description, A.answer_id, A.is_right, A.question_id,  count(T.answer_id) as choose_this_answer\r\nfrom [TestResults] T \r\nright join [Answers] A\r\non T.answer_id = A.answer_id\r\nwhere T.question_id = {questionId}\r\ngroup by A.answer_description, A.answer_id, A.is_right, A.question_id\r\nunion \r\nselect A.answer_description, A.answer_id, A.is_right, A.question_id, 0 as choose_this_answer\r\nfrom [Answers] A\r\nwhere A.question_id = {questionId} and A.answer_id not in (select T.answer_id from [TestResults] T where T.question_id = {questionId});";
+            string sqlExpression = $"select  A.answer_description, A.answer_id, A.is_right, A.question_id,  count(distinct T.attempt_id) as choose_this_answer\r\nfrom [TestResults] T \r\nright join [Answers] A\r\non T.answer_id = A.answer_id\r\nwhere T.question_id = {questionId} " +
+                $"and attempt_id in (select attempt_id from [Attempts] where shared_test_id = {sharedTestId})" +
+                $"group by A.answer_description, A.answer_id, A.is_right, A.question_id\r\nunion \r\nselect A.answer_description, A.answer_id, A.is_right, A.question_id, 0 as choose_this_answer\r\nfrom [Answers] A\r\nwhere A.question_id = {questionId} and A.answer_id not in (select T.answer_id from [TestResults] T join [Attempts] Att on T.attempt_id = Att.attempt_id  where shared_test_id = {sharedTestId});";
             SqlConnection connection = new SqlConnection(_connectionString);
             SqlCommand command = new SqlCommand(sqlExpression, connection);
             List<AnswerStatDTO> answers = new();

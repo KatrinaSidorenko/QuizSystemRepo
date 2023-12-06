@@ -40,6 +40,7 @@
                             <div class="card-body">
                                 <h5>
                                     Total amount of users how taken this test: @Model.TakenCountByUsers
+                                    </br> Total amount of attempts: @Model.AmmountOfAttempts
                                     </br> Avarage mark: @Model.AvgPoints
                                     </br> Procent of users how passed the test: @Model.PassedUsersProcent %
                                 </h5>
@@ -81,7 +82,7 @@
                                     @foreach (var answer in question.Answers)
                                     {
 
-                                        double procent = answer.UserChooseAmount * 100/ Model.UsersStat.Count;
+                                        double procent = answer.UserChooseAmount * 100/Model.AmmountOfAttempts;
 
                                         <p>Choose this answer: @procent %</p>
                                         @if (answer.IsRight)

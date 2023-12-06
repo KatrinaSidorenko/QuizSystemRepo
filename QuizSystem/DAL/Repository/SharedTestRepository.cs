@@ -216,7 +216,7 @@ namespace DAL.Repository
                                    $"attempt_duration='{sharedTest.AttemptDuration}', " +
                                    $"status={(int)sharedTest.Status}, " +
                                    $"test_id={sharedTest.TestId}," +
-                                   $"passing_score={sharedTest.PassingScore}" +
+                                   $"passing_score={sharedTest.PassingScore.ToString().Replace(',', '.')}" +
                                    $"WHERE shared_test_id={sharedTest.SharedTestId}";
 
             SqlConnection connection = new SqlConnection(_connectionString);

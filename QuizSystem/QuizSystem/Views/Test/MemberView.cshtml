@@ -80,7 +80,26 @@
                         <div class="col-md-12 centered-card">
                             <div class="centered-container justify-content-end">
                                 <a href="@Url.Action("TestDocumentView", "Test", new { testId = Model.TestId})" class="btn btn-secondary">Take document</a>
-                                <a href="@Url.Action("TakeTest", "Attempt", new { testId = Model.TestId})" class="btn btn-primary">Take the test</a>
+                                @*<a href="@Url.Action("TakeTest", "Attempt", new { testId = Model.TestId})" class="btn btn-primary">Take the test</a>*@
+                                <button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#exampleModal-@Model.TestId">
+                                    Take the test
+                                </button>
+
+                                <!-- Modal with a unique ID -->
+                                <div class="modal fade" id="exampleModal-@Model.TestId" tabindex="-1" aria-labelledby="exampleModalLabel-@Model.TestId" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel-@Model.TestId">Are you sure you want to start take this test?</h5>
+                                                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                                                <a href="@Url.Action("TakeTest", "Attempt", new { testId = Model.TestId})" class="btn btn-primary" data-user-id="@Model.TestId">Start</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     }

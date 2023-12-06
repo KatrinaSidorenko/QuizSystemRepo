@@ -269,13 +269,14 @@ namespace BLL.Services
                 sharedTestStat.TakenCountByUsers = userStat.Count;
                 sharedTestStat.PassedUsersProcent = (userStat.Count(u => u.BestResult >= sharedTestData.PassingScore) / userStat.Count) *100;
                 sharedTestStat.AvgPoints = userStat.Sum(u => u.AvgResult) / userStat.Count;
+                sharedTestStat.AmmountOfAttempts = await _attemptRepository.TotalAmountOfAttemptsBySharedId(sharedTestId);
 
                 var questions = await _questionRepository.GetTestQuestionsDTO(sharedTestData.TestId);
                 sharedTestStat.QuestionsStat = questions;
 
                 foreach (var question in questions)
                 {
-                    var answers = await _answerRepository.GetAnswersDTO(question.QuestionId);
+                    var answers = await _answerRepository.GetAnswersDTO(question.QuestionId, sharedTestId);
                     question.Answers = answers;
                 }
 

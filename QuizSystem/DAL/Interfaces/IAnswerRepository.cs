@@ -15,6 +15,6 @@ namespace DAL.Interfaces
         Task DeleteAnswer(int answerId);
         Task<Answer> GetAnswerById(int answerId);
         Task<List<Answer>> GetQuestionAnswers(int questionId);
-        Task<List<AnswerStatDTO>> GetAnswersDTO(int questionId);
+        Task<List<AnswerStatDTO>> GetAnswersDTO(int questionId, int sharedTestId);
     }
 }
