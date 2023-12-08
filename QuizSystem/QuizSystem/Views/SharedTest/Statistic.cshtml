@@ -1,5 +1,114 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using QuizSystem.ViewModels.SharedTestViewModels
+@model StatisticSharedTestViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <style>
+        /* Custom CSS to center the card and make it 60% width */
+        .centered-card {
+            margin: 0 auto;
+            width: 60%;
+        }
+
+        /* Custom CSS to align the button to the right of the center elements */
+        .centered-container {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Sorry!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <!--Main layout-->
+    <main class="my-5">
+        <div class="container">
+            <!--Section: Content-->
+            <section class="text-center text-md-start">
+                <div class="row">
+                    <div class="col-md-12 centered-card">
+                        <!-- Centered card with 60% width -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>
+                                    Total amount of users how taken this test: @Model.TakenCountByUsers
+                                    </br> Total amount of attempts: @Model.AmmountOfAttempts
+                                    </br> Avarage mark: @Model.AvgPoints
+                                    </br> Procent of users how passed the test: @Model.PassedUsersProcent %
+                                </h5>
+
+                                <hr />
+                                <h4>
+                                    Users who taken the test:
+                                </h4>
+                                @foreach (var user in Model.UsersStat)
+                                {
+                                    <h5>@user.FirstName @user.LastName</h5>
+                                    <p >Email: @user.Email</p>
+                                    <p >Best mark: @user.BestResult</p>
+                                    <p c>Worst mark: @user.BestResult</p>
+                                    <p >Average mark: @user.AvgResult</p>
+                                }
+@*                                <h5 class="card-title">Test name: @Model.Name</h5>*@
+                               @* <p class="card-text">Description: @Model.Description</p>
+                                <p class="card-text">Questions amount: @Model.AmountOfQuestions</p>
+                                <p class="card-text">Max mark: @Model.TotalMark</p>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Space between test card and question cards -->
+                <div class="mb-4"></div>
+
+                <div class="row justify-content-center">
+                    @foreach (var question in Model.QuestionsStat)
+                    {
+                        <div class="col-md-12 centered-card">
+                            <div class="card">
+                                <div class="card-header">
+                                    <p>(Type: @question.Type)</p>
+                                    <p><strong>Question @question.Description</strong> (Points: @question.Point)</p>
+                                </div>
+                                <div class="card-body">
+                                    @foreach (var answer in question.Answers)
+                                    {
+
+                                        double procent = answer.UserChooseAmount * 100/Model.AmmountOfAttempts;
+
+                                        <p>Choose this answer: @procent %</p>
+                                        @if (answer.IsRight)
+                                        {
+                                            <div class="note note-success mb-3">
+                                                <strong>Right answer:</strong> Answer Text: @answer.Value
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="note note-secondary mb-3">
+                                                <strong>Wrong answer:</strong> Answer Text: @answer.Value
+                                            </div>
+                                        }
+                                        <hr class="hr" />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3"></div>
+                    }
+                    <div class="mb-4"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <!--Main layout-->
+</body>
+</html>

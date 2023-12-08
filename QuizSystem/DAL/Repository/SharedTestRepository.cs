@@ -216,7 +216,7 @@ namespace DAL.Repository
                                    $"attempt_duration='{sharedTest.AttemptDuration}', " +
                                    $"status={(int)sharedTest.Status}, " +
                                    $"test_id={sharedTest.TestId}," +
-                                   $"passing_score={sharedTest.PassingScore}" +
+                                   $"passing_score={sharedTest.PassingScore.ToString().Replace(',', '.')}" +
                                    $"WHERE shared_test_id={sharedTest.SharedTestId}";
 
             SqlConnection connection = new SqlConnection(_connectionString);
@@ -317,6 +317,36 @@ namespace DAL.Repository
                 }
 
                 return (sharedTests, totalRecords);
+            }
+        }
+
+        public async Task<List<UserStatDTO>> UsersStatistic(int sharedTestId)
+        {
+            var sqlExpression = $"select U.first_name, U.last_name, U.email, max(A.points) as max_points, \r\nmin(A.points) as min_points,\r\navg(A.points) as avg_points\r\nfrom [Attempts] A\r\njoin [Users] U on A.user_id = U.user_id\r\nwhere A.shared_test_id ={sharedTestId}\r\ngroup by U.first_name, U.last_name, U.email";
+
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+            List<UserStatDTO> users = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    UserStatDTO userStst = new();
+                    userStst.FirstName = (string)reader["first_name"];
+                    userStst.LastName = (string)reader["last_name"];
+                    userStst.Email = (string)reader["email"];
+                    userStst.BestResult = (double)reader["max_points"];
+                    userStst.WorstResult = (double)reader["min_points"];
+                    userStst.AvgResult = (double)reader["avg_points"];
+                    
+                    users.Add(userStst);
+                }
+
+                return users;
             }
         }
 

@@ -18,5 +18,6 @@ namespace BLL.Interfaces
         Task<Result<Dictionary<int, int>>> GetTestAttemptsCount();
         Task<Result<(int, double)>> GetQuestionsAmountAndMaxMark(int testId);
         Task<Result<(string, string)>> GetTestDocumentPath(int testId);
+        Task<Result<bool>> IsInTestQuestions(int testId);
     }
 }

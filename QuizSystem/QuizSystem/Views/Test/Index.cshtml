@@ -15,6 +15,7 @@
         text-overflow: ellipsis; /* Add ellipsis for overflowed text */
     }
 </style>
+
 <div class="container mb-5">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
@@ -22,6 +23,12 @@
         </div>
     </nav>
 </div>
+@if (TempData["Error"] != null)
+{
+    <div class="col-md-12 alert alert-danger">
+        <span><b>Sorry!</b> - @TempData["Error"]</span>
+    </div>
+}
 <div style="text-align: center;">
     <form method="get" asp-controller="Test" asp-action="Index" class="mb-4">
         <div class="row">

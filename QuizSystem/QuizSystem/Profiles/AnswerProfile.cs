@@ -2,6 +2,7 @@
 using Core.DTO;
 using Core.Models;
 using QuizSystem.ViewModels.AnswerViewModels;
+using QuizSystem.ViewModels.SharedTestViewModels;
 using QuizSystem.ViewModels.TakeTestViewModels;
 
 namespace QuizSystem.Profiles
@@ -17,6 +18,7 @@ namespace QuizSystem.Profiles
             CreateMap<Answer, AnswerTakeTestViewModel>();
             CreateMap<AnswerTakeTestViewModel, AnswerResultDTO>();
             CreateMap<AnswerTakeTestViewModel, Answer>();
+            CreateMap<AnswerStatDTO, AnswerStatViewModel>();
         }
     }
 }

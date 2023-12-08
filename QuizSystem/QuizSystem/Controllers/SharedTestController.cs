@@ -27,6 +27,16 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(int testId)
         {
+            var questionsAmountAllow = await _testService.IsInTestQuestions(testId);
+
+            if (!questionsAmountAllow.IsSuccessful || !questionsAmountAllow.Data)
+            {
+                var userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+                TempData["Error"] = questionsAmountAllow.Message;
+
+                return RedirectToAction("Index", "Test", new { id = userId });
+            }
+
             var permissionResult = await _sharedTestService.IsTestShared(testId);
 
             if (!permissionResult.IsSuccessful)
@@ -141,8 +151,14 @@ namespace QuizSystem.Controllers
             }
             //checks of attempts amount, start and end date
 
-            //rediraction to attempt
-            return RedirectToAction("TakeTest", "Attempt", new {testId = sharedTestResult.Data.TestId, sharedTestId = sharedTestResult.Data.SharedTestId});
+            //rediraction to agreement
+            var agreement = new AgreementSharedTestViewModel()
+            {
+                TestId = sharedTestResult.Data.TestId,
+                SharedTestId = sharedTestResult.Data.SharedTestId
+            };
+
+            return View("Agreement", agreement);
         }
 
         [HttpGet]
@@ -286,7 +302,16 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Statistic(int sharedTestId)
         {
-            return View();
+            var sharedTestResult = await _sharedTestService.GetSharedTestStatistic(sharedTestId);
+            if (!sharedTestResult.IsSuccessful)
+            {
+                TempData["Error"] = sharedTestResult.Message;
+
+                return RedirectToAction("Deatils", "SharedTest", new {sharedTestId = sharedTestId});
+            }
+
+            var sharedTestVm = _mapper.Map<StatisticSharedTestViewModel>(sharedTestResult.Data);
+            return View(sharedTestVm);
         }
     }
 }

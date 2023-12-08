@@ -22,17 +22,19 @@ namespace QuizSystem.Controllers
         private readonly IQuestionService _questionService;
         private readonly IAnswerService _answerService;
         private readonly ITestResultService _resultService;
+        private readonly ISharedTestService _sharedTestService;
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
         public AttemptController(IAttemptService attemptService, ITestService testService, IMapper mapper,
             IQuestionService questionService, IAnswerService answerService,
-            ITestResultService testResultService, IUserService userService)
+            ITestResultService testResultService, IUserService userService, ISharedTestService sharedTestService)
         {
             _attemptService = attemptService;
             _testService = testService;
             _questionService = questionService;
             _answerService = answerService;
             _resultService = testResultService;
+            _sharedTestService = sharedTestService;
             _userService = userService;
             _mapper = mapper;
         }
@@ -87,12 +89,15 @@ namespace QuizSystem.Controllers
 
             testVM.AttemptId = attemptId.Data;
 
-            if(sharedTestId is not null)
+            if (sharedTestId is not null)
             {
+                var sgaredTestResult = await _sharedTestService.GetSharedTestById((int)sharedTestId);
                 testVM.SharedTestId = sharedTestId;
+                testVM.AttemptDuration = sgaredTestResult.Data.AttemptDuration;
+
             }
             
-            return View(testVM);
+            return View(testVM);                 
         }
 
         [HttpPost]
@@ -281,7 +286,7 @@ namespace QuizSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> History(int testId, int userId, SortingParam sortOrder, FilterParam filterParam, 
+        public async Task<IActionResult> History(int testId, int userId, SortingParam sortOrder, FilterParam filterParam, DateTime? startDate = null, DateTime? endDate = null,
             int? sharedTestId = null, int page = 1, string searchParam = "")
         {
             int pageSize = 3;
@@ -295,13 +300,15 @@ namespace QuizSystem.Controllers
                 TestId = testId,
                 SharedTestId = sharedTestId,
                 SortingParam = sortOrder,
-                FilterParam = filterParam
+                FilterParam = filterParam,
+                StartDate = startDate,
+                EndDate = endDate
             };
 
             var attemptsResult = await _attemptService.GetUserTestAttempts(testId, userId, sortOrder,
                 sharedTestId, page, pageSize,
                 searchParam, FilterDictionary.FilterParamDict[filterParam].start, 
-                FilterDictionary.FilterParamDict[filterParam].end);
+                FilterDictionary.FilterParamDict[filterParam].end, startDate, endDate);
 
             if (!attemptsResult.IsSuccessful)
             {

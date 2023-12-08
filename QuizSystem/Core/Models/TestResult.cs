@@ -13,5 +13,6 @@ namespace Core.Models
         public int AnswerId { get; set; }
         public int AttemptId { get; set; }
         public string  EnteredValue { get; set; }
+        public double GainedPoints { get; set; }
     }
 }

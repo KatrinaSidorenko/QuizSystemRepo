@@ -7,6 +7,7 @@
         public int? SharedTestId { get; set; }
         public string Name { get; set; }
         public int TakedTestUserId { get; set; }
+        public DateTime? AttemptDuration { get; set; }
         public List<TakeTestQuestionViewModel> TakeTestQuestions { get; set;}
     }
 }

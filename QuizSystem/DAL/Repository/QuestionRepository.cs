@@ -1,9 +1,11 @@
-﻿using Core.Enums;
+﻿using Core.DTO;
+using Core.Enums;
 using Core.Models;
 using Core.Settings;
 using DAL.Interfaces;
 using Microsoft.Extensions.Options;
 using System.Data.SqlClient;
+using static System.Collections.Specialized.BitVector32;
 
 namespace DAL.Repository
 {
@@ -93,6 +95,32 @@ namespace DAL.Repository
             return questions;
         }
 
+        public async Task<List<QuestionStatDTO>> GetTestQuestionsDTO(int testId)
+        {
+            string sqlExpression = $"SELECT * FROM Questions Where test_id = {testId}";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+            List<QuestionStatDTO> questions = new ();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    QuestionStatDTO question = new();
+                    question.Description = (string)reader["question_description"];
+                    question.Type = (QuestionType)reader["question_type"];
+                    question.Point = (int)reader["point"];
+                    question.QuestionId = (int)reader["question_id"];
+                    questions.Add(question);
+                }
+            }
+
+            return questions;
+        }
+
         public async Task DeleteQuestion(int questionId)
         {
             string sqlExpression = $"DELETE FROM Questions WHERE question_id={questionId}";
@@ -123,5 +151,31 @@ namespace DAL.Repository
             }
         }
 
+        public async Task<bool> IsInTestQuestions(int testId)
+        {
+            string sqlExpression = $"select count(*) as questions_amount from [Questions] where test_id = {testId}";
+
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+            int questionAmount = 0;
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    questionAmount = (int)reader["questions_amount"];
+                }
+            }
+
+            if (questionAmount < 1)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

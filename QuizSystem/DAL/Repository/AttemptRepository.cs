@@ -157,7 +157,29 @@ namespace DAL.Repository
             }
         }
 
-        public async Task<(List<Attempt>, int)> GetAttempts(int testId, int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "attempt_id", string sortOrder = "asc", int? sharedTestId = null, int startAccuracy = 0, int endAccuracy = 100)
+        public async Task<List<int>> GetAttemptIdBySharedTest(int sharedTestId)
+        {
+            string sqlExpresiion = $"select attempt_id from Attempts where shared_test_id={sharedTestId}";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpresiion, connection);
+            List<int> ids = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    ids.Add((int)reader["attempt_id"]);
+                }
+
+                return ids;
+            }
+        }
+        public async Task<(List<Attempt>, int)> GetAttempts(int testId, int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "attempt_id", 
+            string sortOrder = "asc", int? sharedTestId = null, int startAccuracy = 0, int endAccuracy = 100,
+            DateTime? startDate = null, DateTime? endDate = null)
         {           
             string sqlExpression = "PagingAttempts"; // The stored procedure name
 
@@ -181,6 +203,10 @@ namespace DAL.Repository
                     command.Parameters.AddWithValue("@SharedTestId", sharedTestId != null ? sharedTestId: DBNull.Value);
                     command.Parameters.AddWithValue("@StartAccuracy", startAccuracy);
                     command.Parameters.AddWithValue("@EndAccuracy", endAccuracy);
+                    command.Parameters.AddWithValue("@StartDate", startDate != null ? startDate : DBNull.Value);
+                    command.Parameters.AddWithValue("@EndDate", endDate != null ? endDate : DBNull.Value);
+
+
                     // Define the output parameter for total records
                     SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
                     totalRecordsParam.Direction = ParameterDirection.Output;
@@ -353,6 +379,41 @@ namespace DAL.Repository
                 connection.Open();
                 SqlCommand command = new SqlCommand(sqlExpression, connection);
                 int number = await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task DeleteAttemptsBySharedTest(int sharedTestId)
+        {
+            string sqlExpression = $"DELETE FROM Attempts WHERE shared_test_id={sharedTestId}";
+            SqlConnection connection = new SqlConnection(_connectionString);
+
+            using (connection)
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                int number = await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<int> TotalAmountOfAttemptsBySharedId(int sharedTestId)
+        {
+            string sqlExpression = $"select count(*) as amount from Attempts where shared_test_id = {sharedTestId}";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+            using (connection)
+            {
+                connection.Open();
+                var result = await command.ExecuteScalarAsync();
+
+                if (result is null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return (int)result;
+                }
             }
         }
 

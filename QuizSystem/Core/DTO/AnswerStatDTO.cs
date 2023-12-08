@@ -1,6 +1,12 @@
-﻿namespace QuizSystem.ViewModels.SharedTestViewModels
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Core.DTO
 {
-    public class AnswerStatViewModel
+    public class AnswerStatDTO
     {
         public int AnswerId { get; set; }
         public string Value { get; set; }

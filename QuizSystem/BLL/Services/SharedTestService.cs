@@ -11,11 +11,18 @@ namespace BLL.Services
     {
         private readonly ISharedTestRepository _sharedTestRepository;
         private readonly IAttemptRepository _attemptRepository;
+        private readonly IQuestionRepository _questionRepository;
+        private readonly IAnswerRepository _answerRepository;
+        private readonly ITestResultService _testResultService;
 
-        public SharedTestService(ISharedTestRepository sharedTestRepository, IAttemptRepository attemptRepository)
+        public SharedTestService(ISharedTestRepository sharedTestRepository, IAttemptRepository attemptRepository, 
+            IQuestionRepository questionRepository, IAnswerRepository answerRepository, ITestResultService testResultService)
         {
             _sharedTestRepository = sharedTestRepository;
             _attemptRepository = attemptRepository;
+            _questionRepository = questionRepository;
+            _answerRepository = answerRepository;
+            _testResultService = testResultService;
         }
 
         public async Task<Result<int>> AddSharedTest(SharedTest sharedTest)
@@ -46,6 +53,16 @@ namespace BLL.Services
         {
             try
             {
+                var attemptIds = await _attemptRepository.GetAttemptIdBySharedTest(sharedTestId);
+                var deleteResult = await _testResultService.DeleteRangeOfTestResults(attemptIds);
+                //delete attempts
+
+                if (!deleteResult.IsSuccessful)
+                {
+                    return new Result<bool>(false, deleteResult.Message);
+                }
+
+                await _attemptRepository.DeleteAttemptsBySharedTest(sharedTestId);
                 await _sharedTestRepository.DeleteSharedTest(sharedTestId);
 
                 return new Result<bool>(isSuccessful: true);
@@ -230,6 +247,44 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<bool>(false, "Fail to check shared test");
+            }
+        }
+
+        public async Task<Result<SharedTestStatDTO>> GetSharedTestStatistic(int sharedTestId)
+        {
+            var sharedTestStat = new SharedTestStatDTO();
+
+            try
+            {
+                var sharedTestData = await _sharedTestRepository.GetSharedTestById(sharedTestId);
+
+                var userStat = await _sharedTestRepository.UsersStatistic(sharedTestId);
+
+                if (userStat.Count == 0)
+                {
+                    return new Result<SharedTestStatDTO>(false, "Users have not yet taken this test");
+                }
+
+                sharedTestStat.UsersStat = userStat;
+                sharedTestStat.TakenCountByUsers = userStat.Count;
+                sharedTestStat.PassedUsersProcent = (userStat.Count(u => u.BestResult >= sharedTestData.PassingScore) / userStat.Count) *100;
+                sharedTestStat.AvgPoints = userStat.Sum(u => u.AvgResult) / userStat.Count;
+                sharedTestStat.AmmountOfAttempts = await _attemptRepository.TotalAmountOfAttemptsBySharedId(sharedTestId);
+
+                var questions = await _questionRepository.GetTestQuestionsDTO(sharedTestData.TestId);
+                sharedTestStat.QuestionsStat = questions;
+
+                foreach (var question in questions)
+                {
+                    var answers = await _answerRepository.GetAnswersDTO(question.QuestionId, sharedTestId);
+                    question.Answers = answers;
+                }
+
+                return new Result<SharedTestStatDTO>(true, sharedTestStat);
+            }
+            catch (Exception ex)
+            {
+                return new Result<SharedTestStatDTO>(false, "Fail to get shared test statistic");
             }
         }
         private void SetSharedTestStatus(SharedTest sharedTest)

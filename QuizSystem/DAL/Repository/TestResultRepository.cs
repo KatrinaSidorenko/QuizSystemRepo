@@ -20,8 +20,8 @@ namespace DAL.Repository
                 throw new ArgumentNullException(nameof(testResult));
             }
 
-            var sqlExpression = "INSERT INTO TestResults (question_id, answer_id, attempt_id, entered_value)" +
-                               "VALUES (@QuestionId, @AnswerId, @AttemptId, @EnteredValue);" +
+            var sqlExpression = "INSERT INTO TestResults (question_id, answer_id, attempt_id, entered_value, gained_points)" +
+                               "VALUES (@QuestionId, @AnswerId, @AttemptId, @EnteredValue, @GainedPoints);" +
                                "SELECT SCOPE_IDENTITY();";
 
             using (var connection = new SqlConnection(_connectionString))
@@ -32,7 +32,9 @@ namespace DAL.Repository
                     command.Parameters.AddWithValue("@QuestionId", testResult.QuestionId);
                     command.Parameters.AddWithValue("@AnswerId", testResult.AnswerId);
                     command.Parameters.AddWithValue("@AttemptId", testResult.AttemptId);
-                    command.Parameters.AddWithValue("@EnteredValue", testResult.EnteredValue ?? " ");
+                    command.Parameters.AddWithValue("@EnteredValue", testResult.EnteredValue != null ? testResult.EnteredValue : DBNull.Value);
+                    command.Parameters.AddWithValue("@GainedPoints", testResult.GainedPoints);
+
 
                     var insertedId = await command.ExecuteScalarAsync();
 
@@ -65,7 +67,8 @@ namespace DAL.Repository
                     test.QuestionId = (int)reader["question_id"];
                     test.AnswerId = (int)reader["answer_id"];
                     test.AttemptId = (int)reader["attempt_id"];
-                    test.EnteredValue = (string)reader["entered_value"];
+                    test.GainedPoints = (double)reader["gained_points"];
+                    test.EnteredValue = reader["entered_value"] as string;
                 }
             }
 
@@ -82,6 +85,41 @@ namespace DAL.Repository
                 connection.Open();
                 SqlCommand command = new SqlCommand(sqlExpression, connection);
                 int number = await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task DeleteTestResultByQuestion(int questionId)
+        {
+            string sqlExpression = $"DELETE FROM TestResults WHERE question_id={questionId}";
+            SqlConnection connection = new SqlConnection(_connectionString);
+
+            using (connection)
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                int number = await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<(double sum, int rightAmount)> GetAttemptPointsData(int attemptId)
+        {
+            string sqlExpression = $"select sum(gained_points) as total_points, count(*) as right_answers_amount from [TestResults] where gained_points != 0 and attempt_id ={attemptId} group by attempt_id";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+                (double, int) result = new();
+
+                while (reader.Read())
+                {
+                    result.Item1 = (double)reader["total_points"];
+                    result.Item2 = (int)reader["right_answers_amount"];
+                }
+
+                return result;
             }
         }
     }
