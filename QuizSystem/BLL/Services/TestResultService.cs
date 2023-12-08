@@ -2,6 +2,7 @@
 using Core.Models;
 using DAL.Interfaces;
 using DAL.Repository;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace BLL.Services
 {
@@ -104,6 +105,20 @@ namespace BLL.Services
             catch (Exception ex)
             {
                 return new Result<bool>(isSuccessful: false, "Fail to delete test");
+            }
+        }
+
+        public async Task<Result<int>> EnteredRightAnswersAmount(int questionId, int sharedTestId)
+        {
+            try
+            {
+                var result = await _testResultRepository.EnteredRightAnswerAmount(questionId, sharedTestId);
+
+                return new Result<int> (isSuccessful: true, result);
+            }
+            catch(Exception ex)
+            {
+                return new Result<int>(isSuccessful: false);
             }
         }
     }

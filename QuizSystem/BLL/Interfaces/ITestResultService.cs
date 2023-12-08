@@ -9,5 +9,6 @@ namespace BLL.Interfaces
         Task<Result<bool>> DeleteRangeOfTestResults(List<int> attemptIds);
         Task<Result<(double sum, int rA)>> GetAttemptData(int attemptId);
         Task<Result<bool>> DeleteTestResultsByQuestion(int questionId);
+        Task<Result<int>> EnteredRightAnswersAmount(int questionId, int sharedTestId);
     }
 }

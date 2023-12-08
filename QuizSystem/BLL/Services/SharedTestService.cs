@@ -277,6 +277,17 @@ namespace BLL.Services
                 foreach (var question in questions)
                 {
                     var answers = await _answerRepository.GetAnswersDTO(question.QuestionId, sharedTestId);
+
+                    if (question.Type.Equals(QuestionType.Open))
+                    {
+                        var enteredTimes  = await _testResultService.EnteredRightAnswersAmount(question.QuestionId, sharedTestId);
+
+                        if (enteredTimes.IsSuccessful)
+                        {
+                            answers.FirstOrDefault().UserChooseAmount = enteredTimes.Data;
+                        }
+                    }
+
                     question.Answers = answers;
                 }
 

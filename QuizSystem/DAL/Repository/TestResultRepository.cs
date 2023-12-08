@@ -122,5 +122,27 @@ namespace DAL.Repository
                 return result;
             }
         }
+
+        public async Task<int> EnteredRightAnswerAmount(int questionId, int sharedTestId)
+        {
+            string sqlExpression = $"select count(*) as entered_right_answer\r\nfrom [TestResults]\r\nwhere question_id = {questionId} \r\nand lower(entered_value) like (select lower(answer_description) from [Answers] where question_id = {questionId} and is_right = 1)\r\nand\r\nattempt_id in (select attempt_id from [Attempts] where shared_test_id = {sharedTestId}) ";
+
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+                int result = 0;
+
+                while (reader.Read())
+                {
+                    result = (int)reader["entered_right_answer"];
+                }
+
+                return result;
+            }
+        }
     }
 }

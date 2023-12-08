@@ -9,5 +9,6 @@ namespace DAL.Interfaces
         Task DeleteTestResultByAttempt(int attemptId);
         Task<(double sum, int rightAmount)> GetAttemptPointsData(int attemptId);
         Task DeleteTestResultByQuestion(int questionId);
+        Task<int> EnteredRightAnswerAmount(int questionId, int sharedTestId);
     }
 }
