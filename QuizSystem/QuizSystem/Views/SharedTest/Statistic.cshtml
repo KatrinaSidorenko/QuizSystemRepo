@@ -41,7 +41,7 @@
                                 <h5>
                                     Total amount of users how taken this test: @Model.TakenCountByUsers
                                     </br> Total amount of attempts: @Model.AmmountOfAttempts
-                                    </br> Avarage mark: @Model.AvgPoints
+                                    </br> Avarage mark: @Math.Round(Model.AvgPoints, 2)
                                     </br> Procent of users how passed the test: @Model.PassedUsersProcent %
                                 </h5>
 
@@ -51,16 +51,12 @@
                                 </h4>
                                 @foreach (var user in Model.UsersStat)
                                 {
-                                    <h5>@user.FirstName @user.LastName</h5>
+                                    <h5>@user.FirstName @user.LastName (Attempts were made: @user.AttemptsAmount)</h5>
                                     <p >Email: @user.Email</p>
                                     <p >Best mark: @user.BestResult</p>
                                     <p c>Worst mark: @user.BestResult</p>
-                                    <p >Average mark: @user.AvgResult</p>
+                                    <p >Average mark: @Math.Round(user.AvgResult, 2)</p>
                                 }
-@*                                <h5 class="card-title">Test name: @Model.Name</h5>*@
-                               @* <p class="card-text">Description: @Model.Description</p>
-                                <p class="card-text">Questions amount: @Model.AmountOfQuestions</p>
-                                <p class="card-text">Max mark: @Model.TotalMark</p>*@
                             </div>
                         </div>
                     </div>

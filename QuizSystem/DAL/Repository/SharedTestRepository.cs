@@ -322,7 +322,7 @@ namespace DAL.Repository
 
         public async Task<List<UserStatDTO>> UsersStatistic(int sharedTestId)
         {
-            var sqlExpression = $"select U.first_name, U.last_name, U.email, max(A.points) as max_points, \r\nmin(A.points) as min_points,\r\navg(A.points) as avg_points\r\nfrom [Attempts] A\r\njoin [Users] U on A.user_id = U.user_id\r\nwhere A.shared_test_id ={sharedTestId}\r\ngroup by U.first_name, U.last_name, U.email";
+            var sqlExpression = $"select U.first_name, U.last_name, U.email, max(A.points) as max_points, \r\nmin(A.points) as min_points,\r\navg(A.points) as avg_points, count(*) as attempts_amount\r\nfrom [Attempts] A\r\njoin [Users] U on A.user_id = U.user_id\r\nwhere A.shared_test_id ={sharedTestId}\r\ngroup by U.first_name, U.last_name, U.email";
 
             SqlConnection connection = new SqlConnection(_connectionString);
             SqlCommand command = new SqlCommand(sqlExpression, connection);
@@ -342,6 +342,7 @@ namespace DAL.Repository
                     userStst.BestResult = (double)reader["max_points"];
                     userStst.WorstResult = (double)reader["min_points"];
                     userStst.AvgResult = (double)reader["avg_points"];
+                    userStst.AttemptsAmount = (int)reader["attempts_amount"];
                     
                     users.Add(userStst);
                 }

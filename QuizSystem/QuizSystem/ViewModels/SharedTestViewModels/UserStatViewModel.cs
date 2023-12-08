@@ -8,5 +8,6 @@
         public double BestResult { get; set; }
         public double WorstResult { get; set; }
         public double AvgResult { get; set; }
+        public int AttemptsAmount { get; set; }
     }
 }
