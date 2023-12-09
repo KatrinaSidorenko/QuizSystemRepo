@@ -307,7 +307,7 @@ namespace DAL.Repository
 
         public async Task<StatisticAttemptsDTO> GetAttemptsStatistic(int testId, int userId)
         {
-            string sqlExpression = $"SELECT user_id, test_id, \r\nCOUNT(*) AS entry_count, \r\nAVG(CAST(DATEDIFF(MINUTE, start_date, end_date) AS FLOAT)) AS avg_time, \r\navg(points) as avg_points\r\nFROM [Attempts] \r\nwhere user_id ={userId} and test_id = {testId} \r\nGROUP BY user_id, test_id;";
+            string sqlExpression = $"SELECT user_id, test_id, \r\nCOUNT(*) AS entry_count, \r\nAVG(CAST(DATEDIFF(MINUTE, start_date, end_date) AS FLOAT)) AS avg_time, \r\navg(points) as avg_points, max(end_date) as last_attempt,\r\nmin(end_date) as first_attempt\r\nFROM [Attempts] \r\nwhere user_id ={userId} and test_id = {testId} \r\nGROUP BY user_id, test_id;";
 
             SqlConnection connection = new SqlConnection(_connectionString);
             SqlCommand command = new SqlCommand(sqlExpression, connection);
@@ -324,6 +324,8 @@ namespace DAL.Repository
                     statistic.AmountOfAttempts = (int)reader["entry_count"];
                     statistic.AverageMark = (double)reader["avg_points"];
                     statistic.AverageTime = (double)reader["avg_time"];
+                    statistic.FirstAttemptDate = (DateTime)reader["first_attempt"];
+                    statistic.LastAttemptDate = (DateTime)reader["last_attempt"];
                 }
             }
 
