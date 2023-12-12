@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="GroupDocs.Viewer" Version="23.11.0" />
+    <PackageReference Include="Quartz" Version="3.8.0" />
   </ItemGroup>
 
   <ItemGroup>
