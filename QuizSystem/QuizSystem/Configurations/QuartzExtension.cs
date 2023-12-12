@@ -16,6 +16,7 @@ public static class QuartzExtension
                 .AddTrigger(trigger =>
                     trigger
                         .ForJob(jobKey)
+                        .StartNow()
                         .WithSimpleSchedule(schedule =>
                             schedule.WithIntervalInMinutes(1)
                             .RepeatForever()));

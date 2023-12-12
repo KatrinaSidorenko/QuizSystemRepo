@@ -206,7 +206,7 @@ namespace BLL.Services
                     return new Result<bool>(isSuccessful: false, "There are not enough questions in the test");
                 }
 
-                return new Result<bool>(isSuccessful: true);
+                return new Result<bool>(isSuccessful: true, data: true);
             }
             catch(Exception ex)
             {
