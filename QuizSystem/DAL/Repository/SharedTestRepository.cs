@@ -351,5 +351,21 @@ namespace DAL.Repository
             }
         }
 
+        public async Task UpdateSharedTestStatus()
+        {
+            string sqlExpression = "UpdateSharedTestStatus"; // The stored procedure name
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(sqlExpression, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    connection.Open();  
+                    await command.ExecuteNonQueryAsync();
+                    connection.Close();
+                }
+            }
+        }
     }
 }

@@ -16,5 +16,6 @@ namespace BLL.Interfaces
         Task<Result<bool>> FinishSharedTest(int sharedTestId);
         Task<Result<bool>> IsTestShared(int testId);
         Task<Result<SharedTestStatDTO>> GetSharedTestStatistic(int sharedTestId);
+        Task UpdateSharedTestStatus();
     }
 }

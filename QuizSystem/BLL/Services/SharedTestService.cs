@@ -298,6 +298,17 @@ namespace BLL.Services
                 return new Result<SharedTestStatDTO>(false, "Fail to get shared test statistic");
             }
         }
+        public async Task UpdateSharedTestStatus()
+        {
+            try
+            {
+                await _sharedTestRepository.UpdateSharedTestStatus();
+            }
+            catch
+            {
+                Console.WriteLine("Fail update sharedTest");
+            }
+        }
         private void SetSharedTestStatus(SharedTest sharedTest)
         {
             if (sharedTest.StartDate > DateTime.Now)

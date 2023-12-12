@@ -4,6 +4,7 @@ using Core.Settings;
 using DAL.Interfaces;
 using DAL.Repository;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using QuizSystem.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,8 @@ builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<IAttemptService, AttemptService>();
 builder.Services.AddScoped<ITestResultService, TestResultService>();
 builder.Services.AddScoped<ISharedTestService, SharedTestService>();
+
+builder.Services.AddQuartzConfiguration();
 
 var app = builder.Build();
 

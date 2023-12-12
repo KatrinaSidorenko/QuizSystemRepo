@@ -16,6 +16,7 @@ namespace DAL.Interfaces
         Task<bool> IsTestShared(int testId);
         Task<bool> IsCodeExist(Guid code);
         Task<List<UserStatDTO>> UsersStatistic(int sharedTestId);
+        Task UpdateSharedTestStatus();
         Task<(List<SharedTestDTO>, int)> GetUserSharedTestsWithTotalRecords(int userId, int pageNumber = 1, int pageSize = 6, string orderByProp = "shared_test_id", string sortOrder = "asc", SharedTestStatus? filterParam = null);
     }
 }
