@@ -307,7 +307,7 @@ namespace DAL.Repository
 
         public async Task<StatisticAttemptsDTO> GetAttemptsStatistic(int testId, int userId)
         {
-            string sqlExpression = $"SELECT user_id, test_id, \r\nCOUNT(*) AS entry_count, \r\nAVG(CAST(DATEDIFF(MINUTE, start_date, end_date) AS FLOAT)) AS avg_time, \r\navg(points) as avg_points\r\nFROM [Attempts] \r\nwhere user_id ={userId} and test_id = {testId} \r\nGROUP BY user_id, test_id;";
+            string sqlExpression = $"SELECT user_id, test_id, \r\nCOUNT(*) AS entry_count, \r\nAVG(CAST(DATEDIFF(MINUTE, start_date, end_date) AS FLOAT)) AS avg_time, \r\navg(points) as avg_points, max(end_date) as last_attempt,\r\nmin(end_date) as first_attempt\r\nFROM [Attempts] \r\nwhere user_id ={userId} and test_id = {testId} \r\nGROUP BY user_id, test_id;";
 
             SqlConnection connection = new SqlConnection(_connectionString);
             SqlCommand command = new SqlCommand(sqlExpression, connection);
@@ -324,6 +324,8 @@ namespace DAL.Repository
                     statistic.AmountOfAttempts = (int)reader["entry_count"];
                     statistic.AverageMark = (double)reader["avg_points"];
                     statistic.AverageTime = (double)reader["avg_time"];
+                    statistic.FirstAttemptDate = (DateTime)reader["first_attempt"];
+                    statistic.LastAttemptDate = (DateTime)reader["last_attempt"];
                 }
             }
 
@@ -415,6 +417,31 @@ namespace DAL.Repository
                     return (int)result;
                 }
             }
+        }
+
+        public async Task<List<(double points, DateTime date)>> GetMaxAndMinAttemptValues(int userId, int testId)
+        {
+            string sqlExpression = $"select points, end_date from [Attempts]\r\nwhere test_id = {testId} and user_id = {userId} \r\nand end_date >= all(select end_date from [Attempts]) \r\nor end_date <= all(select end_date from [Attempts])\r\norder by end_date desc";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+            List<(double points, DateTime date)> date = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    (double, DateTime) result = new();
+                    result.Item1 = (double)reader["points"];
+                    result.Item2 = (DateTime)reader["end_date"];
+                    date.Add(result);
+                }
+            }
+
+            return date;
         }
 
     }

@@ -213,5 +213,18 @@ namespace BLL.Services
                 return new Result<bool>(isSuccessful: false, "Fail to check test questions");
             }
         }
+        public async Task<Result<int>> GetTestTotalPoints(int testId)
+        {
+            try
+            {
+                var result = await _questionRepository.SelectTotalPointsForTest(testId);
+
+                return new Result<int>(isSuccessful: true, result);
+            }
+            catch (Exception ex)
+            {
+                return new Result<int>(isSuccessful: false, "Fail to get total points in test");
+            }
+        }
     }
 }

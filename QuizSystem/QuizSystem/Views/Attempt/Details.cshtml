@@ -6,23 +6,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Profile</title>
+    <title>Test Statistic</title>
     <style>
-        .container {
+        /* Custom CSS to center the card and make it 60% width */
+        .centered-card {
+            margin: 0 auto;
+            width: 60%;
+        }
+
+        /* Custom CSS to align the button to the right of the center elements */
+        .centered-container {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 70vh;
+            justify-content: space-between;
         }
-
-        .card {
-            max-width: 600px;
-            width: 100%;
-            padding: 30px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            background-color: #FBFBFB;
-        }
-
     </style>
 
 </head>
@@ -33,16 +29,72 @@
             <span><b>Sorry!</b> - @TempData["Error"]</span>
         </div>
     }
-    <div class="container">
-        <div class="card text-center">
-            <div class="card-header">Total amount of attempts: @Model.AmountOfAttempts</div>
-            <div class="card-body">
-                <h5 class="card-title">Avarage mark: @Math.Round(Model.AverageMark, 2)</h5>
-                @*<p class="card-text">With supporting text below as a natural lead-in to additional content.</p>*@
-            </div>
-            <div class="card-footer text-muted">Average time in minutes: @Math.Round(Model.AverageTime, 2)</div>
+    <!--Main layout-->
+    <main class="my-5">
+        <div class="container">
+            <!--Section: Content-->
+            <section class="text-center text-md-start">
+                <div class="row">
+                    <div class="col-md-12 centered-card">
+                        <!-- Centered card with 60% width -->
+                        <div class="card">
+                            <div class="card-body">
+                                <p><strong>Avarage mark:</strong> @Math.Round(Model.AverageMark, 2)</p>
+                                <p><strong>Total amount of attempts: </strong>@Model.AmountOfAttempts</p>
+                                <p><strong>Average time in minutes: </strong>@Math.Round(Model.AverageTime, 2)</p>
+                                <hr />
+                                <p><strong>Last attempt date: </strong> @Model.LastAttemptDate <strong>Mark: </strong>@Model.LastMarkResult</p>
+                                <p><strong>First attempt date: </strong> @Model.FirstAttemptDate <strong>Mark: </strong>@Model.FirstMarkResult</p>
+                                <hr />
+                                <p><strong>Progress: </strong> @Model.Progress %</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Space between test card and question cards -->
+                <div class="mb-4"></div>
+@*
+                <div class="row justify-content-center">
+                    @foreach (var question in Model.QuestionsStat)
+                    {
+                        <div class="col-md-12 centered-card">
+                            <div class="card">
+                                <div class="card-header">
+                                    <p>(Type: @question.Type)</p>
+                                    <p><strong>Question @question.Description</strong> (Points: @question.Point)</p>
+                                </div>
+                                <div class="card-body">
+                                    @foreach (var answer in question.Answers)
+                                    {
+
+                                        double procent = answer.UserChooseAmount * 100 / Model.AmmountOfAttempts;
+
+                                        <p>Choose this answer: @procent %</p>
+                                        @if (answer.IsRight)
+                                        {
+                                            <div class="note note-success mb-3">
+                                                <strong>Right answer:</strong> Answer Text: @answer.Value
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="note note-secondary mb-3">
+                                                <strong>Wrong answer:</strong> Answer Text: @answer.Value
+                                            </div>
+                                        }
+                                        <hr class="hr" />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3"></div>
+                    }
+                    <div class="mb-4"></div>
+                </div>*@
+            </section>
         </div>
-    </div>
+    </main>
 
 </body>
 </html>

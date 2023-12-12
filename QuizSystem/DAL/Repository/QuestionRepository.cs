@@ -177,5 +177,27 @@ namespace DAL.Repository
 
             return true;
         }
+
+        public async Task<int> SelectTotalPointsForTest(int testId)
+        {
+            string sqlExpression = $"select sum(point) as total_points from [Questions] where test_id = {testId};";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+            int totalPoints = 0;
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    totalPoints = (int)reader["total_points"];
+                }
+
+                return totalPoints;
+            }
+
+        }
     }
 }

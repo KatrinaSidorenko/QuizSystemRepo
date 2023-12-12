@@ -327,6 +327,15 @@ namespace BLL.Services
             try
             {
                 var statistic = await _attemptRepository.GetAttemptsStatistic(testId, userId);
+                var marks = await _attemptRepository.GetMaxAndMinAttemptValues(userId, testId);
+
+                statistic.LastMarkResult = marks.FirstOrDefault().points;
+                statistic.FirstMarkResult = marks.LastOrDefault().points;
+
+                var totalPoints = await _questionService.GetTestTotalPoints(testId);
+
+                var progress = (Math.Round((marks.FirstOrDefault().points - marks.LastOrDefault().points) / totalPoints.Data, 2))*100;
+                statistic.Progress = progress;
 
                 return new Result<StatisticAttemptsDTO>(true, statistic);
             }
