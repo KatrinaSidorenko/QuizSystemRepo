@@ -42,6 +42,11 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> TakeTest(int testId, int? sharedTestId = null)
         {
+            if (sharedTestId is not null)
+            {
+                return RedirectToAction("TakeSharedTest", new { testId  = testId, sharedTestId = sharedTestId});
+            }
+
             var testResult = await _testService.GetTestById(testId);
 
             if (!testResult.IsSuccessful)
@@ -89,6 +94,59 @@ namespace QuizSystem.Controllers
 
             testVM.AttemptId = attemptId.Data;
 
+            return View(testVM);                 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TakeSharedTest(int testId, int? sharedTestId = null)
+        {
+            var testResult = await _testService.GetTestById(testId);
+
+            if (!testResult.IsSuccessful)
+            {
+                TempData["Error"] = testResult.Message;
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            var questionsResult = await _questionService.GetTestQuestions(testId);
+
+            var questionsVM = questionsResult.Data.Select(async q =>
+            {
+                var answers = await _answerService.GetQuestionAnswers(q.QuestionId);
+
+                var answersVm = answers.Data.Select(a =>
+                {
+                    var answer = _mapper.Map<AnswerTakeTestViewModel>(a);
+
+                    return answer;
+
+                }).ToList();
+
+                var question = _mapper.Map<TakeTestQuestionViewModel>(q);
+                question.QuestionAnswers = answersVm;
+
+                return question;
+
+            }).ToList();
+
+            var testVM = _mapper.Map<TakeTestViewModel>(testResult.Data);
+            testVM.TakeTestQuestions = Task.WhenAll(questionsVM).Result.ToList();
+            testVM.TakedTestUserId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+
+            var attempt = new Attempt()
+            {
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now,
+                TestId = testId,
+                UserId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value),
+                SharedTestId = sharedTestId == null ? 0 : (int)sharedTestId
+            };
+
+            var attemptId = await _attemptService.AddAttempt(attempt);
+
+            testVM.AttemptId = attemptId.Data;
+
             if (sharedTestId is not null)
             {
                 var sgaredTestResult = await _sharedTestService.GetSharedTestById((int)sharedTestId);
@@ -96,8 +154,8 @@ namespace QuizSystem.Controllers
                 testVM.AttemptDuration = sgaredTestResult.Data.AttemptDuration;
 
             }
-            
-            return View(testVM);                 
+
+            return View(testVM);
         }
 
         [HttpPost]
