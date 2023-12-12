@@ -419,5 +419,30 @@ namespace DAL.Repository
             }
         }
 
+        public async Task<List<(double points, DateTime date)>> GetMaxAndMinAttemptValues(int userId, int testId)
+        {
+            string sqlExpression = $"select points, end_date from [Attempts]\r\nwhere test_id = {testId} and user_id = {userId} \r\nand end_date >= all(select end_date from [Attempts]) \r\nor end_date <= all(select end_date from [Attempts])\r\norder by end_date desc";
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+            List<(double points, DateTime date)> date = new();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    (double, DateTime) result = new();
+                    result.Item1 = (double)reader["points"];
+                    result.Item2 = (DateTime)reader["end_date"];
+                    date.Add(result);
+                }
+            }
+
+            return date;
+        }
+
     }
 }

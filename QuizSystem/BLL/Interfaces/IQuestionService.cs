@@ -16,5 +16,6 @@ namespace BLL.Interfaces
         Task<Result<Question>> GetQuestionById(int questionId);
         Task<Result<bool>> DeleteQuestion(int questionId);
         Task<Result<bool>> IsInTestQuestions(int testId);
+        Task<Result<int>> GetTestTotalPoints(int testId);
     }
 }

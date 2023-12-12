@@ -43,8 +43,10 @@
                                 <p><strong>Total amount of attempts: </strong>@Model.AmountOfAttempts</p>
                                 <p><strong>Average time in minutes: </strong>@Math.Round(Model.AverageTime, 2)</p>
                                 <hr />
-                                <p><strong>Last attempt date: </strong> @Model.LastAttemptDate </p>
-                                <p><strong>First attempt date: </strong> @Model.FirstAttemptDate </p>
+                                <p><strong>Last attempt date: </strong> @Model.LastAttemptDate <strong>Mark: </strong>@Model.LastMarkResult</p>
+                                <p><strong>First attempt date: </strong> @Model.FirstAttemptDate <strong>Mark: </strong>@Model.FirstMarkResult</p>
+                                <hr />
+                                <p><strong>Progress: </strong> @Model.Progress %</p>
                             </div>
                         </div>
                     </div>

@@ -12,5 +12,6 @@ namespace DAL.Interfaces
         Task UpdateQuestion(Question question);
         Task<List<QuestionStatDTO>> GetTestQuestionsDTO(int testId);
         Task<bool> IsInTestQuestions(int testId);
+        Task<int> SelectTotalPointsForTest(int testId);
     }
 }
