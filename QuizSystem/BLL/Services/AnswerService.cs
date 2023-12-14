@@ -37,7 +37,7 @@ namespace BLL.Services
 
                 return new Result<bool>(true);
             }
-            catch (Exception ex)
+            catch
             {
                 return new Result<bool>(false, "Fail to add answers to question");
             }

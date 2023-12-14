@@ -139,8 +139,6 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCode(Guid code)
         {
-            //existence of code
-
             var sharedTestResult = await _sharedTestService.GetSharedTestByCode(code, Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value));
 
             if (!sharedTestResult.IsSuccessful)
@@ -149,13 +147,15 @@ namespace QuizSystem.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
-            //checks of attempts amount, start and end date
 
-            //rediraction to agreement
             var agreement = new AgreementSharedTestViewModel()
             {
                 TestId = sharedTestResult.Data.TestId,
-                SharedTestId = sharedTestResult.Data.SharedTestId
+                SharedTestId = sharedTestResult.Data.SharedTestId,
+                PassingScore = sharedTestResult.Data.PassingScore,
+                AttemptDuration = sharedTestResult.Data.AttemptDuration,
+                Description = sharedTestResult.Data.Description,
+                AttemptCount = sharedTestResult.Data.AttemptCount
             };
 
             return View("Agreement", agreement);
