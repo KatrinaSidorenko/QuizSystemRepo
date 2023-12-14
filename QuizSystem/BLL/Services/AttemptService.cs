@@ -152,9 +152,9 @@ namespace BLL.Services
                 var attempt = await _attemptRepository.GetAttemptById(attemptId);
                 var rightAnswers = await _questionService.GetTestQuestionsWithRightAnswers(attempt.TestId);
 
-                if (rightAnswers.Data.TryGetValue(answer.QuestionId, out var answerIds))
+                if (rightAnswers.Data.TryGetValue(answer.QuestionId, out var rightAnswerIds))
                 {
-                    if (answerIds.Contains(answer.AnswerId))
+                    if (rightAnswerIds.Contains(answer.AnswerId))
                     {
                         var question = await _questionService.GetQuestionById(answer.QuestionId);
 
@@ -169,7 +169,7 @@ namespace BLL.Services
                         }
                         else
                         {
-                            testResult.GainedPoints += (double)question.Data.Point / answerIds.Count;
+                            testResult.GainedPoints += (double)question.Data.Point / rightAnswerIds.Count;
                         }
                     }
                 }
