@@ -181,7 +181,7 @@ namespace DAL.Repository
             string sortOrder = "asc", int? sharedTestId = null, int startAccuracy = 0, int endAccuracy = 100,
             DateTime? startDate = null, DateTime? endDate = null)
         {           
-            string sqlExpression = "PagingAttempts"; // The stored procedure name
+            string sqlExpression = "PagingAttempts"; 
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -193,7 +193,6 @@ namespace DAL.Repository
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
-                    // Define the input parameters
                     command.Parameters.AddWithValue("@PageNumber", pageNumber);
                     command.Parameters.AddWithValue("@PageSize", pageSize);
                     command.Parameters.AddWithValue("@OrderBy", orderByProp);
@@ -207,7 +206,6 @@ namespace DAL.Repository
                     command.Parameters.AddWithValue("@EndDate", endDate != null ? endDate : DBNull.Value);
 
 
-                    // Define the output parameter for total records
                     SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
                     totalRecordsParam.Direction = ParameterDirection.Output;
                     command.Parameters.Add(totalRecordsParam);
@@ -247,7 +245,7 @@ namespace DAL.Repository
 
         public async Task<(List<SharedAttemptDTO>, int)> GetSharedAttempts(int sharedTestId, int pageNumber = 1, int pageSize = 6, string orderByProp = "shared_test_id", string sortOrder = "asc")
         {
-            string sqlExpression = "PagingUserSharedAttempts"; // The stored procedure name
+            string sqlExpression = "PagingUserSharedAttempts"; 
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -259,7 +257,6 @@ namespace DAL.Repository
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
-                    // Define the input parameters
                     command.Parameters.AddWithValue("@PageNumber", pageNumber);
                     command.Parameters.AddWithValue("@PageSize", pageSize);
                     command.Parameters.AddWithValue("@OrderBy", orderByProp);
@@ -267,7 +264,6 @@ namespace DAL.Repository
                     command.Parameters.AddWithValue("@SharedTestId", sharedTestId);
                     
 
-                    // Define the output parameter for total records
                     SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
                     totalRecordsParam.Direction = ParameterDirection.Output;
                     command.Parameters.Add(totalRecordsParam);
@@ -421,7 +417,7 @@ namespace DAL.Repository
 
         public async Task<List<(double points, DateTime date)>> GetMaxAndMinAttemptValues(int userId, int testId)
         {
-            string sqlExpression = $"select points, end_date from [Attempts]\r\nwhere test_id = {testId} and user_id = {userId} \r\nand end_date >= all(select end_date from [Attempts]) \r\nor end_date <= all(select end_date from [Attempts])\r\norder by end_date desc";
+            string sqlExpression = $"SELECT points, end_date\r\nFROM [Attempts]\r\nWHERE test_id = {testId} AND user_id = {userId}\r\n  AND end_date = (SELECT MIN(end_date) FROM [Attempts] WHERE test_id = {testId} AND user_id = {userId})\r\n   OR end_date = (SELECT MAX(end_date) FROM [Attempts] WHERE test_id = {testId} AND user_id = {userId})\r\nORDER BY end_date DESC;";
             SqlConnection connection = new SqlConnection(_connectionString);
             SqlCommand command = new SqlCommand(sqlExpression, connection);
 

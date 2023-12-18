@@ -248,7 +248,6 @@ namespace QuizSystem.Controllers
                 {
                     QuestionId = q.QuestionId,
                     Description = q.Description,
-                    //GetedPoints = ((float)q.Point / answers.Data.Count) * (float)answersVm.Select(a => a.ChoosenByUser && a.IsRight == true).Count(),
                     Point = (float)q.Point,
                     Type = q.Type,
                     Answers = Task.WhenAll(answersVm).Result.ToList()

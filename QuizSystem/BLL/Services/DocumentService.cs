@@ -81,7 +81,7 @@ namespace BLL.Services
                 for (int i = 1; i <= _testDocumentModel.Questions.Count; i++)
                 {
                     var question = _testDocumentModel.Questions[i - 1];
-                    // Question Header
+        
                     column.Item().Column(questionColumn =>
                     {
                         questionColumn.Item().Text($"{i}. (Type: {question.Type}). Question: {question.Description}").Bold();
@@ -102,7 +102,7 @@ namespace BLL.Services
                     }
                     else
                     {
-                        // Answer Options
+       
                         column.Item().Column(answerColumn =>
                         {
                             for (int j = 1; j <= question.Answers.Count; j++)

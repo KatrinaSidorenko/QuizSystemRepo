@@ -56,6 +56,13 @@ namespace QuizSystem.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (testResult.Data.Visibility.Equals(Visibility.Private))
+            {
+                TempData["Error"] = "The test must be public in order to conduct general testing";
+
+                return RedirectToAction("Index", "Test", new { id = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id").Value)});
+            }
+
             var shareTestVM = new CreateShareTestViewModel { TestId = testId, TestName = testResult.Data.Name};
 
             return View(shareTestVM);

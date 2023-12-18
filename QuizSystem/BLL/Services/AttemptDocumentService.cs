@@ -90,7 +90,7 @@ namespace BLL.Services
                 for (int i = 1; i <= _documentModel.Questions.Count; i++)
                 {
                     var question = _documentModel.Questions[i - 1];
-                    // Question Header
+                 
                     column.Item().Column(questionColumn =>
                     {
                         questionColumn.Item().Text($"{i}. (Type: {question.Type}). Question: {question.Description}     max({question.Point})").Bold();

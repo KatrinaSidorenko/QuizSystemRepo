@@ -5,7 +5,6 @@ using Core.Settings;
 using DAL.Interfaces;
 using Microsoft.Extensions.Options;
 using System.Data.SqlClient;
-using static System.Collections.Specialized.BitVector32;
 
 namespace DAL.Repository
 {
