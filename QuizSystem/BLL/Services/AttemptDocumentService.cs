@@ -125,7 +125,7 @@ namespace BLL.Services
                                         {
                                             row.Spacing(5);
                                             row.AutoItem().Text($"Your answer: ");
-                                            row.RelativeItem().Text($"{answer.Value}").Style(wrongAnswerStyle);
+                                            row.RelativeItem().Text($"{answer.ValueByUser}").Style(wrongAnswerStyle);
                                         });
                                     }
                                     else
@@ -134,7 +134,7 @@ namespace BLL.Services
                                         {
                                             row.Spacing(5);
                                             row.AutoItem().Text($"Answer Text: ");
-                                            row.RelativeItem().Text($"{answer.Value}");
+                                            row.RelativeItem().Text($"{answer.ValueByUser}");
                                         });
                                     }
                                 }

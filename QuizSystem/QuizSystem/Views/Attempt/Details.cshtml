@@ -54,44 +54,6 @@
 
                 <!-- Space between test card and question cards -->
                 <div class="mb-4"></div>
-@*
-                <div class="row justify-content-center">
-                    @foreach (var question in Model.QuestionsStat)
-                    {
-                        <div class="col-md-12 centered-card">
-                            <div class="card">
-                                <div class="card-header">
-                                    <p>(Type: @question.Type)</p>
-                                    <p><strong>Question @question.Description</strong> (Points: @question.Point)</p>
-                                </div>
-                                <div class="card-body">
-                                    @foreach (var answer in question.Answers)
-                                    {
-
-                                        double procent = answer.UserChooseAmount * 100 / Model.AmmountOfAttempts;
-
-                                        <p>Choose this answer: @procent %</p>
-                                        @if (answer.IsRight)
-                                        {
-                                            <div class="note note-success mb-3">
-                                                <strong>Right answer:</strong> Answer Text: @answer.Value
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="note note-secondary mb-3">
-                                                <strong>Wrong answer:</strong> Answer Text: @answer.Value
-                                            </div>
-                                        }
-                                        <hr class="hr" />
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3"></div>
-                    }
-                    <div class="mb-4"></div>
-                </div>*@
             </section>
         </div>
     </main>

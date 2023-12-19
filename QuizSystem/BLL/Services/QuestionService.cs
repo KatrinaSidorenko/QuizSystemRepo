@@ -31,6 +31,11 @@ namespace BLL.Services
 
             try
             {
+                if (question.Description.Contains('\''))
+                {
+                    question.Description = question.Description.Replace("'", "*");
+                }
+
                 var questionId = await _questionRepository.AddQuestion(question);
 
                 answers.ForEach(answersItem => { answersItem.QuestionId = questionId; });

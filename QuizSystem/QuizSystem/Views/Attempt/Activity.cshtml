@@ -94,7 +94,7 @@
                     <div class="col-md-4">
                         <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
                         <div class="card mb-3">
-                            <div class="card-header"><h5>Title: @test.Name</h5></div>
+                            <div class="card-header"><h5>Title: @((test.Name.Length > 30) ? $"{test.Name.Substring(0, 20)}..." : test.Name)</h5></div>
                             <div class="card-body">
                                 <p class="card-title overflow-example">Description: @test.Description</p>
                                 <p class="card-text"><strong>Your attempts amount: <i class="fas fa-bullseye"></i> @test.AttemptsAmount</strong></p>

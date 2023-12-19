@@ -97,12 +97,21 @@ namespace QuizSystem.Controllers
                 return View(createShareTest);
             }
 
+            var testMaxMarkResult = await _testService.GetQuestionsAmountAndMaxMark(createShareTest.TestId);
+            var passingScore = Convert.ToDouble(createShareTest.PassScore.Replace('.', ','));
+
+            if (passingScore > testMaxMarkResult.Data.Item2)
+            {
+                TempData["Error"] = $"The passing score must be lower than the maximum score on the test. Maximum score for this test is {testMaxMarkResult.Data.Item2}";
+
+                return View(createShareTest);
+            }
 
             var sharedTest = _mapper.Map<SharedTest>(createShareTest);
            
             sharedTest.AttemptDuration = new DateTime(2023, 01, 01).AddMinutes(createShareTest.AttemptDuration);
 
-            sharedTest.PassingScore = Convert.ToDouble(createShareTest.PassScore.Replace('.', ','));
+            sharedTest.PassingScore = passingScore;
 
             var addResult = await _sharedTestService.AddSharedTest(sharedTest);
 
