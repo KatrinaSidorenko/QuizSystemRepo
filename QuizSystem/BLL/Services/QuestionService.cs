@@ -44,6 +44,8 @@ namespace BLL.Services
 
                 if (!answerResult.IsSuccessful)
                 {
+                    await DeleteQuestion(questionId);
+
                     return new Result<Question>(false, answerResult.Message);
                 }
 
