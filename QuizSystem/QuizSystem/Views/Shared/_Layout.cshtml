@@ -33,9 +33,7 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
+                        
                        @* <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Users</a>
                         </li>*@
@@ -51,15 +49,30 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Attempt" asp-action="Activity">Activity</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="SharedTest" asp-action="Index">Your shared tests</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="SharedTest" asp-action="Index">My shared tests</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Log Out</a>
                             </li>
+                            <li class="nav-item" style="margin-left: 400px;">
+                                <form method="get" asp-controller="SharedTest" asp-action="GetCode">
+                                    <div class="input-group" style="width: 420px">
+                                        <div class="form-outline">
+                                            <input type="search" id="code" name="code" class="form-control" style="background-color: ghostwhite;" />
+                                            <label class="form-label" for="code">Enter a join code</label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-fire-flame-curved"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </li>
                         }
                         else
                         {
-
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
                             </li>

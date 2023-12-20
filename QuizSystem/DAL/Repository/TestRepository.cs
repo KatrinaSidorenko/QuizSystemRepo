@@ -53,7 +53,7 @@ namespace DAL.Repository
 
         public async Task<(List<Test>, int)> GetAllPublicTestsWithTotalRecords(int pageNumber = 1, int pageSize = 6, string orderByProp = "test_id", string sortOrder = "asc")
         {
-            string sqlExpression = "PagingAllPublicTests"; // The stored procedure name
+            string sqlExpression = "PagingAllPublicTests"; 
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -65,13 +65,11 @@ namespace DAL.Repository
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
-                    // Define the input parameters
                     command.Parameters.AddWithValue("@PageNumber", pageNumber);
                     command.Parameters.AddWithValue("@PageSize", pageSize);
                     command.Parameters.AddWithValue("@OrderBy", orderByProp);
                     command.Parameters.AddWithValue("@SortOrder", sortOrder);
 
-                    // Define the output parameter for total records
                     SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
                     totalRecordsParam.Direction = ParameterDirection.Output;
                     command.Parameters.Add(totalRecordsParam);
@@ -119,7 +117,6 @@ namespace DAL.Repository
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
-                    // Define the input parameters
                     command.Parameters.AddWithValue("@PageNumber", pageNumber);
                     command.Parameters.AddWithValue("@PageSize", pageSize);
                     command.Parameters.AddWithValue("@OrderBy", orderByProp);
@@ -128,7 +125,6 @@ namespace DAL.Repository
                     command.Parameters.AddWithValue("@FilterParam", filterParam != null ? filterParam : DBNull.Value);
                     command.Parameters.AddWithValue("@SearchParam", !string.IsNullOrEmpty(serachParam) ? serachParam : DBNull.Value);
 
-                    // Define the output parameter for total records
                     SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
                     totalRecordsParam.Direction = ParameterDirection.Output;
                     command.Parameters.Add(totalRecordsParam);
@@ -354,7 +350,6 @@ namespace DAL.Repository
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
-                    // Define the input parameters
                     command.Parameters.AddWithValue("@PageNumber", pageNumber);
                     command.Parameters.AddWithValue("@PageSize", pageSize);
                     command.Parameters.AddWithValue("@OrderBy", orderByProp);
@@ -363,7 +358,6 @@ namespace DAL.Repository
                     command.Parameters.AddWithValue("@FilterParam", filterParam != null ? filterParam : DBNull.Value);
                     command.Parameters.AddWithValue("@SearchParam", !string.IsNullOrEmpty(serachParam) ? serachParam : DBNull.Value);
 
-                    // Define the output parameter for total records
                     SqlParameter totalRecordsParam = new SqlParameter("@TotalRecords", SqlDbType.Int);
                     totalRecordsParam.Direction = ParameterDirection.Output;
                     command.Parameters.Add(totalRecordsParam);

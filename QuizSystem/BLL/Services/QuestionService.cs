@@ -21,16 +21,21 @@ namespace BLL.Services
         {
             if(question == null || answers.Count == 0)
             {
-                return new Result<Question>(false, "No answers to the question");
+                return new Result<Question>(false, "There are no answers to the question");
             }
 
             if (answers.Where(a => a.IsRight).Count() == 0)
             {
-                return new Result<Question>(false, "Should be one right answer");
+                return new Result<Question>(false, "There must be at least one correct answer");
             }
 
             try
             {
+                if (question.Description.Contains('\''))
+                {
+                    question.Description = question.Description.Replace("'", "*");
+                }
+
                 var questionId = await _questionRepository.AddQuestion(question);
 
                 answers.ForEach(answersItem => { answersItem.QuestionId = questionId; });
@@ -39,12 +44,14 @@ namespace BLL.Services
 
                 if (!answerResult.IsSuccessful)
                 {
+                    await DeleteQuestion(questionId);
+
                     return new Result<Question>(false, answerResult.Message);
                 }
 
                 return new Result<Question>(isSuccessful: true);
             }
-            catch (Exception ex)
+            catch 
             {
                 return new Result<Question>(false, "Fail to create question and answers");
             }

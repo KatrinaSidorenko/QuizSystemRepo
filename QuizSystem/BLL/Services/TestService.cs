@@ -250,7 +250,6 @@ namespace BLL.Services
 
         public async Task<Result<(string, string)>> GetTestDocumentPath(int testId)
         {
-            //craete the member view model
             var documentModelResult = await GetTestDocumentModel(testId);
 
             if (!documentModelResult.IsSuccessful)
@@ -258,10 +257,8 @@ namespace BLL.Services
                 return new Result<(string, string)>(false, documentModelResult.Message);
             }
 
-            //create the documentService
             var documentService = new DocumentService(documentModelResult.Data);
 
-            //carete file name na dresturn it
             var fileName = CreateFileName(testId);
 
             var filePath = CraeteFilePath(fileName); 

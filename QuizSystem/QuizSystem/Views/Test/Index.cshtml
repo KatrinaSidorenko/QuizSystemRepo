@@ -1,5 +1,6 @@
 ﻿@using QuizSystem.ViewModels.PaginationTestViewModels
 @using Core.Enums
+
 @model TestPaginationModel
 
 @{
@@ -107,11 +108,16 @@
                 <div class="col-md-4">
                     <!-- Use col-md-4 to divide the row into 3 equal columns on medium-sized screens -->
                     <div class="card mb-3">
-                        <div class="card-header"><h5>Title: @test.Name</h5></div>
+                        <div class="card-header overflow-example"><h5>Title: @((test.Name.Length > 30) ? $"{test.Name.Substring(0, 20)}..." : test.Name)</h5></div>
                         <div class="card-body">
                             <p class="card-text overflow-example">Description: @test.Description</p>
                             <a href="@Url.Action("TestView", "Test", new { testId = test.TestId})" class="btn btn-primary">Details</a>
-                            <a href="@Url.Action("Create", "SharedTest", new { testId = test.TestId})" class="btn btn-success btn-rounded">Share</a>
+
+                            @if (!test.Visibility.Equals(Visibility.Private))
+                            {
+                                <a href="@Url.Action("Create", "SharedTest", new { testId = test.TestId})" class="btn btn-success btn-rounded">Share</a>
+                            }
+                           
                             <a href="@Url.Action("Edit", "Test", new { testId = test.TestId})" class="btn btn-primary">Edit</a>
                             <!-- Button trigger modal with a unique ID -->
                             <button type="button" class="btn btn-danger" data-mdb-toggle="modal" data-mdb-target="#exampleModal-@test.TestId">

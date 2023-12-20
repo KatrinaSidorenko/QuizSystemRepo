@@ -56,6 +56,13 @@ namespace QuizSystem.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (testResult.Data.Visibility.Equals(Visibility.Private))
+            {
+                TempData["Error"] = "The test must be public in order to conduct general testing";
+
+                return RedirectToAction("Index", "Test", new { id = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id").Value)});
+            }
+
             var shareTestVM = new CreateShareTestViewModel { TestId = testId, TestName = testResult.Data.Name};
 
             return View(shareTestVM);
@@ -90,12 +97,21 @@ namespace QuizSystem.Controllers
                 return View(createShareTest);
             }
 
+            var testMaxMarkResult = await _testService.GetQuestionsAmountAndMaxMark(createShareTest.TestId);
+            var passingScore = Convert.ToDouble(createShareTest.PassScore.Replace('.', ','));
+
+            if (passingScore > testMaxMarkResult.Data.Item2)
+            {
+                TempData["Error"] = $"The passing score must be lower than the maximum score on the test. Maximum score for this test is {testMaxMarkResult.Data.Item2}";
+
+                return View(createShareTest);
+            }
 
             var sharedTest = _mapper.Map<SharedTest>(createShareTest);
            
             sharedTest.AttemptDuration = new DateTime(2023, 01, 01).AddMinutes(createShareTest.AttemptDuration);
 
-            sharedTest.PassingScore = Convert.ToDouble(createShareTest.PassScore.Replace('.', ','));
+            sharedTest.PassingScore = passingScore;
 
             var addResult = await _sharedTestService.AddSharedTest(sharedTest);
 
@@ -139,8 +155,6 @@ namespace QuizSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCode(Guid code)
         {
-            //existence of code
-
             var sharedTestResult = await _sharedTestService.GetSharedTestByCode(code, Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value));
 
             if (!sharedTestResult.IsSuccessful)
@@ -149,13 +163,15 @@ namespace QuizSystem.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
-            //checks of attempts amount, start and end date
 
-            //rediraction to agreement
             var agreement = new AgreementSharedTestViewModel()
             {
                 TestId = sharedTestResult.Data.TestId,
-                SharedTestId = sharedTestResult.Data.SharedTestId
+                SharedTestId = sharedTestResult.Data.SharedTestId,
+                PassingScore = sharedTestResult.Data.PassingScore,
+                AttemptDuration = sharedTestResult.Data.AttemptDuration,
+                Description = sharedTestResult.Data.Description,
+                AttemptCount = sharedTestResult.Data.AttemptCount
             };
 
             return View("Agreement", agreement);

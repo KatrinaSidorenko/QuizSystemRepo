@@ -90,7 +90,7 @@ namespace BLL.Services
                 for (int i = 1; i <= _documentModel.Questions.Count; i++)
                 {
                     var question = _documentModel.Questions[i - 1];
-                    // Question Header
+                 
                     column.Item().Column(questionColumn =>
                     {
                         questionColumn.Item().Text($"{i}. (Type: {question.Type}). Question: {question.Description}     max({question.Point})").Bold();
@@ -125,7 +125,7 @@ namespace BLL.Services
                                         {
                                             row.Spacing(5);
                                             row.AutoItem().Text($"Your answer: ");
-                                            row.RelativeItem().Text($"{answer.Value}").Style(wrongAnswerStyle);
+                                            row.RelativeItem().Text($"{answer.ValueByUser}").Style(wrongAnswerStyle);
                                         });
                                     }
                                     else
@@ -134,7 +134,7 @@ namespace BLL.Services
                                         {
                                             row.Spacing(5);
                                             row.AutoItem().Text($"Answer Text: ");
-                                            row.RelativeItem().Text($"{answer.Value}");
+                                            row.RelativeItem().Text($"{answer.ValueByUser}");
                                         });
                                     }
                                 }

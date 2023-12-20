@@ -35,6 +35,15 @@
     <div class="container">
         <div class="card text-center">
             <div class="card-header">Are you sure that do you want to start take attempt?</div>
+            <div class="card-body">
+                <p class="card-text">Description: @Model.Description</p>
+                <p class="card-text">Total attempts count: @Model.AttemptCount</p>
+                <p class="card-text">Passing score: @Model.PassingScore</p>
+                @{
+                    var time = Model.AttemptDuration - new DateTime(2023, 01, 01);
+                }
+                <p class="card-text">Attempt duration: @time</p>
+            </div>
             <div class="card-footer text-muted">
                 <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Close</a>
                 <a href="@Url.Action("TakeTest", "Attempt", new { testId = Model.TestId, sharedTestId = Model.SharedTestId })" class="btn btn-success">Start</a>

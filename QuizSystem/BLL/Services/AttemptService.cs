@@ -73,34 +73,6 @@ namespace BLL.Services
 
                 attempt.Points = attemptData.Data.sum;
                 attempt.RightAnswersAmount = attemptData.Data.rA;
-                //var rightAnswers = await _questionService.GetTestQuestionsWithRightAnswers(attemptResultDTO.TestId);
-
-                //foreach(var answer in attemptResultDTO.Answers)
-                //{
-                //    if(rightAnswers.Data.TryGetValue(answer.QuestionId, out var answerIds))
-                //    {
-                //        if(answerIds.Contains(answer.AnswerId))
-                //        {
-                //            var question = await _questionService.GetQuestionById(answer.QuestionId);
-
-                //            if (question.Data.Type.Equals(QuestionType.Open))
-                //            {
-                //                var openAnswer = await _answerService.GetQuestionAnswers(question.Data.QuestionId);
-
-                //                if(openAnswer.Data.FirstOrDefault().Value.ToLower().Equals(answer.Value?.ToLower() ?? ""))
-                //                {
-                //                    attempt.Points += question.Data.Point;
-                //                    attempt.RightAnswersAmount++;
-                //                }
-                //            }
-                //            else
-                //            {
-                //                attempt.Points += (double)question.Data.Point / answerIds.Count;
-                //                attempt.RightAnswersAmount++;
-                //            }                         
-                //        }
-                //    }
-                //}
 
                 await _attemptRepository.UpdateAttempt(attempt);
 
@@ -152,9 +124,9 @@ namespace BLL.Services
                 var attempt = await _attemptRepository.GetAttemptById(attemptId);
                 var rightAnswers = await _questionService.GetTestQuestionsWithRightAnswers(attempt.TestId);
 
-                if (rightAnswers.Data.TryGetValue(answer.QuestionId, out var answerIds))
+                if (rightAnswers.Data.TryGetValue(answer.QuestionId, out var rightAnswerIds))
                 {
-                    if (answerIds.Contains(answer.AnswerId))
+                    if (rightAnswerIds.Contains(answer.AnswerId))
                     {
                         var question = await _questionService.GetQuestionById(answer.QuestionId);
 
@@ -169,7 +141,7 @@ namespace BLL.Services
                         }
                         else
                         {
-                            testResult.GainedPoints += (double)question.Data.Point / answerIds.Count;
+                            testResult.GainedPoints += (double)question.Data.Point / rightAnswerIds.Count;
                         }
                     }
                 }
@@ -353,10 +325,9 @@ namespace BLL.Services
             {
                 return new Result<(string, string)>(false, documentModelResult.Message);
             }
-            //create the documentService
+
             var documentService = new AttemptDocumentService(documentModelResult.Data);
 
-            //carete file name na dresturn it
             var fileName = CreateFileName(attemptId);
 
             var filePath = CraeteFilePath(fileName);
