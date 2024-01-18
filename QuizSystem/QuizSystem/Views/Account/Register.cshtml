@@ -35,63 +35,47 @@
     }
     <div class="container">
         <form id="edit-form" method="post" asp-controller="Account" asp-action="Register" enctype="multipart/form-data">
-            <!-- 2 column grid layout with text inputs for the first and last names -->
             <div class="row mb-4">
                 <div class="col">
                     <div class="form-outline">
-                        <label asp-for="FirstName" class="control-label"></label>
-                        <input asp-for="FirstName" class="form-control" placeholder="FirstName">
+                        <label asp-for="FirstName" class="control-label">First name</label>
+                        <input asp-for="FirstName" class="form-control" placeholder="First name">
                         <span asp-validation-for="FirstName" class="text-danger"></span>
-                        @* <input type="text" id="form6Example1" class="form-control" />
-                        <label class="form-label" for="form6Example1">First name</label>*@
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-outline">
-                        <label asp-for="LastName" class="control-label"></label>
-                        <input asp-for="LastName" class="form-control" placeholder="LastName">
+                        <label asp-for="LastName" class="control-label">Last name</label>
+                        <input asp-for="LastName" class="form-control" placeholder="Last name">
                         <span asp-validation-for="LastName" class="text-danger"></span>
-                        @*<input type="text" id="form6Example2" class="form-control" />
-                        <label class="form-label" for="form6Example2">Last name</label>*@
                     </div>
                 </div>
             </div>
 
-            <!-- Text input -->
             <div class="form-outline mb-4">
-                <label asp-for="DateOfBirth" class="control-label"></label>
-                <input asp-for="DateOfBirth" class="form-control" placeholder="Date Of Birth" type="date" min="@DateTime.Now.AddYears(-80).ToString("yyyy-MM-dd")" max="@DateTime.Now.AddYears(-6).ToString("yyyy-MM-dd")">
+                <label asp-for="DateOfBirth" class="control-label">Date of birth</label>
+                <input asp-for="DateOfBirth" class="form-control" placeholder="Date of birth" type="date" min="@DateTime.Now.AddYears(-80).ToString("yyyy-MM-dd")" max="@DateTime.Now.AddYears(-6).ToString("yyyy-MM-dd")">
                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-                @* <input type="text" id="form6Example3" class="form-control" />
-                <label class="form-label" for="form6Example3">Company name</label>*@
             </div>
 
-            <!-- Email input -->
             <div class="form-outline mb-4">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" placeholder="Email">
                 <span asp-validation-for="Email" class="text-danger"></span>
-                @*<input type="email" id="form6Example5" class="form-control" />
-                <label class="form-label" for="form6Example5">Email</label>*@
             </div>
 
-            <!-- Number input -->
             <div class="form-outline mb-4">
                 <label asp-for="Password" class="control-label"></label>
                 <input asp-for="Password" class="form-control" placeholder="Password">
                 <span asp-validation-for="Password" class="text-danger"></span>
-                @*<input type="number" id="form6Example6" class="form-control" />
-                <label class="form-label" for="form6Example6">Phone</label>*@
             </div>
 
             <div class="form-group">
                 <div class="py-2">
                     <button type="submit" class="btn btn-primary btn-block mb-4">Create</button>
-                    <a asp-controller="User" asp-action="Index" type="button" class="btn btn-secondary btn-block mb-3">Cancel</a>
+                    <a asp-controller="Home" asp-action="Index" type="button" class="btn btn-secondary btn-block mb-3">Cancel</a>
                 </div>
             </div>
-            @*                <!-- Submit button -->
-            <button type="submit" class="btn btn-primary btn-block mb-4">Place order</button>*@
         </form>
     </div>
   

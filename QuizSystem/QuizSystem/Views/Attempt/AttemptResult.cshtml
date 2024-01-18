@@ -59,16 +59,16 @@
                                             @if(answer.Value.ToLower().Equals(answer.ValueByUser.ToLower() ?? " "))
                                             {
                                                 <div class="note note-success mb-3">
-                                                    <strong>Right answer:</strong> Answer Text: @answer.Value
+                                                    <strong>Right answer:</strong> @answer.Value
                                                 </div>
                                             }
                                             else if(answer.IsRight && !answer.ChoosenByUser)
                                             {
                                                 <div class="note note-success mb-3">
-                                                    <strong>Right answer:</strong> Answer Text: @answer.Value
+                                                    <strong>Right answer:</strong> @answer.Value
                                                 </div>
                                                 <div class="note note-danger mb-3">
-                                                    <strong>Your answer:</strong> Answer Text: @answer.ValueByUser
+                                                    <strong>Your answer:</strong> @answer.ValueByUser
                                                 </div>
                                             }
                                             else

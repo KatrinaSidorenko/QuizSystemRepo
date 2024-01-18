@@ -227,8 +227,16 @@ namespace QuizSystem.Controllers
                     {
                         if (q.Type.Equals(QuestionType.Open))
                         {
-                            attemptAnswer.ChoosenByUser = testResult.Data.EnteredValue.ToLower().Equals(a.Value) ? true : false;
-                            attemptAnswer.ValueByUser = testResult.Data.EnteredValue;
+                            if (testResult.Data.EnteredValue is not null)
+                            {
+                                attemptAnswer.ChoosenByUser = testResult.Data.EnteredValue.ToLower().Equals(a.Value) ? true : false;
+                                attemptAnswer.ValueByUser = testResult.Data.EnteredValue;
+                            }
+                            else
+                            {
+                                attemptAnswer.ChoosenByUser = false;
+                                attemptAnswer.ValueByUser = "";
+                            }
                         }
                         else
                         {
